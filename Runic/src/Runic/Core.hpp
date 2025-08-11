@@ -13,3 +13,9 @@
 #error Runic only supports Linux!
 
 #endif // RUNIC_PLATFORM_LINUX
+
+#ifdef NDEBUG
+inline constexpr bool IS_DEBUG = false;
+#else
+inline constexpr bool IS_DEBUG = true;
+#endif
