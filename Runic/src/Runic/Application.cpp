@@ -1,0 +1,9 @@
+#include "Application.hpp"
+
+namespace Runic
+{
+void Application::run()
+{
+    while (true);
+}
+} // Runic
