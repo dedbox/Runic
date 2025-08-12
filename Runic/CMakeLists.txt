@@ -21,6 +21,10 @@ add_library(Runic SHARED
         src/Runic/Application.cpp
         src/Runic/Application.hpp
         src/Runic/Core.hpp
+        src/Runic/Event/ApplicationEvent.hpp
+        src/Runic/Event/Event.hpp
+        src/Runic/Event/KeyEvent.hpp
+        src/Runic/Event/MouseEvent.hpp
         src/Runic/Log.cpp
         src/Runic/Log.hpp
         src/Runic/Main.hpp)
