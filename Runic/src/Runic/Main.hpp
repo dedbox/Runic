@@ -2,7 +2,7 @@
 
 #ifdef RUNIC_PLATFORM_LINUX
 
-#include "Application.hpp"
+#include "Runic/Application.hpp"
 
 // ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile
 int main(int /*argc*/, char** /*argv*/)

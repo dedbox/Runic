@@ -36,9 +36,7 @@ target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 install(TARGETS Runic DESTINATION lib)
 install(FILES src/Runic.hpp DESTINATION include)
-install(FILES
-        src/Runic/Application.hpp
-        src/Runic/Core.hpp
-        src/Runic/Log.hpp
-        src/Runic/Main.hpp
-        DESTINATION include/Runic)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/"
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.hpp"
+        EXCLUDE PATTERN "*.cpp")

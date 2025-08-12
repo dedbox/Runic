@@ -4,7 +4,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "Core.hpp"
+#include "Runic/Core.hpp"
 
 namespace Runic
 {
