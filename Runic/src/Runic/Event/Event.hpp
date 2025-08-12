@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <functional>
-#include <string>
+#include "pch.hpp"
 
 #include "spdlog/fmt/fmt.h"
 
@@ -113,7 +111,7 @@ private:
     Event& _event;
 };
 
-auto format_as(const Runic::Event& event)
+inline auto format_as(const Runic::Event& event)
 {
     return fmt::format("{}", event.toString());
 }
