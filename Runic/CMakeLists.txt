@@ -36,6 +36,10 @@ add_library(Runic SHARED
         src/Runic/Event/Event.hpp
         src/Runic/Event/KeyEvent.hpp
         src/Runic/Event/MouseEvent.hpp
+        src/Runic/Layer.cpp
+        src/Runic/Layer.hpp
+        src/Runic/LayerStack.cpp
+        src/Runic/LayerStack.hpp
         src/Runic/Log.cpp
         src/Runic/Log.hpp
         src/Runic/Main.hpp

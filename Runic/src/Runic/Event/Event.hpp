@@ -70,6 +70,8 @@ class RUNIC_API Event
     friend class EventDispatcher;
 
 public:
+    bool handled = false;
+
     virtual ~Event() = default;
 
     virtual EventType type() const = 0;
@@ -81,9 +83,6 @@ public:
     virtual std::string toString() const { return name(); }
 
     bool hasCategory(const EventCategory cat) const { return hasFlag(category(), cat); }
-
-protected:
-    bool _handled = false;
 };
 
 inline auto format_as(const Event& event)
@@ -104,7 +103,7 @@ public:
     bool dispatch(EventFunction<T> func)
     {
         if (_event.type() == T::staticType()) {
-            _event._handled = func(*static_cast<T*>(&_event));
+            _event.handled = func(*static_cast<T*>(&_event));
             return true;
         }
         return false;
