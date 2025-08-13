@@ -8,8 +8,6 @@
 int main(int /*argc*/, char** /*argv*/)
 {
     Runic::Log::Init();
-    RUNIC_CORE_WARN("Initialized log!");
-    RUNIC_CORE_INFO("Hello!");
 
     const auto app = Runic::CreateApplication();
     app->run();

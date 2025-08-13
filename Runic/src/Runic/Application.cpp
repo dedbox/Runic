@@ -2,8 +2,15 @@
 
 namespace Runic
 {
+Application::Application()
+{
+    _window = std::unique_ptr<Window>(Window::create());
+}
+
 void Application::run()
 {
-    while (true);
+    while (_isRunning) {
+        _window->onUpdate();
+    }
 }
-} // Runic
+}

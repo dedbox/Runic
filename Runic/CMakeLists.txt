@@ -7,6 +7,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 
+find_package(OpenGL REQUIRED)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -16,7 +18,16 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(spdlog)
 
+FetchContent_Declare(
+        glfw
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG 3.4)
+
+FetchContent_MakeAvailable(glfw)
+
 add_library(Runic SHARED
+        src/Platform/Linux/LinuxWindow.cpp
+        src/Platform/Linux/LinuxWindow.hpp
         src/Runic.hpp
         src/Runic/Application.cpp
         src/Runic/Application.hpp
@@ -28,6 +39,7 @@ add_library(Runic SHARED
         src/Runic/Log.cpp
         src/Runic/Log.hpp
         src/Runic/Main.hpp
+        src/Runic/Window.hpp
         src/pch.hpp)
 
 target_compile_definitions(Runic
@@ -35,9 +47,11 @@ target_compile_definitions(Runic
         RUNIC_PLATFORM_LINUX=""
         RUNIC_BUILD_LIB="")
 
-target_link_libraries(Runic PUBLIC spdlog::spdlog)
+target_link_libraries(Runic PUBLIC spdlog::spdlog ${OPENGL_LIBRARIES} glfw)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR})
 
 target_precompile_headers(Runic PRIVATE src/pch.hpp)
 

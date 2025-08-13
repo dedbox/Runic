@@ -1,17 +1,22 @@
 #pragma once
 
-#include "Runic/Core.hpp"
+#include "pch.hpp"
+#include "Runic/Window.hpp"
 
 namespace Runic
 {
-class Application
+class RUNIC_API Application
 {
 public:
-    Application() = default;
+    Application();
 
     virtual ~Application() = default;
 
-    void RUNIC_API run();
+    void run();
+
+private:
+    std::unique_ptr<Window> _window;
+    bool _isRunning = true;
 };
 
 // Client must define this

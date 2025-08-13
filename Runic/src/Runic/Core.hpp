@@ -19,3 +19,9 @@ inline constexpr bool IS_DEBUG = false;
 #else
 inline constexpr bool IS_DEBUG = true;
 #endif
+
+#ifdef RUNIC_ENABLE_ASSERTS
+inline constexpr bool IS_ASSERTED = true;
+#else
+inline constexpr bool IS_ASSERTED = false;
+#endif

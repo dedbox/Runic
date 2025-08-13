@@ -88,6 +88,11 @@ protected:
     bool _handled = false;
 };
 
+inline auto format_as(const Event& event)
+{
+    return fmt::format("{}", event.toString());
+}
+
 class EventDispatcher
 {
     template<typename T>
@@ -110,9 +115,4 @@ public:
 private:
     Event& _event;
 };
-
-inline auto format_as(const Runic::Event& event)
-{
-    return fmt::format("{}", event.toString());
-}
 }
