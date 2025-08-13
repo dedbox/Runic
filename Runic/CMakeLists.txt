@@ -25,6 +25,16 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glfw)
 
+FetchContent_Declare(
+        glad
+        GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+        GIT_TAG v2.0.8
+        SOURCE_SUBDIR cmake)
+
+FetchContent_MakeAvailable(glad)
+
+glad_add_library(glad_gl_core_46 STATIC LOADER API gl:core=4.6)
+
 add_library(Runic SHARED
         src/Platform/Linux/LinuxWindow.cpp
         src/Platform/Linux/LinuxWindow.hpp
@@ -51,7 +61,7 @@ target_compile_definitions(Runic
         RUNIC_PLATFORM_LINUX=""
         RUNIC_BUILD_LIB="")
 
-target_link_libraries(Runic PUBLIC spdlog::spdlog ${OPENGL_LIBRARIES} glfw)
+target_link_libraries(Runic PUBLIC spdlog::spdlog ${OPENGL_LIBRARIES} glfw glad_gl_core_46)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR})
