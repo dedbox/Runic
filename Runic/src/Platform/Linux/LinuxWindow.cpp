@@ -1,5 +1,7 @@
 #include "Platform/Linux/LinuxWindow.hpp"
 
+#include "glad/gl.h"
+
 #include "pch.hpp"
 #include "Runic/Event/ApplicationEvent.hpp"
 #include "Runic/Event/KeyEvent.hpp"
@@ -41,11 +43,17 @@ void LinuxWindow::init(const WindowProps& props)
         // ReSharper disable once CppDFAUnusedValue
         int success = glfwInit();
         RUNIC_CORE_ASSERT(success, "Could not initialize GLFW!");
+        glfwSetErrorCallback(handleGlfwError);
         s_GLFWInitialized = true;
     }
 
     _window = glfwCreateWindow(_data.width, _data.height, _data.title.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(_window);
+
+    const int version = gladLoadGL(glfwGetProcAddress);
+    RUNIC_CORE_ASSERT(version, "Could not load glad!");
+    RUNIC_CORE_INFO("Loaded OpenGL {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+
     glfwSetWindowUserPointer(_window, &_data);
     setVSync(true);
 

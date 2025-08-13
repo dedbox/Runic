@@ -59,7 +59,8 @@ add_library(Runic SHARED
 target_compile_definitions(Runic
         PRIVATE
         RUNIC_PLATFORM_LINUX=""
-        RUNIC_BUILD_LIB="")
+        RUNIC_BUILD_LIB=""
+        GLFW_INCLUDE_NONE="")
 
 target_link_libraries(Runic PUBLIC spdlog::spdlog ${OPENGL_LIBRARIES} glfw glad_gl_core_46)
 
