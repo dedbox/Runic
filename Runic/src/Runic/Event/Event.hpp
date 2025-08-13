@@ -72,9 +72,7 @@ class RUNIC_API Event
 public:
     virtual ~Event() = default;
 
-    virtual EventType staticType() const = 0;
-
-    virtual EventType type() const { return staticType(); };
+    virtual EventType type() const = 0;
 
     virtual const char* name() const = 0;
 
@@ -95,8 +93,8 @@ inline auto format_as(const Event& event)
 
 class EventDispatcher
 {
-    template<typename T>
-    using EventFunction = std::function<bool(T&)>;
+    template<std::derived_from<Event> T>
+    using EventFunction = std::function<bool(const T&)>;
 
 public:
     explicit EventDispatcher(Event& event)

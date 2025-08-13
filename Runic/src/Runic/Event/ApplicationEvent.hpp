@@ -19,7 +19,9 @@ public:
         return std::format("WindowResizeEvent: {}, {}", _width, _height);
     }
 
-    EventType staticType() const override { return EventType::WindowResize; }
+    static EventType staticType() { return EventType::WindowResize; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "WindowResize"; }
 
@@ -34,7 +36,9 @@ class WindowCloseEvent final : public Event
 public:
     WindowCloseEvent() = default;
 
-    EventType staticType() const override { return EventType::WindowClose; }
+    static EventType staticType() { return EventType::WindowClose; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "WindowClose"; }
 
@@ -46,7 +50,9 @@ class AppTickEvent final : public Event
 public:
     AppTickEvent() = default;
 
-    EventType staticType() const override { return EventType::AppTick; }
+    static EventType staticType() { return EventType::AppTick; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "AppTick"; }
 
@@ -58,7 +64,9 @@ class AppUpdateEvent final : public Event
 public:
     AppUpdateEvent() = default;
 
-    EventType staticType() const override { return EventType::AppUpdate; }
+    static EventType staticType() { return EventType::AppUpdate; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "AppUpdate"; }
 
@@ -70,7 +78,9 @@ class AppRenderEvent final : public Event
 public:
     AppRenderEvent() = default;
 
-    EventType staticType() const override { return EventType::AppRender; }
+    static EventType staticType() { return EventType::AppRender; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "AppRender"; }
 

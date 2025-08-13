@@ -1,10 +1,18 @@
 #include "Platform/Linux/LinuxWindow.hpp"
 
 #include "pch.hpp"
+#include "Runic/Event/ApplicationEvent.hpp"
+#include "Runic/Event/KeyEvent.hpp"
+#include "Runic/Event/MouseEvent.hpp"
 
 namespace Runic
 {
 static bool s_GLFWInitialized = false;
+
+static void handleGlfwError(int error, const char* description)
+{
+    RUNIC_CORE_ERROR("GLFW ERROR ({}): {}", error, description);
+}
 
 Window* Window::create(const WindowProps& props)
 {
@@ -13,12 +21,12 @@ Window* Window::create(const WindowProps& props)
 
 LinuxWindow::LinuxWindow(const WindowProps& props)
 {
-    init(props);
+    LinuxWindow::init(props);
 }
 
 LinuxWindow::~LinuxWindow()
 {
-    shutdown();
+    LinuxWindow::shutdown();
 }
 
 void LinuxWindow::init(const WindowProps& props)
@@ -30,6 +38,7 @@ void LinuxWindow::init(const WindowProps& props)
     _data.height = props.height;
 
     if (!s_GLFWInitialized) {
+        // ReSharper disable once CppDFAUnusedValue
         int success = glfwInit();
         RUNIC_CORE_ASSERT(success, "Could not initialize GLFW!");
         s_GLFWInitialized = true;
@@ -39,6 +48,87 @@ void LinuxWindow::init(const WindowProps& props)
     glfwMakeContextCurrent(_window);
     glfwSetWindowUserPointer(_window, &_data);
     setVSync(true);
+
+    // events
+    glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, const int width, const int height) {
+        WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+
+        if (data.width != width || data.height != height) {
+            WindowResizeEvent event(width, height);
+            data.width = width;
+            data.height = height;
+            data.eventCallback(event);
+        }
+    });
+
+    glfwSetWindowCloseCallback(_window, [](GLFWwindow* window) {
+        const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+        WindowCloseEvent event;
+        data.eventCallback(event);
+    });
+
+    glfwSetKeyCallback(
+        _window, [](GLFWwindow* window, const int key, const int /*scancode*/, const int action, const int /*mods*/) {
+            const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+
+            switch (action) {
+                case GLFW_PRESS: {
+                    KeyPressedEvent event(key, false);
+                    data.eventCallback(event);
+                    break;
+                }
+
+                case GLFW_RELEASE: {
+                    KeyReleasedEvent event(key);
+                    data.eventCallback(event);
+                    break;
+                }
+
+                case GLFW_REPEAT: {
+                    KeyPressedEvent event(key, true);
+                    data.eventCallback(event);
+                    break;
+                }
+
+                default:
+                    RUNIC_CORE_ASSERT(false, "Unknown key action!");
+                    break;
+            }
+        });
+
+    glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, const int button, const int action, const int /*mods*/) {
+        const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+
+        switch (action) {
+            case GLFW_PRESS: {
+                MouseButtonPressedEvent event(button);
+                data.eventCallback(event);
+                break;
+            }
+
+            case GLFW_RELEASE: {
+                MouseButtonReleasedEvent event(button);
+                data.eventCallback(event);
+                break;
+            }
+
+            default:
+                RUNIC_CORE_ASSERT(false, "Unknown mouse action!");
+                break;
+        }
+    });
+
+    glfwSetScrollCallback(_window, [](GLFWwindow* window, const double xOffset, const double yOffset) {
+        const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+        MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
+        data.eventCallback(event);
+    });
+
+    glfwSetCursorPosCallback(_window, [](GLFWwindow* window, const double xPos, const double yPos) {
+        const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+        MouseMovedEvent event(static_cast<float>(xPos), static_cast<float>(yPos));
+        data.eventCallback(event);
+    });
 }
 
 void LinuxWindow::shutdown()
@@ -52,7 +142,7 @@ void LinuxWindow::onUpdate()
     glfwSwapBuffers(_window);
 }
 
-void LinuxWindow::setVSync(bool enabled)
+void LinuxWindow::setVSync(const bool enabled)
 {
     if (enabled)
         glfwSwapInterval(1);

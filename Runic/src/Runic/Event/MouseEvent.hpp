@@ -19,7 +19,9 @@ public:
         return std::format("MouseMovedEvent: {}, {}", _mouseX, _mouseY);
     }
 
-    EventType staticType() const override { return EventType::MouseMoved; }
+    static EventType staticType() { return EventType::MouseMoved; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "MouseMoved"; }
 
@@ -43,7 +45,9 @@ public:
         return std::format("MouseScrolledEvent: {}, {}", _xOffset, _yOffset);
     }
 
-    EventType staticType() const override { return EventType::MouseScrolled; }
+    static EventType staticType() { return EventType::MouseScrolled; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "MouseScrolled"; }
 
@@ -78,7 +82,9 @@ public:
         return std::format("MouseButtonPressedEvent: {}", _button);
     }
 
-    EventType staticType() const override { return EventType::MouseButtonPressed; }
+    static EventType staticType() { return EventType::MouseButtonPressed; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "MouseButtonPressed"; }
 };
@@ -94,7 +100,9 @@ public:
         return std::format("MouseButtonReleasedEvent: {}", _button);
     }
 
-    EventType staticType() const override { return EventType::MouseButtonReleased; }
+    static EventType staticType() { return EventType::MouseButtonReleased; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "MouseButtonReleased"; }
 };

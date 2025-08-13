@@ -16,7 +16,7 @@ public:
     unsigned int getWidth() override { return _data.width; }
     unsigned int getHeight() override { return _data.height; }
 
-    void setEventCallback(const EventCallbackFn& callback) override { _data.eventCallback = callback; }
+    void setEventCallback(EventCallbackFn& callback) override { _data.eventCallback = callback; }
 
     void setVSync(bool enabled) override;
 

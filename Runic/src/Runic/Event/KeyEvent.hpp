@@ -32,7 +32,9 @@ public:
         return std::format("KeyPressedEvent: {}{}", _keyCode, _repeated ? " (repeat)" : "");
     }
 
-    EventType staticType() const override { return EventType::KeyPressed; }
+    static EventType staticType() { return EventType::KeyPressed; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "KeyPressed"; }
 
@@ -51,7 +53,9 @@ public:
         return std::format("KeyReleasedEvent: {}", _keyCode);
     }
 
-    EventType staticType() const override { return EventType::KeyReleased; }
+    static EventType staticType() { return EventType::KeyReleased; }
+
+    EventType type() const override { return staticType(); }
 
     const char* name() const override { return "KeyReleased"; }
 };

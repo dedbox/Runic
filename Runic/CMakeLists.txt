@@ -50,7 +50,6 @@ target_compile_definitions(Runic
 target_link_libraries(Runic PUBLIC spdlog::spdlog ${OPENGL_LIBRARIES} glfw)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
 target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR})
 
 target_precompile_headers(Runic PRIVATE src/pch.hpp)
