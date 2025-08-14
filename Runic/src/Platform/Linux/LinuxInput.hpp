@@ -4,7 +4,7 @@
 
 namespace Runic
 {
-class LinuxInput : public Input
+class LinuxInput final : public Input
 {
 public:
     bool isKeyPressedImpl(int keyCode) override;

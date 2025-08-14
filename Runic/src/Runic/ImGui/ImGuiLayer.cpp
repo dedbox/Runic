@@ -30,8 +30,8 @@ void ImGuiLayer::onAttach()
     style.ScaleAllSizes(mainScale);
     style.FontScaleDpi = mainScale;
 
-    Application& app{Application::get()};
-    GLFWwindow* window = static_cast<GLFWwindow*>(app.getWindow().getNativeWindow());
+    const Application& app{Application::get()};
+    const auto window = static_cast<GLFWwindow*>(app.getWindow().getNativeWindow());
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");

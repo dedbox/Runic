@@ -23,12 +23,12 @@ Window* Window::create(const WindowProps& props)
 
 LinuxWindow::LinuxWindow(const WindowProps& props)
 {
-    LinuxWindow::init(props);
+    init(props);
 }
 
 LinuxWindow::~LinuxWindow()
 {
-    LinuxWindow::shutdown();
+    shutdown();
 }
 
 void LinuxWindow::init(const WindowProps& props)
@@ -146,7 +146,7 @@ void LinuxWindow::init(const WindowProps& props)
     });
 }
 
-void LinuxWindow::shutdown()
+void LinuxWindow::shutdown() const
 {
     glfwDestroyWindow(_window);
     glfwTerminate();

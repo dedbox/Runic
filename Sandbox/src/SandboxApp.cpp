@@ -1,17 +1,17 @@
 #include <Runic.hpp>
 
-class Sandbox : public Runic::Application
+class SandboxApp final : public Runic::Application
 {
 public:
-    Sandbox()
+    SandboxApp()
     {
         pushOverlay(new Runic::ImGuiLayer());
     }
 
-    ~Sandbox() override = default;
+    ~SandboxApp() override = default;
 };
 
 Runic::Application* Runic::CreateApplication()
 {
-    return new Sandbox();
+    return new SandboxApp();
 }

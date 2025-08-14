@@ -23,7 +23,12 @@ public:
 
     void pushOverlay(Layer* overlay);
 
-    static Application& get() { return *s_Instance; }
+    static Application& get()
+    {
+        RUNIC_CORE_ASSERT(s_Instance, "Application has not been instantiated!")
+        assert(s_Instance != nullptr);
+        return *s_Instance;
+    }
 
     Window& getWindow() const { return *_window; }
 

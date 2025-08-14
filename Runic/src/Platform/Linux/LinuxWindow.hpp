@@ -6,7 +6,7 @@
 
 namespace Runic
 {
-class LinuxWindow : public Window
+class LinuxWindow final : public Window
 {
 public:
     explicit LinuxWindow(const WindowProps& props);
@@ -27,9 +27,9 @@ public:
     void* getNativeWindow() const override { return _window; }
 
 private:
-    virtual void init(const WindowProps& props);
+    void init(const WindowProps& props);
 
-    virtual void shutdown();
+    void shutdown() const;
 
     GLFWwindow* _window;
 

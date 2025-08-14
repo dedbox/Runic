@@ -4,7 +4,7 @@
 
 namespace Runic
 {
-class RUNIC_API ImGuiLayer : public Layer
+class RUNIC_API ImGuiLayer final : public Layer
 {
 public:
     ImGuiLayer();

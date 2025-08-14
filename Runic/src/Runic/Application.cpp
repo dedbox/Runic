@@ -52,7 +52,7 @@ void Application::pushOverlay(Layer* overlay)
     _layerStack.pushOverlay(overlay);
 }
 
-bool Application::onWindowClose(const WindowCloseEvent& event)
+bool Application::onWindowClose(const WindowCloseEvent& /*event*/)
 {
     _isRunning = false;
     return true;
