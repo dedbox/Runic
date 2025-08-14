@@ -78,6 +78,7 @@ add_library(Runic SHARED
         src/Runic/ImGui/ImGuiLayer.cpp
         src/Runic/ImGui/ImGuiLayer.hpp
         src/Runic/Input.hpp
+        src/Runic/KeyCode.hpp
         src/Runic/Layer.cpp
         src/Runic/Layer.hpp
         src/Runic/LayerStack.cpp
@@ -85,6 +86,7 @@ add_library(Runic SHARED
         src/Runic/Log.cpp
         src/Runic/Log.hpp
         src/Runic/Main.hpp
+        src/Runic/MouseButtonCode.hpp
         src/Runic/Window.hpp
         src/pch.hpp
         src/Platform/Linux/LinuxInput.cpp
