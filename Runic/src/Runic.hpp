@@ -11,5 +11,7 @@
 #include <Runic/KeyCode.hpp>
 #include <Runic/MouseButtonCode.hpp>
 
+#include <Runic/Math.hpp>
+
 // Main Entry Point
 #include <Runic/Main.hpp>

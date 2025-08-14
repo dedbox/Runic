@@ -14,14 +14,16 @@ include(FetchContent)
 FetchContent_Declare(
         spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG v1.15.3)
+        GIT_TAG v1.15.3
+        GIT_SHALLOW YES)
 
 FetchContent_MakeAvailable(spdlog)
 
 FetchContent_Declare(
         glfw
         GIT_REPOSITORY https://github.com/glfw/glfw.git
-        GIT_TAG 3.4)
+        GIT_TAG 3.4
+        GIT_SHALLOW YES)
 
 FetchContent_MakeAvailable(glfw)
 
@@ -29,7 +31,8 @@ FetchContent_Declare(
         glad
         GIT_REPOSITORY https://github.com/Dav1dde/glad.git
         GIT_TAG v2.0.8
-        SOURCE_SUBDIR cmake)
+        SOURCE_SUBDIR cmake
+        GIT_SHALLOW YES)
 
 FetchContent_MakeAvailable(glad)
 
@@ -37,7 +40,8 @@ glad_add_library(glad_gl_core_46 STATIC LOADER API gl:core=4.6)
 
 FetchContent_Declare(
         imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git)
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_SHALLOW YES)
 
 FetchContent_MakeAvailable(imgui)
 
@@ -64,6 +68,14 @@ target_sources(ImGui PRIVATE
 
 target_link_libraries(ImGui PRIVATE glfw)
 
+FetchContent_Declare(
+        glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG 1.0.1
+        GIT_SHALLOW YES)
+
+FetchContent_MakeAvailable(glm)
+
 add_library(Runic SHARED
         src/Platform/Linux/LinuxWindow.cpp
         src/Platform/Linux/LinuxWindow.hpp
@@ -86,6 +98,7 @@ add_library(Runic SHARED
         src/Runic/Log.cpp
         src/Runic/Log.hpp
         src/Runic/Main.hpp
+        src/Runic/Math.hpp
         src/Runic/MouseButtonCode.hpp
         src/Runic/Window.hpp
         src/pch.hpp
@@ -98,7 +111,9 @@ target_compile_definitions(Runic
         RUNIC_BUILD_LIB=""
         GLFW_INCLUDE_NONE="")
 
-target_link_libraries(Runic PUBLIC spdlog::spdlog ${OPENGL_LIBRARIES} glfw glad_gl_core_46 ImGui)
+target_link_libraries(Runic PUBLIC glm::glm)
+target_link_libraries(Runic PRIVATE spdlog::spdlog ${OPENGL_LIBRARIES} glfw glad_gl_core_46 ImGui glm::glm)
+target_link_libraries(Runic INTERFACE spdlog::spdlog)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR})
