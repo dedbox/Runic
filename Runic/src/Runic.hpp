@@ -2,6 +2,7 @@
 
 // Includes for Runic applications
 #include <Runic/Application.hpp>
+#include <Runic/ImGui/ImGuiLayer.hpp>
 #include <Runic/Layer.hpp>
 #include <Runic/Log.hpp>
 

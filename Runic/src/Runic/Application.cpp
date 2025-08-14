@@ -1,9 +1,16 @@
 #include "Runic/Application.hpp"
 
+#include "GL/gl.h"
+
 namespace Runic
 {
+Application* Application::s_Instance{nullptr};
+
 Application::Application()
 {
+    RUNIC_CORE_ASSERT(!s_Instance, "Application already exists!");
+    s_Instance = this;
+
     _window = std::unique_ptr<Window>(Window::create());
 
     Window::EventCallbackFn callback = [&](Event& event) { onEvent(event); };
@@ -13,6 +20,9 @@ Application::Application()
 void Application::run()
 {
     while (_isRunning) {
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         for (Layer* layer : _layerStack)
             layer->onUpdate();
 

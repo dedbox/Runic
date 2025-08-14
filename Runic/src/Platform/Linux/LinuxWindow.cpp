@@ -76,32 +76,39 @@ void LinuxWindow::init(const WindowProps& props)
     });
 
     glfwSetKeyCallback(
-        _window, [](GLFWwindow* window, const int key, const int /*scancode*/, const int action, const int /*mods*/) {
+        _window, [](GLFWwindow* window, const int keyCode, const int scanCode, const int action, const int /*mods*/) {
             const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
             switch (action) {
                 case GLFW_PRESS: {
-                    KeyPressedEvent event(key, false);
+                    KeyPressedEvent event(keyCode, scanCode, false);
                     data.eventCallback(event);
                     break;
                 }
 
                 case GLFW_RELEASE: {
-                    KeyReleasedEvent event(key);
+                    KeyReleasedEvent event(keyCode, scanCode);
                     data.eventCallback(event);
                     break;
                 }
 
                 case GLFW_REPEAT: {
-                    KeyPressedEvent event(key, true);
+                    KeyPressedEvent event(keyCode, scanCode, true);
                     data.eventCallback(event);
                     break;
                 }
 
                 default:
-                    RUNIC_CORE_ASSERT(false, "Unknown key action!");
+                    RUNIC_CORE_ASSERT(false, "Unknown keyCode action!");
                     break;
             }
+        });
+
+    glfwSetCharCallback(
+        _window, [](GLFWwindow* window, const unsigned int keyCode) {
+            const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            KeyTypedEvent event(keyCode);
+            data.eventCallback(event);
         });
 
     glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, const int button, const int action, const int /*mods*/) {
@@ -142,6 +149,8 @@ void LinuxWindow::init(const WindowProps& props)
 void LinuxWindow::shutdown()
 {
     glfwDestroyWindow(_window);
+    glfwTerminate();
+    s_GLFWInitialized = false;
 }
 
 void LinuxWindow::onUpdate()

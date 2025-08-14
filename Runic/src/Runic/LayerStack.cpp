@@ -16,12 +16,14 @@ LayerStack::~LayerStack()
 void LayerStack::pushLayer(Layer* layer)
 {
     _layerInsert = _layers.emplace(_layerInsert, layer);
+    layer->onAttach();
 }
 
 void LayerStack::popLayer(Layer* layer)
 {
     const auto it = std::ranges::find(_layers, layer);
     if (it != _layers.end()) {
+        layer->onDetach();
         _layers.erase(it);
         --_layerInsert;
     }
@@ -30,12 +32,15 @@ void LayerStack::popLayer(Layer* layer)
 void LayerStack::pushOverlay(Layer* overlay)
 {
     _layers.emplace_back(overlay);
+    overlay->onAttach();
 }
 
 void LayerStack::popOverlay(Layer* overlay)
 {
     const auto it = std::ranges::find(_layers, overlay);
-    if (it != _layers.end())
+    if (it != _layers.end()) {
+        overlay->onDetach();
         _layers.erase(it);
+    }
 }
 } // Runic

@@ -3,7 +3,10 @@
 class Sandbox : public Runic::Application
 {
 public:
-    Sandbox() = default;
+    Sandbox()
+    {
+        pushOverlay(new Runic::ImGuiLayer());
+    }
 
     ~Sandbox() override = default;
 };

@@ -24,6 +24,8 @@ public:
 
     bool isVSync() const override;
 
+    void* getNativeWindow() const override { return _window; }
+
 private:
     virtual void init(const WindowProps& props);
 

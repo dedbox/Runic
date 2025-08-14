@@ -23,7 +23,13 @@ public:
 
     void pushOverlay(Layer* overlay);
 
+    static Application& get() { return *s_Instance; }
+
+    Window& getWindow() const { return *_window; }
+
 private:
+    static Application* s_Instance;
+
     std::unique_ptr<Window> _window;
     bool _isRunning = true;
     LayerStack _layerStack;
