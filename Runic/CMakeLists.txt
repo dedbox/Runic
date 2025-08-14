@@ -77,6 +77,7 @@ add_library(Runic SHARED
         src/Runic/Event/MouseEvent.hpp
         src/Runic/ImGui/ImGuiLayer.cpp
         src/Runic/ImGui/ImGuiLayer.hpp
+        src/Runic/Input.hpp
         src/Runic/Layer.cpp
         src/Runic/Layer.hpp
         src/Runic/LayerStack.cpp
@@ -85,7 +86,9 @@ add_library(Runic SHARED
         src/Runic/Log.hpp
         src/Runic/Main.hpp
         src/Runic/Window.hpp
-        src/pch.hpp)
+        src/pch.hpp
+        src/Platform/Linux/LinuxInput.cpp
+        src/Platform/Linux/LinuxInput.hpp)
 
 target_compile_definitions(Runic
         PRIVATE
