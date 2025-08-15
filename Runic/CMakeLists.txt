@@ -87,6 +87,8 @@ add_library(Runic STATIC
         src/Platform/Linux/LinuxInput.hpp
         src/Platform/Linux/LinuxWindow.cpp
         src/Platform/Linux/LinuxWindow.hpp
+        src/Platform/OpenGL/OpenGLBuffer.cpp
+        src/Platform/OpenGL/OpenGLBuffer.hpp
         src/Platform/OpenGL/OpenGLContext.cpp
         src/Platform/OpenGL/OpenGLContext.hpp
         src/Runic.hpp
@@ -110,7 +112,11 @@ add_library(Runic STATIC
         src/Runic/Main.hpp
         src/Runic/Math.hpp
         src/Runic/MouseButtonCode.hpp
+        src/Runic/Renderer/Buffer.cpp
+        src/Runic/Renderer/Buffer.hpp
         src/Runic/Renderer/GraphicsContext.hpp
+        src/Runic/Renderer/Renderer.cpp
+        src/Runic/Renderer/Renderer.hpp
         src/Runic/Renderer/Shader.cpp
         src/Runic/Renderer/Shader.hpp
         src/Runic/Window.hpp)

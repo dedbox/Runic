@@ -49,7 +49,7 @@ void LinuxWindow::init(const WindowProps& props)
     _window = glfwCreateWindow(_data.width, _data.height, _data.title.c_str(), nullptr, nullptr);
 
     _context = new OpenGLContext(_window);
-    _context->init();;
+    _context->init();
 
     glfwSetWindowUserPointer(_window, &_data);
     setVSync(true);

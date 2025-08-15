@@ -6,10 +6,10 @@
 
 namespace Runic
 {
-class OpenGLContext : public GraphicsContext
+class OpenGLContext final : public GraphicsContext
 {
 public:
-    OpenGLContext(GLFWwindow* windowHandle);
+    explicit OpenGLContext(GLFWwindow* windowHandle);
 
     void init() override;
 

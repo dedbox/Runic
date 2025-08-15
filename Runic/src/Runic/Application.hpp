@@ -7,6 +7,7 @@
 #include "Runic/LayerStack.hpp"
 #include "Runic/Window.hpp"
 
+#include "Runic/Renderer/Buffer.hpp"
 #include "Runic/Renderer/Shader.hpp"
 
 namespace Runic
@@ -44,8 +45,10 @@ private:
     bool _isRunning = true;
     LayerStack _layerStack;
 
-    unsigned int _vertexArray, _vertexBuffer, _indexBuffer;
+    unsigned int _vertexArray;
     std::unique_ptr<Shader> _shader;
+    std::unique_ptr<VertexBuffer> _vertexBuffer;
+    std::unique_ptr<IndexBuffer> _indexBuffer;
 
     bool onWindowClose(const WindowCloseEvent& event);
 };
