@@ -2,6 +2,7 @@
 
 #include "GLFW/glfw3.h"
 
+#include "Runic/Renderer/GraphicsContext.hpp"
 #include "Runic/Window.hpp"
 
 namespace Runic
@@ -32,6 +33,7 @@ private:
     void shutdown() const;
 
     GLFWwindow* _window;
+    GraphicsContext* _context;
 
     struct WindowData
     {

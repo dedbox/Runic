@@ -82,8 +82,13 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 add_library(Runic STATIC
+        src/pch.hpp
+        src/Platform/Linux/LinuxInput.cpp
+        src/Platform/Linux/LinuxInput.hpp
         src/Platform/Linux/LinuxWindow.cpp
         src/Platform/Linux/LinuxWindow.hpp
+        src/Platform/OpenGL/OpenGLContext.cpp
+        src/Platform/OpenGL/OpenGLContext.hpp
         src/Runic.hpp
         src/Runic/Application.cpp
         src/Runic/Application.hpp
@@ -105,10 +110,8 @@ add_library(Runic STATIC
         src/Runic/Main.hpp
         src/Runic/Math.hpp
         src/Runic/MouseButtonCode.hpp
-        src/Runic/Window.hpp
-        src/pch.hpp
-        src/Platform/Linux/LinuxInput.cpp
-        src/Platform/Linux/LinuxInput.hpp)
+        src/Runic/Renderer/GraphicsContext.hpp
+        src/Runic/Window.hpp)
 
 target_compile_definitions(Runic
         PRIVATE

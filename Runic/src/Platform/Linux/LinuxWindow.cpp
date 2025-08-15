@@ -1,8 +1,7 @@
-#include "Platform/Linux/LinuxWindow.hpp"
-
-#include "glad/gl.h"
-
 #include "pch.hpp"
+
+#include "Platform/Linux/LinuxWindow.hpp"
+#include "Platform/OpenGL/OpenGLContext.hpp"
 #include "Runic/Event/ApplicationEvent.hpp"
 #include "Runic/Event/KeyEvent.hpp"
 #include "Runic/Event/MouseEvent.hpp"
@@ -48,11 +47,9 @@ void LinuxWindow::init(const WindowProps& props)
     }
 
     _window = glfwCreateWindow(_data.width, _data.height, _data.title.c_str(), nullptr, nullptr);
-    glfwMakeContextCurrent(_window);
 
-    const int version = gladLoadGL(glfwGetProcAddress);
-    RUNIC_CORE_ASSERT(version, "Could not load glad!");
-    RUNIC_CORE_INFO("Loaded OpenGL {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+    _context = new OpenGLContext(_window);
+    _context->init();;
 
     glfwSetWindowUserPointer(_window, &_data);
     setVSync(true);
@@ -156,7 +153,7 @@ void LinuxWindow::shutdown() const
 void LinuxWindow::onUpdate()
 {
     glfwPollEvents();
-    glfwSwapBuffers(_window);
+    _context->swapBuffers();
 }
 
 void LinuxWindow::setVSync(const bool enabled)
