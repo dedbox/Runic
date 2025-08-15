@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "Runic/Application.hpp"
 
 #include "GL/gl.h"

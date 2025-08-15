@@ -1,6 +1,6 @@
 #include "pch.hpp"
-
 #include "Platform/Linux/LinuxWindow.hpp"
+
 #include "Platform/OpenGL/OpenGLContext.hpp"
 #include "Runic/Event/ApplicationEvent.hpp"
 #include "Runic/Event/KeyEvent.hpp"

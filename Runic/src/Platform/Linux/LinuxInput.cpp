@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "Platform/Linux/LinuxInput.hpp"
 
 #include "GLFW/glfw3.h"

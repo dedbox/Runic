@@ -1,3 +1,5 @@
+#include "pch.hpp"
+
 #include "glad/gl.h"
 
 #include "OpenGLContext.hpp"
