@@ -7,6 +7,8 @@
 #include "Runic/LayerStack.hpp"
 #include "Runic/Window.hpp"
 
+#include "Runic/Renderer/Shader.hpp"
+
 namespace Runic
 {
 class RUNIC_API Application
@@ -43,6 +45,7 @@ private:
     LayerStack _layerStack;
 
     unsigned int _vertexArray, _vertexBuffer, _indexBuffer;
+    std::unique_ptr<Shader> _shader;
 
     bool onWindowClose(const WindowCloseEvent& event);
 };

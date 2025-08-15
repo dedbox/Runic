@@ -111,6 +111,8 @@ add_library(Runic STATIC
         src/Runic/Math.hpp
         src/Runic/MouseButtonCode.hpp
         src/Runic/Renderer/GraphicsContext.hpp
+        src/Runic/Renderer/Shader.cpp
+        src/Runic/Renderer/Shader.hpp
         src/Runic/Window.hpp)
 
 target_compile_definitions(Runic
