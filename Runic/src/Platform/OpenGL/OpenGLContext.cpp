@@ -19,6 +19,11 @@ void OpenGLContext::init()
     const int version = gladLoadGL(glfwGetProcAddress);
     RUNIC_CORE_ASSERT(version, "Could not load glad!");
     RUNIC_CORE_INFO("Loaded OpenGL {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+
+    RUNIC_CORE_INFO("OpenGL info:");
+    RUNIC_CORE_INFO("    Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+    RUNIC_CORE_INFO("    Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+    RUNIC_CORE_INFO("    Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 }
 
 void OpenGLContext::swapBuffers()

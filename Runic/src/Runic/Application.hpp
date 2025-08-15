@@ -42,6 +42,8 @@ private:
     bool _isRunning = true;
     LayerStack _layerStack;
 
+    unsigned int _vertexArray, _vertexBuffer, _indexBuffer;
+
     bool onWindowClose(const WindowCloseEvent& event);
 };
 
