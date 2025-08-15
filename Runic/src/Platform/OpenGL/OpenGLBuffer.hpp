@@ -15,8 +15,13 @@ public:
 
     void unbind() const override;
 
+    const BufferLayout& getLayout() const override { return _layout; }
+
+    void setLayout(const BufferLayout layout) override { _layout = layout; }
+
 private:
     uint32_t _rendererID;
+    BufferLayout _layout;
 };
 
 class OpenGLIndexBuffer final : public IndexBuffer
