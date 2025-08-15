@@ -15,6 +15,9 @@ Application::Application()
 
     Window::EventCallbackFn callback = [&](Event& event) { onEvent(event); };
     _window->setEventCallback(callback);
+
+    _imGuiLayer = new ImGuiLayer();
+    pushLayer(_imGuiLayer);
 }
 
 void Application::run()
@@ -25,6 +28,11 @@ void Application::run()
 
         for (Layer* layer : _layerStack)
             layer->onUpdate();
+
+        _imGuiLayer->begin();
+        for (Layer* layer : _layerStack)
+            layer->onImGuiRender();
+        _imGuiLayer->end();
 
         _window->onUpdate();
     }

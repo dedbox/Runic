@@ -15,6 +15,10 @@ public:
 
     void onDetach() override;
 
-    void onUpdate() override;
+    void onImGuiRender() override;
+
+    static void begin();
+
+    static void end();
 };
 } // Runic

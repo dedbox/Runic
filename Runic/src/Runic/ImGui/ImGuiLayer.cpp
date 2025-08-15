@@ -19,16 +19,18 @@ void ImGuiLayer::onAttach()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO& io{ImGui::GetIO()};
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     ImGui::StyleColorsDark();
 
-    const float mainScale{ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor())};
-
-    ImGuiStyle& style = ImGui::GetStyle();
-    style.ScaleAllSizes(mainScale);
-    style.FontScaleDpi = mainScale;
+    ImGuiStyle& style{ImGui::GetStyle()};
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 
     const Application& app{Application::get()};
     const auto window = static_cast<GLFWwindow*>(app.getWindow().getNativeWindow());
@@ -44,22 +46,35 @@ void ImGuiLayer::onDetach()
     ImGui::DestroyContext();
 }
 
-void ImGuiLayer::onUpdate()
+void ImGuiLayer::onImGuiRender()
 {
-    const Application& app = Application::get();
+    static bool show{true};
+    ImGui::ShowDemoWindow(&show);
+}
 
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(static_cast<float>(app.getWindow().getWidth()),
-                            static_cast<float>(app.getWindow().getHeight()));
-
+void ImGuiLayer::begin()
+{
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+}
 
-    static bool showDemo = true;
-    ImGui::ShowDemoWindow(&showDemo);
+void ImGuiLayer::end()
+{
+    const Application& app{Application::get()};
+
+    ImGuiIO& io{ImGui::GetIO()};
+    io.DisplaySize = ImVec2(static_cast<float>(app.getWindow().getWidth()),
+                            static_cast<float>(app.getWindow().getHeight()));
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        GLFWwindow* backupCurrentContext{glfwGetCurrentContext()};
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backupCurrentContext);
+    }
 }
 } // Runic

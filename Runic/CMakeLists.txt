@@ -41,6 +41,7 @@ glad_add_library(glad_gl_core_46 STATIC LOADER API gl:core=4.6)
 FetchContent_Declare(
         imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG docking
         GIT_SHALLOW YES)
 
 FetchContent_MakeAvailable(imgui)
@@ -57,6 +58,10 @@ add_library(ImGui STATIC
         ${imgui_SOURCE_DIR}/imstb_rectpack.h
         ${imgui_SOURCE_DIR}/imstb_textedit.h
         ${imgui_SOURCE_DIR}/imstb_truetype.h)
+
+target_compile_definitions(ImGui
+        PRIVATE
+        IMGUI_IMPL_OPENGL_LOADER_GLAD="")
 
 target_include_directories(ImGui PUBLIC ${imgui_SOURCE_DIR})
 
@@ -76,7 +81,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glm)
 
-add_library(Runic SHARED
+add_library(Runic STATIC
         src/Platform/Linux/LinuxWindow.cpp
         src/Platform/Linux/LinuxWindow.hpp
         src/Runic.hpp
@@ -111,12 +116,14 @@ target_compile_definitions(Runic
         RUNIC_BUILD_LIB=""
         GLFW_INCLUDE_NONE="")
 
-target_link_libraries(Runic PUBLIC glm::glm)
-target_link_libraries(Runic PRIVATE spdlog::spdlog ${OPENGL_LIBRARIES} glfw glad_gl_core_46 ImGui glm::glm)
+target_link_libraries(Runic PUBLIC ImGui glm::glm)
+target_link_libraries(Runic PRIVATE spdlog::spdlog ${OPENGL_LIBRARIES} glfw glad_gl_core_46)
 target_link_libraries(Runic INTERFACE spdlog::spdlog)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR})
+target_include_directories(Runic PRIVATE
+        ${OPENGL_INCLUDE_DIR}
+        ${glad_INCLUDE_DIR})
 
 target_precompile_headers(Runic PRIVATE src/pch.hpp)
 

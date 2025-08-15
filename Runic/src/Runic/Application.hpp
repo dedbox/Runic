@@ -2,6 +2,7 @@
 
 #include "pch.hpp"
 #include "Runic/Event/ApplicationEvent.hpp"
+#include "Runic/ImGui/ImGuiLayer.hpp"
 #include "Runic/Layer.hpp"
 #include "Runic/LayerStack.hpp"
 #include "Runic/Window.hpp"
@@ -36,6 +37,8 @@ private:
     static Application* s_Instance;
 
     std::unique_ptr<Window> _window;
+    ImGuiLayer* _imGuiLayer;
+
     bool _isRunning = true;
     LayerStack _layerStack;
 

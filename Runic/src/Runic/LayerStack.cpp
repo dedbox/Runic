@@ -2,10 +2,7 @@
 
 namespace Runic
 {
-LayerStack::LayerStack()
-{
-    _layerInsert = _layers.begin();
-}
+LayerStack::LayerStack() {}
 
 LayerStack::~LayerStack()
 {
@@ -15,7 +12,8 @@ LayerStack::~LayerStack()
 
 void LayerStack::pushLayer(Layer* layer)
 {
-    _layerInsert = _layers.emplace(_layerInsert, layer);
+    _layers.emplace(_layers.begin() + _layerInsertIndex, layer);
+    _layerInsertIndex++;
     layer->onAttach();
 }
 
@@ -25,7 +23,7 @@ void LayerStack::popLayer(Layer* layer)
     if (it != _layers.end()) {
         layer->onDetach();
         _layers.erase(it);
-        --_layerInsert;
+        _layerInsertIndex--;
     }
 }
 
