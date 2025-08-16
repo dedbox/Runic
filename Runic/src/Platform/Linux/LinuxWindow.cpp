@@ -40,7 +40,7 @@ void LinuxWindow::init(const WindowProps& props)
 
     if (!s_GLFWInitialized) {
         // ReSharper disable once CppDFAUnusedValue
-        int success = glfwInit();
+        const int success = glfwInit();
         RUNIC_CORE_ASSERT(success, "Could not initialize GLFW!");
         glfwSetErrorCallback(handleGlfwError);
         s_GLFWInitialized = true;

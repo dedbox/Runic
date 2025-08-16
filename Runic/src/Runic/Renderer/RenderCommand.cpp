@@ -1,4 +1,3 @@
-#include "pch.hpp"
 #include "Runic/Renderer/RenderCommand.hpp"
 
 #include "Platform/OpenGL/OpenGLRendererAPI.hpp"

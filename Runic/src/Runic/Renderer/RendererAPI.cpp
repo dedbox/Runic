@@ -1,4 +1,3 @@
-#include "pch.hpp"
 #include "Runic/Renderer/RendererAPI.hpp"
 
 namespace Runic

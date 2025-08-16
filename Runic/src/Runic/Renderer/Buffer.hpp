@@ -72,8 +72,8 @@ struct BufferElement
     uint32_t offset{};
     bool normalized{};
 
-    BufferElement(const ShaderDataType type, const std::string& name, bool normalized = false)
-        : name(name), type(type), size(shaderDataTypeSize(type)), offset(0), normalized(normalized) {}
+    BufferElement(const ShaderDataType type, const std::string& name, const bool normalized = false)
+        : name(name), type(type), size(shaderDataTypeSize(type)), normalized(normalized) {}
 
     uint32_t getComponentCount() const { return shaderDataTypeComponentCount(type); }
 };
