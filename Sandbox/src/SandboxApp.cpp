@@ -97,8 +97,29 @@ void main()
 
     void onUpdate() override
     {
+        if (Runic::Input::isKeyPressed(Runic::Key::A))
+            _cameraPosition.x -= _cameraMoveSpeed;
+
+        if (Runic::Input::isKeyPressed(Runic::Key::D))
+            _cameraPosition.x += _cameraMoveSpeed;
+
+        if (Runic::Input::isKeyPressed(Runic::Key::S))
+            _cameraPosition.y -= _cameraMoveSpeed;
+
+        if (Runic::Input::isKeyPressed(Runic::Key::W))
+            _cameraPosition.y += _cameraMoveSpeed;
+
+        if (Runic::Input::isKeyPressed(Runic::Key::Q))
+            _cameraRotation += _cameraRotationSpeed;
+
+        if (Runic::Input::isKeyPressed(Runic::Key::E))
+            _cameraRotation -= _cameraRotationSpeed;
+
         Runic::RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         Runic::RenderCommand::clear();
+
+        _camera.setPosition(_cameraPosition);
+        _camera.setRotation(_cameraRotation);
 
         Runic::Renderer::beginScene(_camera);
 
@@ -114,6 +135,10 @@ private:
     std::shared_ptr<Runic::VertexArray> _squareVA;
 
     Runic::OrthographicCamera _camera;
+    glm::vec3 _cameraPosition{0.0f, 0.0f, 0.0f};
+    float _cameraMoveSpeed{0.1f};
+    float _cameraRotation{0.0f};
+    float _cameraRotationSpeed{2.0f};
 };
 
 class SandboxApp final : public Runic::Application
