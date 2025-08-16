@@ -1,19 +1,19 @@
 #pragma once
 
+#include "Runic/Renderer/RendererAPI.hpp"
+#include "Runic/Renderer/VertexArray.hpp"
+
 namespace Runic
 {
-enum class RendererAPI
-{
-    None   = 0,
-    OpenGL = 1,
-};
-
 class Renderer
 {
 public:
-    static RendererAPI getAPI() { return s_RendererAPI; }
+    static void beginScene();
 
-private:
-    static RendererAPI s_RendererAPI;
+    static void endScene();
+
+    static void submit(const std::shared_ptr<VertexArray>& vertexArray);
+
+    static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
 };
 } // Runic

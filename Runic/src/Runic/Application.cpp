@@ -1,7 +1,8 @@
 #include "pch.hpp"
 #include "Runic/Application.hpp"
 
-#include "glad/gl.h"
+#include "Runic/Renderer/RenderCommand.hpp"
+#include "Runic/Renderer/Renderer.hpp"
 
 namespace Runic
 {
@@ -108,16 +109,17 @@ void main()
 void Application::run()
 {
     while (_isRunning) {
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+        RenderCommand::clear();
+
+        Renderer::beginScene();
 
         _shader->bind();
-        _squareVA->bind();
-        glDrawElements(GL_TRIANGLES, _squareVA->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 
-        _shader->bind();
-        _vertexArray->bind();
-        glDrawElements(GL_TRIANGLES, _vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+        Renderer::submit(_squareVA);
+        Renderer::submit(_vertexArray);
+
+        Renderer::endScene();
 
         for (Layer* layer : _layerStack)
             layer->onUpdate();

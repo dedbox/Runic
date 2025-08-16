@@ -9,11 +9,11 @@ namespace Runic
 VertexBuffer* VertexBuffer::create(const float* vertices, const uint32_t size)
 {
     switch (Renderer::getAPI()) {
-        case RendererAPI::None:
+        case RendererAPI::API::None:
             RUNIC_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
             return nullptr;
 
-        case RendererAPI::OpenGL:
+        case RendererAPI::API::OpenGL:
             return new OpenGLVertexBuffer(vertices, size);
     }
 
@@ -24,11 +24,11 @@ VertexBuffer* VertexBuffer::create(const float* vertices, const uint32_t size)
 IndexBuffer* IndexBuffer::create(const uint32_t* indices, const uint32_t count)
 {
     switch (Renderer::getAPI()) {
-        case RendererAPI::None:
+        case RendererAPI::API::None:
             RUNIC_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
             return nullptr;
 
-        case RendererAPI::OpenGL:
+        case RendererAPI::API::OpenGL:
             return new OpenGLIndexBuffer(indices, count);
     }
 
