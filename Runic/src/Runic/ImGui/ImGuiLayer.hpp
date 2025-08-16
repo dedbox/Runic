@@ -15,8 +15,6 @@ public:
 
     void onDetach() override;
 
-    void onImGuiRender() override;
-
     static void begin();
 
     static void end();
