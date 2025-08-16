@@ -36,5 +36,5 @@ private:
 #define RUNIC_ERROR(...) if constexpr (IS_DEBUG) ::Runic::Log::GetClientLogger()->error(__VA_ARGS__)
 #define RUNIC_FATAL(...) if constexpr (IS_DEBUG) ::Runic::Log::GetClientLogger()->fatal(__VA_ARGS__)
 
-#define RUNIC_ASSERT(x, ...) if constexpr (IS_ASSERTED) {if(!(x)) RUNIC_ERROR("Assertion failed: {}", __VA_ARGS__); raise(SIGTRAP); }
-#define RUNIC_CORE_ASSERT(x, ...) if constexpr (IS_ASSERTED) {if(!(x)) RUNIC_CORE_ERROR("Assertion failed: {}", __VA_ARGS__); raise(SIGTRAP); }
+#define RUNIC_ASSERT(x, ...) if constexpr (IS_ASSERTED) {if(!(x)) {RUNIC_ERROR("Assertion failed: {}", __VA_ARGS__); raise(SIGTRAP); }}
+#define RUNIC_CORE_ASSERT(x, ...) if constexpr (IS_ASSERTED) {if(!(x)) {RUNIC_CORE_ERROR("Assertion failed: {}", __VA_ARGS__); raise(SIGTRAP); }}

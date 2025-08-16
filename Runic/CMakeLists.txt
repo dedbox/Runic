@@ -125,6 +125,7 @@ target_compile_definitions(Runic
         PRIVATE
         RUNIC_PLATFORM_LINUX=""
         RUNIC_BUILD_LIB=""
+        RUNIC_ENABLE_ASSERTS=1
         GLFW_INCLUDE_NONE="")
 
 target_link_libraries(Runic PUBLIC ImGui glm::glm)
