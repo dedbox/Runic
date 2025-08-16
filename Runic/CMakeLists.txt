@@ -91,6 +91,8 @@ add_library(Runic STATIC
         src/Platform/OpenGL/OpenGLBuffer.hpp
         src/Platform/OpenGL/OpenGLContext.cpp
         src/Platform/OpenGL/OpenGLContext.hpp
+        src/Platform/OpenGL/OpenGLVertexArray.cpp
+        src/Platform/OpenGL/OpenGLVertexArray.hpp
         src/Runic.hpp
         src/Runic/Application.cpp
         src/Runic/Application.hpp
@@ -119,6 +121,8 @@ add_library(Runic STATIC
         src/Runic/Renderer/Renderer.hpp
         src/Runic/Renderer/Shader.cpp
         src/Runic/Renderer/Shader.hpp
+        src/Runic/Renderer/VertexArray.cpp
+        src/Runic/Renderer/VertexArray.hpp
         src/Runic/Window.hpp)
 
 target_compile_definitions(Runic

@@ -7,8 +7,8 @@
 #include "Runic/LayerStack.hpp"
 #include "Runic/Window.hpp"
 
-#include "Runic/Renderer/Buffer.hpp"
 #include "Runic/Renderer/Shader.hpp"
+#include "Runic/Renderer/VertexArray.hpp"
 
 namespace Runic
 {
@@ -45,10 +45,10 @@ private:
     bool _isRunning = true;
     LayerStack _layerStack;
 
-    unsigned int _vertexArray;
-    std::unique_ptr<Shader> _shader;
-    std::unique_ptr<VertexBuffer> _vertexBuffer;
-    std::unique_ptr<IndexBuffer> _indexBuffer;
+    std::shared_ptr<VertexArray> _vertexArray;
+    std::shared_ptr<Shader> _shader;
+
+    std::shared_ptr<VertexArray> _squareVA;
 
     bool onWindowClose(const WindowCloseEvent& event);
 };
