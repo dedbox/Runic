@@ -2,24 +2,25 @@
 #include "Platform/Linux/LinuxInput.hpp"
 
 #include "GLFW/glfw3.h"
+
 #include "Runic/Application.hpp"
 
 namespace Runic
 {
 Input* Input::s_instance{new LinuxInput};
 
-bool LinuxInput::isKeyPressedImpl(const int keyCode)
+bool LinuxInput::isKeyPressedImpl(const Key keyCode)
 {
     const auto window{static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow())};
-    const auto state{glfwGetKey(window, keyCode)};
+    const auto state{glfwGetKey(window, static_cast<int>(keyCode))};
 
     return state == GLFW_PRESS || state == GLFW_REPEAT;
 }
 
-bool LinuxInput::isMouseButtonPressedImpl(const int button)
+bool LinuxInput::isMouseButtonPressedImpl(const MouseButton button)
 {
     const auto window{static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow())};
-    const auto state{glfwGetMouseButton(window, button)};
+    const auto state{glfwGetMouseButton(window, static_cast<int>(button))};
 
     return state == GLFW_PRESS;
 }

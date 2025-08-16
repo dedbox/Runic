@@ -6,9 +6,18 @@
 #include <Runic/Layer.hpp>
 #include <Runic/Log.hpp>
 
-#include <Runic/Input.hpp>
-#include <Runic/KeyCode.hpp>
-#include <Runic/MouseButtonCode.hpp>
+// Events ---------------------------------------------------------------------
+#include <Runic/Event/Event.hpp>
+#include <Runic/Event/ApplicationEvent.hpp>
+#include <Runic/Event/KeyEvent.hpp>
+#include <Runic/Event/MouseEvent.hpp>
+// ----------------------------------------------------------------------------
+
+// Input ----------------------------------------------------------------------
+#include <Runic/Input/Input.hpp>
+#include <Runic/Input/Key.hpp>
+#include <Runic/Input/MouseButton.hpp>
+// ----------------------------------------------------------------------------
 
 #include <Runic/ImGui/ImGuiLayer.hpp>
 

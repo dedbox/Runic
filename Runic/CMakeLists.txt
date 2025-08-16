@@ -105,8 +105,9 @@ add_library(Runic STATIC
         src/Runic/Event/MouseEvent.hpp
         src/Runic/ImGui/ImGuiLayer.cpp
         src/Runic/ImGui/ImGuiLayer.hpp
-        src/Runic/Input.hpp
-        src/Runic/KeyCode.hpp
+        src/Runic/Input/Input.hpp
+        src/Runic/Input/Key.hpp
+        src/Runic/Input/MouseButton.hpp
         src/Runic/Layer.cpp
         src/Runic/Layer.hpp
         src/Runic/LayerStack.cpp
@@ -115,7 +116,6 @@ add_library(Runic STATIC
         src/Runic/Log.hpp
         src/Runic/Main.hpp
         src/Runic/Math.hpp
-        src/Runic/MouseButtonCode.hpp
         src/Runic/Renderer/Buffer.cpp
         src/Runic/Renderer/Buffer.hpp
         src/Runic/Renderer/Camera.cpp

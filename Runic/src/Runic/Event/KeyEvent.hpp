@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.hpp"
+#include "Runic/Input/Key.hpp"
 #include "Runic/Event/Event.hpp"
 
 namespace Runic
@@ -8,7 +9,7 @@ namespace Runic
 class RUNIC_API KeyEvent : public Event
 {
 public:
-    int keyCode() const { return _keyCode; }
+    Key keyCode() const { return static_cast<Key>(_keyCode); }
 
     EventCategory category() const override { return EventCategory::Keyboard | EventCategory::Input; }
 
