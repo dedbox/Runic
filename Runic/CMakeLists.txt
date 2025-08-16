@@ -118,6 +118,8 @@ add_library(Runic STATIC
         src/Runic/MouseButtonCode.hpp
         src/Runic/Renderer/Buffer.cpp
         src/Runic/Renderer/Buffer.hpp
+        src/Runic/Renderer/Camera.cpp
+        src/Runic/Renderer/Camera.hpp
         src/Runic/Renderer/GraphicsContext.hpp
         src/Runic/Renderer/RenderCommand.cpp
         src/Runic/Renderer/RenderCommand.hpp

@@ -4,11 +4,14 @@
 #include "Runic/Renderer/RenderCommand.hpp"
 #include "Runic/Renderer/Renderer.hpp"
 
+#include "glm/ext/scalar_constants.hpp"
+
 namespace Runic
 {
 Application* Application::s_Instance{nullptr};
 
 Application::Application()
+    : _camera(-1.6f, 1.6f, -0.9f, 0.9f)
 {
     RUNIC_CORE_ASSERT(!s_Instance, "Application already exists!");
     s_Instance = this;
@@ -80,11 +83,13 @@ layout (location = 1) in vec4 a_Color;
 out vec3 v_Position;
 out vec4 v_Color;
 
+uniform mat4 u_ViewProjection;
+
 void main()
 {
     v_Position = a_Position;
     v_Color = a_Color;
-    gl_Position = vec4(a_Position, 1.0);
+    gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 }
 )EOF";
 
@@ -112,12 +117,10 @@ void Application::run()
         RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         RenderCommand::clear();
 
-        Renderer::beginScene();
+        Renderer::beginScene(_camera);
 
-        _shader->bind();
-
-        Renderer::submit(_squareVA);
-        Renderer::submit(_vertexArray);
+        Renderer::submit(_shader, _squareVA);
+        Renderer::submit(_shader, _vertexArray);
 
         Renderer::endScene();
 

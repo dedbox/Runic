@@ -7,6 +7,7 @@
 #include "Runic/LayerStack.hpp"
 #include "Runic/Window.hpp"
 
+#include "Runic/Renderer/Camera.hpp"
 #include "Runic/Renderer/Shader.hpp"
 #include "Runic/Renderer/VertexArray.hpp"
 
@@ -45,10 +46,11 @@ private:
     bool _isRunning = true;
     LayerStack _layerStack;
 
-    std::shared_ptr<VertexArray> _vertexArray;
     std::shared_ptr<Shader> _shader;
-
+    std::shared_ptr<VertexArray> _vertexArray;
     std::shared_ptr<VertexArray> _squareVA;
+
+    OrthographicCamera _camera;
 
     bool onWindowClose(const WindowCloseEvent& event);
 };

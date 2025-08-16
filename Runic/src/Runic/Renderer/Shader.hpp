@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.hpp"
+#include "glm/glm.hpp"
 
 namespace Runic
 {
@@ -14,6 +15,8 @@ public:
     void bind() const;
 
     static void unbind();
+
+    void uploadUniformMat4(const std::string& name, const glm::mat4& matrix) const;
 
 private:
     uint32_t _rendererID;
