@@ -37,8 +37,10 @@ private:
     std::unique_ptr<Window> _window;
     ImGuiLayer* _imGuiLayer;
 
-    bool _isRunning = true;
+    bool _isRunning{true};
     LayerStack _layerStack;
+
+    float _lastFrameTime{0.0f};
 
     bool onWindowClose(const WindowCloseEvent& event);
 };

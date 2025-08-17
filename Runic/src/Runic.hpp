@@ -3,6 +3,7 @@
 // Includes for Runic applications
 
 #include <Runic/Application.hpp>
+#include <Runic/Core/Timestep.hpp>
 #include <Runic/Layer.hpp>
 #include <Runic/Log.hpp>
 

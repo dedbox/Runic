@@ -95,25 +95,27 @@ void main()
         _shader.reset(new Runic::Shader(vertexSrc, fragmentSrc));
     }
 
-    void onUpdate() override
+    void onUpdate(Runic::Timestep ts) override
     {
+        RUNIC_TRACE("Delta time: {}s ({} ms)", ts.getSeconds(), ts.getMilliseconds());
+
         if (Runic::Input::isKeyPressed(Runic::Key::A))
-            _cameraPosition.x -= _cameraMoveSpeed;
+            _cameraPosition.x -= _cameraMoveSpeed * ts;
 
         if (Runic::Input::isKeyPressed(Runic::Key::D))
-            _cameraPosition.x += _cameraMoveSpeed;
+            _cameraPosition.x += _cameraMoveSpeed * ts;
 
         if (Runic::Input::isKeyPressed(Runic::Key::S))
-            _cameraPosition.y -= _cameraMoveSpeed;
+            _cameraPosition.y -= _cameraMoveSpeed * ts;
 
         if (Runic::Input::isKeyPressed(Runic::Key::W))
-            _cameraPosition.y += _cameraMoveSpeed;
+            _cameraPosition.y += _cameraMoveSpeed * ts;
 
         if (Runic::Input::isKeyPressed(Runic::Key::Q))
-            _cameraRotation += _cameraRotationSpeed;
+            _cameraRotation += _cameraRotationSpeed * ts;
 
         if (Runic::Input::isKeyPressed(Runic::Key::E))
-            _cameraRotation -= _cameraRotationSpeed;
+            _cameraRotation -= _cameraRotationSpeed * ts;
 
         Runic::RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         Runic::RenderCommand::clear();
@@ -135,10 +137,12 @@ private:
     std::shared_ptr<Runic::VertexArray> _squareVA;
 
     Runic::OrthographicCamera _camera;
+
     glm::vec3 _cameraPosition{0.0f, 0.0f, 0.0f};
-    float _cameraMoveSpeed{0.1f};
+    float _cameraMoveSpeed{5.0f};
+
     float _cameraRotation{0.0f};
-    float _cameraRotationSpeed{2.0f};
+    float _cameraRotationSpeed{180.0f};
 };
 
 class SandboxApp final : public Runic::Application

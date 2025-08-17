@@ -98,6 +98,7 @@ add_library(Runic STATIC
         src/Runic.hpp
         src/Runic/Application.cpp
         src/Runic/Application.hpp
+        src/Runic/Core/Timestep.hpp
         src/Runic/Core.hpp
         src/Runic/Event/ApplicationEvent.hpp
         src/Runic/Event/Event.hpp

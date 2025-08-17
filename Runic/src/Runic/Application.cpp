@@ -1,6 +1,8 @@
 #include "pch.hpp"
 #include "Runic/Application.hpp"
 
+#include "GLFW/glfw3.h"
+
 namespace Runic
 {
 Application* Application::s_Instance{nullptr};
@@ -22,8 +24,12 @@ Application::Application()
 void Application::run()
 {
     while (_isRunning) {
+        const float time{static_cast<float>(glfwGetTime())};
+        const Timestep timestep{time - _lastFrameTime};
+        _lastFrameTime = time;
+
         for (Layer* layer : _layerStack)
-            layer->onUpdate();
+            layer->onUpdate(timestep);
 
         _imGuiLayer->begin();
         for (Layer* layer : _layerStack)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pch.hpp"
+#include "Runic/Core/Timestep.hpp"
 #include "Runic/Event/Event.hpp"
 
 namespace Runic
@@ -14,7 +14,7 @@ public:
 
     virtual void onAttach() {}
     virtual void onDetach() {}
-    virtual void onUpdate() {}
+    virtual void onUpdate(Timestep ts) {}
     virtual void onImGuiRender() {}
     virtual void onEvent(Event& event) {}
 
