@@ -16,6 +16,8 @@ public:
 
     static void unbind();
 
+    void uploadUniformFloat4(const std::string& name, const glm::vec4& vector) const;
+
     void uploadUniformMat4(const std::string& name, const glm::mat4& matrix) const;
 
 private:
