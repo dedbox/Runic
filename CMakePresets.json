@@ -1,0 +1,55 @@
+{
+    "$schema" : "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+    "version" : 10,
+    "cmakeMinimumRequired" : {
+        "major" : 3,
+        "minor" : 23,
+        "patch" : 0
+    },
+    "configurePresets" : [
+        {
+            "name" : "linux-debug",
+            "displayName" : "Linux Debug",
+            "binaryDir" : "${sourceDir}/build/linux-debug",
+            "cacheVariables" : {
+                "CMAKE_BUILD_TYPE" : "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON"
+            }
+        },
+        {
+            "name" : "linux-internal",
+            "displayName" : "Linux Internal",
+            "binaryDir" : "${sourceDir}/build/linux-relwithdebinfo",
+            "cacheVariables" : {
+                "CMAKE_BUILD_TYPE" : "RelWithDebInfo",
+                "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON"
+            }
+        },
+        {
+            "name" : "linux-release",
+            "displayName" : "Linux Release",
+            "binaryDir" : "${sourceDir}/build/linux-release",
+            "cacheVariables" : {
+                "CMAKE_BUILD_TYPE" : "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON"
+            }
+        }
+    ],
+    "buildPresets" : [
+        {
+            "name" : "build-linux-debug",
+            "displayName" : "Build Linux Debug",
+            "configurePreset" : "linux-debug"
+        },
+        {
+            "name" : "build-linux-internal",
+            "displayName" : "Build Linux Internal",
+            "configurePreset" : "linux-internal"
+        },
+        {
+            "name" : "build-linux-release",
+            "displayName" : "Build Linux Release",
+            "configurePreset" : "linux-release"
+        }
+    ]
+}
