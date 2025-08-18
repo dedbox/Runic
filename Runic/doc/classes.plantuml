@@ -1,0 +1,21 @@
+@startuml
+!theme toy
+
+package Runic <<rectangle>> {
+  package Core <<folder>> {
+    class Main <<Artifact>> {
+      {static} {abstract} Application* CreateApplication()
+    }
+
+    hide <<Artifact>> circle
+    hide <<Artifact>> fields
+
+    class Application
+
+    hide Application members
+
+    Main *-- Application
+  }
+}
+
+@enduml

@@ -2,4 +2,7 @@
 
 // The Runic Application Developer API
 
-#include <Runic/hello.hpp>
+#include <Runic/Core/Application.hpp>
+
+// Application Entry Point
+#include <Runic/Core/Main.hpp>

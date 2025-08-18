@@ -1,3 +1,9 @@
 #include <Runic.hpp>
 
-int main() { Runic::hello(); }
+class SandboxApplication : public Runic::Application
+{
+};
+
+Runic::Application* Runic::CreateApplication() {
+  return new SandboxApplication;
+}
