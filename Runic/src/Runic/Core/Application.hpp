@@ -1,14 +1,26 @@
 #pragma once
 
+#include "Window.hpp"
+
 namespace Runic
 {
+
+struct AppData {
+    std::string name{"Runic Application"};
+    std::string version{"0"};
+    std::string identifier{"net.dedbox.runic"};
+};
 
 class Application
 {
 public:
+    explicit Application(const AppData& = AppData(), const WindowData& windowData = WindowData());
+
 private:
+    AppData _data;
+    std::unique_ptr<Window> _window;
 };
 
-extern Application* CreateApplication();
+extern std::unique_ptr<Application> CreateApplication();
 
 } // namespace Runic

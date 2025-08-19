@@ -1,22 +1,32 @@
 #pragma once
 
+#include "SDL3/SDL_video.h"
+
 namespace Runic
 {
-struct WindowData
-{
+
+constexpr uint32_t DEFAULT_WIDTH{1280};
+constexpr uint32_t DEFAULT_HEIGHT{720};
+
+struct WindowData {
     std::string title{"Runic Engine"};
-    uint32_t width{1280};
-    uint32_t height{720};
+    uint32_t width{DEFAULT_WIDTH};
+    uint32_t height{DEFAULT_HEIGHT};
 };
 
 class Window
 {
-  public:
-    explicit Window(const WindowData& data);
+public:
+    explicit Window(WindowData data);
 
-    const WindowData& getData() const;
+    [[nodiscard]] const WindowData& getData() const;
 
-  private:
+    void show() const;
+    void hide() const;
+
+private:
     WindowData _data;
+    SDL_Window* _native;
 };
+
 } // namespace Runic

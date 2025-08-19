@@ -16,14 +16,22 @@ set(SDL_STATIC YES)
 
 FetchContent_MakeAvailable(SDL)
 
-add_library(Runic STATIC src/Runic.hpp src/Runic/Core/Window.cpp)
+add_library(Runic STATIC src/Runic/Core/Application.cpp
+                         src/Runic/Core/Window.cpp)
 
 target_link_libraries(Runic PRIVATE SDL3::SDL3)
 
 target_precompile_headers(
-  Runic PRIVATE
-  # data types
-  <cstdint> <string>)
+  Runic
+  PUBLIC
+  # data structures
+  <cstdint>
+  <string>
+  <memory>
+  <optional>
+  <stdexcept>
+  # algorithms
+  <format>)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

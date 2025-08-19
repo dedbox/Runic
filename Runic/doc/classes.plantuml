@@ -4,17 +4,54 @@
 package Runic <<rectangle>> {
   package Core <<folder>> {
     class Main <<Artifact>> {
-      {static} {abstract} Application* CreateApplication()
+      {static} {abstract} CreateApplication(): unique_ptr<Application>
     }
 
     hide <<Artifact>> circle
     hide <<Artifact>> fields
 
-    class Application
+    struct AppData {
+      + name: string
+      + version: string
+      + identifier: string
+    }
 
-    hide Application members
+    hide AppData methods
+
+    class Application {
+      - data: AppData
+      - window: unique_ptr<Window>
+      + Application(const AppData&, const WindowData&)
+    }
 
     Main *-- Application
+    (Main, Application) .. AppData
+
+    struct WindowData {
+      + title: string
+      + width: uint32
+      + height: uint32
+    }
+
+    hide WindowData methods
+
+    class Window {
+      - data: WindowData
+      - native: SDL_window*
+      + Window(WindowData)
+      + getData(): const WindowData&
+      + show(): void
+      + hide(): void
+    }
+
+    Application *-- Window
+    (Application, Window) .. WindowData
+
+    class SDLException {
+      + SDLException(const string&)
+    }
+
+    hide SDLException fields
   }
 }
 

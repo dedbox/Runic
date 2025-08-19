@@ -4,6 +4,7 @@ class SandboxApplication : public Runic::Application
 {
 };
 
-Runic::Application* Runic::CreateApplication() {
-  return new SandboxApplication;
+std::unique_ptr<Runic::Application> Runic::CreateApplication()
+{
+    return std::make_unique<SandboxApplication>();
 }
