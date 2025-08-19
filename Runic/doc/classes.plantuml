@@ -52,6 +52,16 @@ package Runic <<rectangle>> {
     }
 
     hide SDLException fields
+
+    class Log {
+      {static} - CoreLogger: shared_ptr<spdlog::logger>
+      {static} - ClientLogger: shared_ptr<spdlog::logger>
+      {static} + Init(): void
+      {static} + GetCore(): shared_ptr<spdlog::logger>&
+      {static} + GetClient(): shared_ptr<spdlog::logger>&
+    }
+
+    Main --> Log : uses
   }
 }
 

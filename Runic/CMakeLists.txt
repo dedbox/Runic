@@ -16,22 +16,31 @@ set(SDL_STATIC YES)
 
 FetchContent_MakeAvailable(SDL)
 
-add_library(Runic STATIC src/Runic/Core/Application.cpp
-                         src/Runic/Core/Window.cpp)
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG v1.15.3
+  GIT_SHALLOW YES)
 
-target_link_libraries(Runic PRIVATE SDL3::SDL3)
+FetchContent_MakeAvailable(spdlog)
+
+add_library(Runic STATIC src/Runic/Core.hpp src/Runic/Core/Application.cpp
+                         src/Runic/Core/Log.cpp src/Runic/Core/Window.cpp)
+
+target_link_libraries(Runic PRIVATE SDL3::SDL3 spdlog::spdlog)
+# target_link_libraries(Runic INTERFACE spdlog::spdlog)
 
 target_precompile_headers(
   Runic
   PUBLIC
-  # data structures
   <cstdint>
   <string>
   <memory>
   <optional>
   <stdexcept>
-  # algorithms
-  <format>)
+  <format>
+  <utility>
+  <csignal>)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
