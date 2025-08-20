@@ -44,7 +44,10 @@ target_precompile_headers(
   <utility>
   <csignal>
   <functional>
-  <ranges>)
+  <ranges>
+  <map>
+  <typeindex>
+  <vector>)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

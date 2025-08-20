@@ -3,36 +3,83 @@
 class SandboxApplication : public Runic::Application
 {
 public:
-    void onUpdate() override
+    SandboxApplication()
     {
-        // Keys ----------------------------------------------------------------
+        // Window Events -------------------------------------------------------
 
-        std::vector<std::string> keys;
+        addEventHandler<Runic::WindowCloseEvent>(
+            [](const auto& /*event*/)
+            {
+                RUNIC_INFO("quit");
+                return false;
+            });
 
-        if (Runic::Input::IsKeyPressed(Runic::Key::Escape)) keys.emplace_back("Escape");
-        if (Runic::Input::IsKeyPressed(Runic::Key::Space)) keys.emplace_back("Space");
+        addEventHandler<Runic::WindowFocusEvent>(
+            [](const auto& /*event*/)
+            {
+                RUNIC_INFO("focus");
+                return true;
+            });
 
-        if (!keys.empty())
-            RUNIC_INFO(
-                "DOWN: " +
-                (keys | std::ranges::views::join_with('|') | std::ranges::to<std::string>()));
+        addEventHandler<Runic::WindowResizeEvent>(
+            [](const auto& event)
+            {
+                RUNIC_INFO("resize {}x{}", event.width, event.height);
+                return true;
+            });
 
-        // Mouse Buttons -------------------------------------------------------
+        addEventHandler<Runic::WindowUnfocusEvent>(
+            [](const auto& /*event*/)
+            {
+                RUNIC_INFO("unfocus");
+                return true;
+            });
 
-        std::vector<std::string> buttons;
-        if (Runic::Input::IsMouseButtonPressed(Runic::MouseButton::Left))
-            buttons.emplace_back("Left");
-        if (Runic::Input::IsMouseButtonPressed(Runic::MouseButton::Middle))
-            buttons.emplace_back("Middle");
-        if (Runic::Input::IsMouseButtonPressed(Runic::MouseButton::Right))
-            buttons.emplace_back("Right");
-        if (Runic::Input::IsMouseButtonPressed(Runic::MouseButton::X1)) buttons.emplace_back("X1");
-        if (Runic::Input::IsMouseButtonPressed(Runic::MouseButton::X2)) buttons.emplace_back("X2");
+        // Key Events ----------------------------------------------------------
 
-        if (!buttons.empty())
-            RUNIC_INFO(
-                "PRESSED: " +
-                (buttons | std::ranges::views::join_with('|') | std::ranges::to<std::string>()));
+        addEventHandler<Runic::KeyPressEvent>(
+            [](const auto& event)
+            {
+                RUNIC_INFO("key press {}{}", event.key, event.repeat ? " (repeat)" : "");
+                return true;
+            });
+
+        addEventHandler<Runic::KeyReleaseEvent>(
+            [](const auto& event)
+            {
+                RUNIC_INFO("key release {}", event.key);
+                return true;
+            });
+
+        // Mouse Events --------------------------------------------------------
+
+        addEventHandler<Runic::MouseButtonPressEvent>(
+            [](const auto& event)
+            {
+                RUNIC_INFO("mouse button press {} ({}, {})", event.button, event.x, event.y);
+                return true;
+            });
+
+        addEventHandler<Runic::MouseButtonReleaseEvent>(
+            [](const auto& event)
+            {
+                RUNIC_INFO("mouse button release {} ({}, {})", event.button, event.x, event.y);
+                return true;
+            });
+
+        addEventHandler<Runic::MouseMoveEvent>(
+            [](const auto& event)
+            {
+                RUNIC_INFO("mouse move {} {}", event.xOffset, event.yOffset);
+                return true;
+            });
+
+        addEventHandler<Runic::MouseScrollEvent>(
+            [](const auto& event)
+            {
+                RUNIC_INFO("mouse scroll {} {}", event.horiz, event.vert);
+                return true;
+            });
     }
 };
 

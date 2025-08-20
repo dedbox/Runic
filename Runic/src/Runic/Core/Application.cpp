@@ -18,6 +18,13 @@ Application::Application(const AppData& data, const WindowData& windowData)
 
     _window = std::make_unique<Window>(windowData);
     _window->show();
+
+    addSystemEventHandler<WindowCloseEvent>(
+        [&](const auto&)
+        {
+            _done = true;
+            return true;
+        });
 }
 
 } // namespace Runic

@@ -16,25 +16,29 @@ package Runic <<rectangle>> {
       + identifier: string
     }
 
-    hide AppData methods
-
     class Application {
       - data: AppData
       - window: unique_ptr<Window>
+      - userDispatch: EventDispatcher
+      - systemDispatch: eventDispatcher
+      - done: bool
       + Application(const AppData&, const WindowData&)
       + onUpdate(): void
+      + isDone(): bool
+      + addEventHandler<T>(bool(const T&)): void
+      + handleEvent<T>(const T&): void
+      - addSystemEventHandler<T>(bool(const T&)): void
+      - handleSystemEvent<T>(const T&): void
     }
 
     Main *-- Application
-    (Main, Application) .. AppData
+    (Main, Application) . AppData
 
     struct WindowData {
       + title: string
       + width: uint32
       + height: uint32
     }
-
-    hide WindowData methods
 
     class Window {
       - data: WindowData
@@ -46,13 +50,11 @@ package Runic <<rectangle>> {
     }
 
     Application *-- Window
-    (Application, Window) .. WindowData
+    (Application, Window) . WindowData
 
     class SDLException {
       + SDLException(const string&)
     }
-
-    hide SDLException fields
 
     class Log {
       {static} - CoreLogger: shared_ptr<spdlog::logger>
@@ -62,7 +64,7 @@ package Runic <<rectangle>> {
       {static} + GetClient(): shared_ptr<spdlog::logger>&
     }
 
-    Main --> Log : uses
+    Main --> Log : initializes
 
     class Input {
       {static} + IsKeyPressed(Key): bool
@@ -77,8 +79,6 @@ package Runic <<rectangle>> {
         ...
       }
 
-      hide Key methods
-
       enum MouseButton {
         Left
         Middle
@@ -86,13 +86,25 @@ package Runic <<rectangle>> {
         X1
         X2
       }
-
-      hide MouseButton methods
     }
 
     Input --> Key
     Input --> MouseButton
+
+    package Event <<Frame>> {
+      struct "*Event ..." as ConcreteEvent
+
+      class EventDispatcher {
+        {field} - handlers: map<type_index, vector<bool(const void*)>>
+        + addHandler<T>(bool(const T&)): void
+        + dispatch<T>(const T&): bool
+      }
+    }
+
+    Application *-- EventDispatcher
   }
 }
+
+hide empty members
 
 @enduml

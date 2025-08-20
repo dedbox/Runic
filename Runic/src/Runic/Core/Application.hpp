@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Event.hpp"
 #include "Window.hpp"
 
 namespace Runic
@@ -28,9 +29,37 @@ public:
 
     virtual void onUpdate() {};
 
+    template <typename EventType>
+    void addEventHandler(std::function<bool(const EventType&)> handler)
+    {
+        _userDispatcher.addHandler<EventType>(handler);
+    }
+
+    template <typename EventType>
+    void handleEvent(const EventType& event)
+    {
+        _userDispatcher.dispatch(event) || _systemDispatcher.dispatch(event);
+    }
+
+    [[nodiscard]] bool isDone() const { return _done; }
+
 private:
     AppData _data;
     std::unique_ptr<Window> _window;
+    EventDispatcher _userDispatcher, _systemDispatcher;
+    bool _done{false};
+
+    template <typename EventType>
+    void addSystemEventHandler(std::function<bool(const EventType&)> handler)
+    {
+        _systemDispatcher.addHandler<EventType>(handler);
+    }
+
+    template <typename EventType>
+    void handleSystemEvent(const EventType& event)
+    {
+        _systemDispatcher.dispatch(event);
+    }
 };
 
 extern std::unique_ptr<Application> CreateApplication();

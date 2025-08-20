@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Application.hpp"
+#include "Event.hpp"
 #include "Log.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1
@@ -24,15 +25,77 @@ inline SDL_AppResult SDL_AppIterate(void* appstate)
 {
     Runic::Application* app{static_cast<Runic::Application*>(appstate)};
 
+    if (app->isDone()) return SDL_APP_SUCCESS;
+
     app->onUpdate();
 
     return SDL_APP_CONTINUE;
 }
 
-inline SDL_AppResult SDL_AppEvent(void* /*appstate*/, SDL_Event* event)
+inline SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 {
-    if (event->type == SDL_EVENT_QUIT)
-        return SDL_APP_SUCCESS;
+    Runic::Application* app{static_cast<Runic::Application*>(appstate)};
+
+    switch (event->type)
+    {
+        // Window Events -------------------------------------------------------
+
+    case SDL_EVENT_QUIT:
+    case SDL_EVENT_WINDOW_CLOSE_REQUESTED: app->handleEvent(Runic::WindowCloseEvent()); break;
+
+    case SDL_EVENT_WINDOW_FOCUS_GAINED: app->handleEvent(Runic::WindowFocusEvent()); break;
+
+    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+    {
+        int x{}, y{};
+        SDL_GetWindowSizeInPixels(app->getWindow().getNative(), &x, &y);
+        app->handleEvent(Runic::WindowResizeEvent(x, y));
+        break;
+    }
+
+    case SDL_EVENT_WINDOW_FOCUS_LOST:
+        app->handleEvent(Runic::WindowUnfocusEvent());
+        break;
+
+        // Key Events ----------------------------------------------------------
+
+    case SDL_EVENT_KEY_DOWN:
+    {
+        Runic::Key key{static_cast<Runic::Key>(event->key.key)};
+        app->handleEvent(Runic::KeyPressEvent(key, event->key.repeat));
+        break;
+    }
+
+    case SDL_EVENT_KEY_UP:
+        app->handleEvent(Runic::KeyReleaseEvent(static_cast<Runic::Key>(event->key.key)));
+        break;
+
+        // Mouse Events --------------------------------------------------------
+
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        app->handleEvent(
+            Runic::MouseButtonPressEvent(
+                static_cast<Runic::MouseButton>(event->button.button), event->button.x,
+                event->button.y));
+        break;
+
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+        app->handleEvent(
+            Runic::MouseButtonReleaseEvent(
+                static_cast<Runic::MouseButton>(event->button.button), event->button.x,
+                event->button.y));
+        break;
+
+    case SDL_EVENT_MOUSE_MOTION:
+        app->handleEvent(Runic::MouseMoveEvent(event->motion.xrel, event->motion.yrel));
+        break;
+
+    case SDL_EVENT_MOUSE_WHEEL:
+        app->handleEvent(Runic::MouseScrollEvent(event->wheel.x, event->wheel.y));
+        break;
+
+    default: break;
+    }
 
     return SDL_APP_CONTINUE;
 }
