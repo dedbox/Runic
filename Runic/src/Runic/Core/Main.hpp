@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Runic/Core/Application.hpp"
-#include "Runic/Core/Log.hpp"
+#include "Application.hpp"
+#include "Log.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1
 
@@ -20,8 +20,12 @@ inline SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*arg*/)
     return SDL_APP_CONTINUE;
 }
 
-inline SDL_AppResult SDL_AppIterate(void* /*appstate*/)
+inline SDL_AppResult SDL_AppIterate(void* appstate)
 {
+    Runic::Application* app{static_cast<Runic::Application*>(appstate)};
+
+    app->onUpdate();
+
     return SDL_APP_CONTINUE;
 }
 

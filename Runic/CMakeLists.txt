@@ -24,8 +24,10 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(spdlog)
 
-add_library(Runic STATIC src/Runic/Core.hpp src/Runic/Core/Application.cpp
-                         src/Runic/Core/Log.cpp src/Runic/Core/Window.cpp)
+add_library(
+  Runic STATIC
+  src/Runic/Core.hpp src/Runic/Core/Application.cpp src/Runic/Core/Input.cpp
+  src/Runic/Core/Log.cpp src/Runic/Core/Window.cpp)
 
 target_link_libraries(Runic PRIVATE SDL3::SDL3 spdlog::spdlog)
 # target_link_libraries(Runic INTERFACE spdlog::spdlog)
@@ -40,7 +42,9 @@ target_precompile_headers(
   <stdexcept>
   <format>
   <utility>
-  <csignal>)
+  <csignal>
+  <functional>
+  <ranges>)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

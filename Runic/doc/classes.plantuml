@@ -22,6 +22,7 @@ package Runic <<rectangle>> {
       - data: AppData
       - window: unique_ptr<Window>
       + Application(const AppData&, const WindowData&)
+      + onUpdate(): void
     }
 
     Main *-- Application
@@ -62,6 +63,35 @@ package Runic <<rectangle>> {
     }
 
     Main --> Log : uses
+
+    class Input {
+      {static} + IsKeyPressed(Key): bool
+      {static} + IsMouseButtonPressed(MouseButton): bool
+    }
+
+    package Input as InputPkg {
+      enum Key {
+        A
+        B
+        C
+        ...
+      }
+
+      hide Key methods
+
+      enum MouseButton {
+        Left
+        Middle
+        Right
+        X1
+        X2
+      }
+
+      hide MouseButton methods
+    }
+
+    Input --> Key
+    Input --> MouseButton
   }
 }
 

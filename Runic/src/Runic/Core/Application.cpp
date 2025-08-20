@@ -1,9 +1,6 @@
 #include "Application.hpp"
 
-#include <memory>
-
-#include "Runic/Core/SDLException.hpp"
-#include "Runic/Core/Window.hpp"
+#include "SDLException.hpp"
 
 #include "SDL3/SDL_init.h"
 

@@ -1,0 +1,177 @@
+#pragma once
+
+#include <SDL3/SDL_keyboard.h>
+#include <SDL3/SDL_keycode.h>
+
+namespace Runic
+{
+
+// From SDL_keycode.h
+//
+// not included:
+//
+// POWER
+//
+// F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, EXECUTE, HELP,
+// MENU, SELECT, STOP, AGAIN, UNDO, CUT, COPY, PASTE, FIND, MUTE, VOLUMEUP,
+// VOLUMEDOWN, KP_COMMA, KP_EQUALSAS400, ALTERASE, SYSREQ, CANCEL, CLEAR, PRIOR,
+// RETURN2, SEPARATOR, OUT, OPER, CLEARAGAIN, CRSEL, EXSEL, KP_00, KP_000,
+// THOUSANDSSEPARATOR, DECIMALSEPARATOR, CURRENCYUNIT, CURRENCYSUBUNIT,
+// KP_LEFTPAREN, KP_RIGHTPAREN, KP_LEFTBRACE, KP_RIGHTBRACE, KP_TAB,
+// KP_BACKSPACE, KP_A, KP_B, KP_C, KP_D, KP_E, KP_F, KP_XOR, KP_POWER,
+// KP_PERCENT, KP_LESS, KP_GREATER, KP_AMPERSAND, KP_DBLAMPERSAND,
+// KP_VERTICALBAR, KP_DBLVERTICALBAR, KP_COLON, KP_HASH, KP_SPACE, KP_AT,
+// KP_EXCLAM, KP_MEMSTORE, KP_MEMRECALL, KP_MEMCLEAR, KP_MEMADD, KP_MEMSUBTRACT,
+// KP_MEMMULTIPLY, KP_MEMDIVIDE, KP_PLUSMINUS, KP_CLEAR, KP_CLEARENTRY,
+// KP_BINARY, KP_OCTAL, KP_DECIMAL, KP_HEXADECIMAL
+//
+// MODE, SLEEP, WAKE, CHANNEL_INCREMENT, CHANNEL_DECREMENT, MEDIA_PLAY,
+// MEDIA_PAUSE, MEDIA_RECORD, MEDIA_FAST_FORWARD, MEDIA_REWIND,
+// MEDIA_NEXT_TRACK, MEDIA_PREVIOUS_TRACK, MEDIA_STOP, MEDIA_EJECT,
+// MEDIA_PLAY_PAUSE, MEDIA_SELECT, AC_NEW, AC_OPEN, AC_CLOSE, AC_EXIT, AC_SAVE,
+// AC_PRINT, AC_PROPERTIES, AC_SEARCH, AC_HOME, AC_BACK, AC_FORWARD, AC_STOP,
+// AC_REFRESH, AC_BOOKMARKS, SOFTLEFT, SOFTRIGHT, CALL, ENDCALL, LEFT_TAB,
+// LEVEL5_SHIFT, MULTI_KEY_COMPOSE, LMETA, RMETA, LHYPER, RHYPER
+
+enum class Key
+{
+    None = SDLK_UNKNOWN,
+
+    // ASCII keys
+    Enter        = SDLK_RETURN,
+    Escape       = SDLK_ESCAPE,
+    Backspace    = SDLK_BACKSPACE,
+    Tab          = SDLK_TAB,
+    Space        = SDLK_SPACE,
+    Exclaim      = SDLK_EXCLAIM,
+    Quote        = SDLK_DBLAPOSTROPHE,
+    Hash         = SDLK_HASH,
+    Dollar       = SDLK_DOLLAR,
+    Percent      = SDLK_PERCENT,
+    Ampersand    = SDLK_AMPERSAND,
+    Apostrophe   = SDLK_APOSTROPHE,
+    LeftParen    = SDLK_LEFTPAREN,
+    RightParen   = SDLK_RIGHTPAREN,
+    Asterisk     = SDLK_ASTERISK,
+    Plus         = SDLK_PLUS,
+    Comma        = SDLK_COMMA,
+    Minus        = SDLK_MINUS,
+    Period       = SDLK_PERIOD,
+    Slash        = SDLK_SLASH,
+    Key0         = SDLK_0,
+    Key1         = SDLK_1,
+    Key2         = SDLK_2,
+    Key3         = SDLK_3,
+    Key4         = SDLK_4,
+    Key5         = SDLK_5,
+    Key6         = SDLK_6,
+    Key7         = SDLK_7,
+    Key8         = SDLK_8,
+    Key9         = SDLK_9,
+    Colon        = SDLK_COLON,
+    Semicolon    = SDLK_SEMICOLON,
+    Less         = SDLK_LESS,
+    Equals       = SDLK_EQUALS,
+    Greater      = SDLK_GREATER,
+    Question     = SDLK_QUESTION,
+    At           = SDLK_AT,
+    LeftbBacket  = SDLK_LEFTBRACKET,
+    Backslash    = SDLK_BACKSLASH,
+    RightBracket = SDLK_RIGHTBRACKET,
+    Caret        = SDLK_CARET,
+    Underscore   = SDLK_UNDERSCORE,
+    Grave        = SDLK_GRAVE,
+    A            = SDLK_A,
+    B            = SDLK_B,
+    C            = SDLK_C,
+    D            = SDLK_D,
+    E            = SDLK_E,
+    F            = SDLK_F,
+    G            = SDLK_G,
+    H            = SDLK_H,
+    I            = SDLK_I,
+    J            = SDLK_J,
+    K            = SDLK_K,
+    L            = SDLK_L,
+    M            = SDLK_M,
+    N            = SDLK_N,
+    O            = SDLK_O,
+    P            = SDLK_P,
+    Q            = SDLK_Q,
+    R            = SDLK_R,
+    S            = SDLK_S,
+    T            = SDLK_T,
+    U            = SDLK_U,
+    V            = SDLK_V,
+    W            = SDLK_W,
+    X            = SDLK_X,
+    Y            = SDLK_Y,
+    Z            = SDLK_Z,
+    LeftBrace    = SDLK_LEFTBRACE,
+    pipe         = SDLK_PIPE,
+    RightBrace   = SDLK_RIGHTBRACE,
+    Tilde        = SDLK_TILDE,
+
+    // Extended Keys
+    Capslock    = SDLK_CAPSLOCK,
+    F1          = SDLK_F1,
+    F2          = SDLK_F2,
+    F3          = SDLK_F3,
+    F4          = SDLK_F4,
+    F5          = SDLK_F5,
+    F6          = SDLK_F6,
+    F7          = SDLK_F7,
+    F8          = SDLK_F8,
+    F9          = SDLK_F9,
+    F10         = SDLK_F10,
+    F11         = SDLK_F11,
+    F12         = SDLK_F12,
+    PrintScreen = SDLK_PRINTSCREEN,
+    ScrollLock  = SDLK_SCROLLLOCK,
+    Pause       = SDLK_PAUSE,
+    Insert      = SDLK_INSERT,
+    Home        = SDLK_HOME,
+    PageUp      = SDLK_PAGEUP,
+    End         = SDLK_END,
+    PageDown    = SDLK_PAGEDOWN,
+    Right       = SDLK_RIGHT,
+    Left        = SDLK_LEFT,
+    Down        = SDLK_DOWN,
+    Up          = SDLK_UP,
+    NumLock     = SDLK_NUMLOCKCLEAR,
+    KP_Divide   = SDLK_KP_DIVIDE,
+    KP_Multiply = SDLK_KP_MULTIPLY,
+    KP_Minus    = SDLK_KP_MINUS,
+    KP_Plus     = SDLK_KP_PLUS,
+    KP_Enter    = SDLK_KP_ENTER,
+    KP_1        = SDLK_KP_1,
+    KP_2        = SDLK_KP_2,
+    KP_3        = SDLK_KP_3,
+    KP_4        = SDLK_KP_4,
+    KP_5        = SDLK_KP_5,
+    KP_6        = SDLK_KP_6,
+    KP_7        = SDLK_KP_7,
+    KP_8        = SDLK_KP_8,
+    KP_9        = SDLK_KP_9,
+    KP_0        = SDLK_KP_0,
+    KP_Period   = SDLK_KP_PERIOD,
+    Application = SDLK_APPLICATION,
+    KP_Equals   = SDLK_KP_EQUALS,
+
+    // Mod Keys
+    LeftCtrl   = SDLK_LCTRL,
+    LeftShift  = SDLK_LSHIFT,
+    LeftAlt    = SDLK_LALT,
+    LeftMeta   = SDLK_LGUI,
+    RightCtrl  = SDLK_RCTRL,
+    RightShift = SDLK_RSHIFT,
+    RightAlt   = SDLK_RALT,
+    RightMeta  = SDLK_RGUI,
+};
+
+inline auto format_as(const Key& key)
+{
+    return SDL_GetKeyName(static_cast<SDL_Keycode>(key));
+}
+
+} // namespace Runic
