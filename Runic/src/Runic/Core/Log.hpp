@@ -36,22 +36,4 @@ private:
 #define RUNIC_ERROR(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Client()->error(__VA_ARGS__)
 #define RUNIC_CRITICAL(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Client()->critical(__VA_ARGS__)
 // clang-format on
-
-#define RUNIC_CORE_ASSERT(x, fmt, ...)                                                             \
-    if constexpr (::Runic::Core::Debugging) {                                                      \
-        if (!(x)) {                                                                                \
-            RUNIC_CORE_ERROR("Assertion failed: " fmt, __VA_ARGS__);                               \
-            if (!raise(SIGTRAP))                                                                   \
-                throw std::runtime_error("trap failed");                                           \
-        }                                                                                          \
-    }
-
-#define RUNIC_ASSERT(x, fmt, ...)                                                                  \
-    if constexpr (::Runic::Core::Debugging) {                                                      \
-        if (!(x)) {                                                                                \
-            RUNIC_ERROR("Assertion failed: " fmt, __VA_ARGS__);                                    \
-            if (!raise(SIGTRAP))                                                                   \
-                throw std::runtime_error("trap failed");                                           \
-        }                                                                                          \
-    }
 // NOLINTEND(cppcoreguidelines-macro-usage)
