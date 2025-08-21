@@ -18,7 +18,8 @@ public:
 
 std::string flatten_layers(const Runic::LayerManager& layers)
 {
-    return layers | std::ranges::views::transform([](const auto& layer) { return layer->name; }) |
+    return layers |
+           std::ranges::views::transform([](const auto& layer) { return layer->getName(); }) |
            std::ranges::views::join_with(' ') | std::ranges::to<std::string>();
 }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Event.hpp"
+
 namespace Runic
 {
 
@@ -7,7 +9,7 @@ class Layer
 {
 public:
     explicit Layer(std::string name = "Layer")
-        : name(std::move(name))
+        : _name(std::move(name))
     {
     }
 
@@ -23,8 +25,13 @@ public:
     virtual void onUpdate() {}
     virtual void onGuiRender() {}
 
-    // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
-    std::string name;
+    [[nodiscard]] const std::string& getName() const { return _name; }
+
+private:
+    std::string _name;
+
+private:
+    EventDispatcher _dispatcher;
 };
 
 } // namespace Runic
