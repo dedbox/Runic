@@ -102,6 +102,35 @@ package Runic <<rectangle>> {
     }
 
     Application *-- EventDispatcher
+
+    class Layer {
+      + name: string = "Layer"
+      + Layer(?name:string)
+      + onAttach(): void
+      + onDetach(): void
+      + onUpdate(): void
+      + onGuiRender(): void
+    }
+
+    class LayerManager {
+      - layers: list<unique_ptr<Layer>>
+      - sep: optional<list<unique_ptr<Layer>>::iterator>
+      + LayerManager()
+      + push_front(unique_ptr<Layer>): void
+      + push_back(unique_ptr<Layer>): void
+      + pop_front(): unique_ptr<Layer>
+      + pop_back(): unique_ptr<Layer>
+      + pushGui_front(unique_ptr<Layer>): void
+      + pushGui_back(unique_ptr<Layer>): void
+      + popGui_front(): unique_ptr<Layer>
+      + popGui_back(): unique_ptr<Layer>
+      + begin(): list<unique_ptr<Layer>>::iterator
+      + end(): list<unique_ptr<Layer>>::iterator
+    }
+
+    LayerManager o-- "0..*" Layer
+
+    Application *-- LayerManager
   }
 }
 
