@@ -35,6 +35,12 @@ public:
     [[nodiscard]] auto begin() const { return _layers.begin(); }
     [[nodiscard]] auto end() const { return _layers.end(); }
 
+    auto rbegin() { return _layers.rbegin(); }
+    auto rend() { return _layers.rend(); }
+
+    [[nodiscard]] auto rbegin() const { return _layers.rbegin(); }
+    [[nodiscard]] auto rend() const { return _layers.rend(); }
+
 private:
     std::list<std::unique_ptr<Layer>> _layers;
     std::optional<std::list<std::unique_ptr<Layer>>::iterator> _sep;

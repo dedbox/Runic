@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.hpp"
+#include "LayerManager.hpp"
 #include "Window.hpp"
 
 namespace Runic
@@ -27,28 +28,27 @@ public:
 
     [[nodiscard]] const Window& getWindow() const { return *_window; }
 
-    virtual void onUpdate() {};
+    LayerManager& getLayerManager() { return _layers; }
 
-    template <typename EventType>
-    void addEventHandler(std::function<bool(const EventType&)> handler)
+    virtual void onUpdate() {}
+
+    void onUpdateLayers()
     {
-        _userDispatcher.addHandler<EventType>(handler);
+        for (auto& _layer : _layers)
+            _layer->onUpdate();
     }
 
     template <typename EventType>
-    void handleEvent(const EventType& event)
+    void dispatchEvent(const EventType& event)
     {
-        _userDispatcher.dispatch(event) || _systemDispatcher.dispatch(event);
+        for (auto& _layer : std::ranges::reverse_view(_layers))
+            if (_layer->handleEvent(event)) return;
+        handleSystemEvent(event);
     }
 
     [[nodiscard]] bool isDone() const { return _done; }
 
-private:
-    AppData _data;
-    std::unique_ptr<Window> _window;
-    EventDispatcher _userDispatcher, _systemDispatcher;
-    bool _done{false};
-
+protected:
     template <typename EventType>
     void addSystemEventHandler(std::function<bool(const EventType&)> handler)
     {
@@ -56,10 +56,17 @@ private:
     }
 
     template <typename EventType>
-    void handleSystemEvent(const EventType& event)
+    bool handleSystemEvent(const EventType& event)
     {
-        _systemDispatcher.dispatch(event);
+        return _systemDispatcher.dispatch(event);
     }
+
+private:
+    AppData _data;
+    std::unique_ptr<Window> _window;
+    EventDispatcher _systemDispatcher;
+    LayerManager _layers;
+    bool _done{false};
 };
 
 extern std::unique_ptr<Application> CreateApplication();

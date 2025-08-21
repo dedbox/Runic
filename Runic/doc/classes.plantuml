@@ -19,20 +19,21 @@ package Runic <<rectangle>> {
     class Application {
       - data: AppData
       - window: unique_ptr<Window>
-      - userDispatch: EventDispatcher
-      - systemDispatch: eventDispatcher
+      - systemDispatcher: EventDispatcher
       - done: bool
       + Application(const AppData&, const WindowData&)
+      + getWindow(): const Window&
+      + getLayerManager(): LayerManager&
       + onUpdate(): void
+      + onUpdateLayers(): void
+      + dispatchEvent<T>(const T&): void
       + isDone(): bool
-      + addEventHandler<T>(bool(const T&)): void
-      + handleEvent<T>(const T&): void
-      - addSystemEventHandler<T>(bool(const T&)): void
-      - handleSystemEvent<T>(const T&): void
+      # addSystemEventHandler<T>(bool(const T&)): void
+      # handleSystemEvent<T>(const T&): void
     }
 
     Main *-- Application
-    (Main, Application) . AppData
+    AppData . (Main, Application)
 
     struct WindowData {
       + title: string
@@ -49,8 +50,8 @@ package Runic <<rectangle>> {
       + hide(): void
     }
 
-    Application *-- Window
-    (Application, Window) . WindowData
+    Application *-right- Window
+    WindowData . (Application, Window)
 
     class SDLException {
       + SDLException(const string&)
@@ -104,13 +105,19 @@ package Runic <<rectangle>> {
     Application *-- EventDispatcher
 
     class Layer {
+      - dispatcher: EventDispatcher
       + name: string = "Layer"
       + Layer(?name:string)
       + onAttach(): void
       + onDetach(): void
       + onUpdate(): void
       + onGuiRender(): void
+      + getName(): const string&
+      + addEventHandler<T>(bool(const T&)): void
+      + handleEvent<T>(const T&): void
     }
+
+    Layer *-left- EventDispatcher
 
     class LayerManager {
       - layers: list<unique_ptr<Layer>>
@@ -126,6 +133,8 @@ package Runic <<rectangle>> {
       + popGui_back(): unique_ptr<Layer>
       + begin(): list<unique_ptr<Layer>>::iterator
       + end(): list<unique_ptr<Layer>>::iterator
+      + rbegin(): list<unique_ptr<Layer>>::iterator
+      + rend(): list<unique_ptr<Layer>>::iterator
     }
 
     LayerManager o-- "0..*" Layer

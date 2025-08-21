@@ -13,14 +13,13 @@ Application::Application(const AppData& data, const WindowData& windowData)
     if (!SDL_SetAppMetadata(data.name.c_str(), data.version.c_str(), data.identifier.c_str()))
         throw SDLException("Could not set app metadata");
 
-    if (!SDL_Init(SDL_INIT_VIDEO))
-        throw SDLException("Could not initialize SDL");
+    if (!SDL_Init(SDL_INIT_VIDEO)) throw SDLException("Could not initialize SDL");
 
     _window = std::make_unique<Window>(windowData);
     _window->show();
 
     addSystemEventHandler<WindowCloseEvent>(
-        [&](const auto&)
+        [&](const auto& /*event*/)
         {
             _done = true;
             return true;
