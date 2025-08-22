@@ -31,7 +31,7 @@ public:
 
     LayerManager& getLayerManager() { return _layers; }
 
-    virtual void onUpdate() {}
+    virtual void onUpdate();
 
     void onUpdateLayers()
     {

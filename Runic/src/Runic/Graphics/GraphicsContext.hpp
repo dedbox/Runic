@@ -14,7 +14,8 @@ public:
     explicit GraphicsContext(Window* window);
 
     void setClearColor(const glm::vec4& color);
-    void clear();
+    void clear() const;
+    void swapBuffers() const;
 
 private:
     Window* _window;

@@ -32,10 +32,15 @@ void GraphicsContext::setClearColor(const glm::vec4& color)
     glClearColor(color.r, color.g, color.b, color.a);
 }
 
-void GraphicsContext::clear()
+void GraphicsContext::clear() const
 {
     // NOLINTNEXTLINE(hicpp-signed-bitwise)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void GraphicsContext::swapBuffers() const
+{
+    SDL_GL_SwapWindow(_window->getNative());
 }
 
 } // namespace Runic

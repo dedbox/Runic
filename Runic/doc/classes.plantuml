@@ -147,6 +147,7 @@ package Runic <<rectangle>> {
       + GraphicsContext(Window*)
       + setClearColor(const vec4&): void
       + clear(): void
+      + swapBuffers(): void
     }
 
     Application *- GraphicsContext

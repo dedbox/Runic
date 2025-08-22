@@ -29,10 +29,15 @@ Application::Application(const AppData& data, const WindowData& windowData)
         });
 
     _context = std::make_unique<GraphicsContext>(_window.get());
-    _context->setClearColor({0.0F, 0.0F, 1.0F, 1.0F});
-    _context->clear();
 
     _window->show();
+}
+
+void Application::onUpdate()
+{
+    _context->setClearColor({0.0F, 0.0F, 1.0F, 1.0F});
+    _context->clear();
+    _context->swapBuffers();
 }
 
 } // namespace Runic
