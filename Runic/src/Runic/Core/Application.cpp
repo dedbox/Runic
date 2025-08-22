@@ -33,11 +33,4 @@ Application::Application(const AppData& data, const WindowData& windowData)
     _window->show();
 }
 
-void Application::onUpdate()
-{
-    _context->setClearColor({0.0F, 0.0F, 1.0F, 1.0F});
-    _context->clear();
-    _context->swapBuffers();
-}
-
 } // namespace Runic

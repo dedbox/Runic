@@ -1,18 +1,23 @@
 #include <Runic.hpp>
 
-class KeyLayer : public Runic::Layer
+class ClearLayer : public Runic::Layer
 {
 public:
-    explicit KeyLayer(const std::string& loc)
-        : Runic::Layer(loc)
+    explicit ClearLayer(Runic::GraphicsContext& context, const glm::vec4& color)
+        : _context(context)
+        , _color(color)
     {
-        addEventHandler<Runic::KeyPressEvent>(
-            [loc](const Runic::KeyPressEvent& event)
-            {
-                if (!event.repeat) Runic::Info(loc);
-                return false;
-            });
     }
+
+    void onUpdate() override
+    {
+        _context.setClearColor(_color);
+        _context.clear();
+    }
+
+private:
+    Runic::GraphicsContext& _context;
+    const glm::vec4 _color;
 };
 
 class SandboxApplication : public Runic::Application
@@ -21,16 +26,9 @@ public:
     SandboxApplication()
         : Application({.name = "Sandbox"})
     {
+        auto context                = getGraphicsContext();
         Runic::LayerManager& layers = getLayerManager();
-
-        layers.pushGui_back(std::make_unique<KeyLayer>("X"));
-        layers.pushGui_back(std::make_unique<KeyLayer>("Y"));
-        layers.pushGui_back(std::make_unique<KeyLayer>("Z"));
-
-        layers.push_back(std::make_unique<KeyLayer>(""));
-        layers.push_back(std::make_unique<KeyLayer>("A"));
-        layers.push_back(std::make_unique<KeyLayer>("B"));
-        layers.push_back(std::make_unique<KeyLayer>("C"));
+        layers.push_back(std::make_unique<ClearLayer>(context, glm::vec4(0.0F, 1.0F, 0.0F, 1.0F)));
     }
 };
 

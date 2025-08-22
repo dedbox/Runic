@@ -30,8 +30,9 @@ public:
     [[nodiscard]] const Window& getWindow() const { return *_window; }
 
     LayerManager& getLayerManager() { return _layers; }
+    GraphicsContext& getGraphicsContext() { return *_context; }
 
-    virtual void onUpdate();
+    virtual void onUpdate() { _context->swapBuffers(); }
 
     void onUpdateLayers()
     {

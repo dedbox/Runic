@@ -24,8 +24,8 @@ inline SDL_AppResult SDL_AppIterate(void* appstate)
 
     if (app->isDone()) return SDL_APP_SUCCESS;
 
-    app->onUpdate();
     app->onUpdateLayers();
+    app->onUpdate();
 
     return SDL_APP_CONTINUE;
 }

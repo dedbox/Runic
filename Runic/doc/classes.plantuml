@@ -24,6 +24,7 @@ package Runic <<rectangle>> {
       + Application(const AppData&, const WindowData&)
       + getWindow(): const Window&
       + getLayerManager(): LayerManager&
+      + getGraphicsContext(): GraphicsContext&
       + onUpdate(): void
       + onUpdateLayers(): void
       + dispatchEvent<T>(const T&): void

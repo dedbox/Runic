@@ -9,3 +9,6 @@
 
 // Application Entry Point
 #include <Runic/Core/Main.hpp>
+
+// The Graphics API
+#include <Runic/Graphics/GraphicsContext.hpp>
