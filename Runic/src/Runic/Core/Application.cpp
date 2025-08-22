@@ -1,6 +1,7 @@
 #include "Application.hpp"
 
 #include "Log.hpp"
+#include "Runic/Graphics/GraphicsContext.hpp"
 #include "SDLException.hpp"
 
 #include "SDL3/SDL_init.h"
@@ -19,7 +20,6 @@ Application::Application(const AppData& data, const WindowData& windowData)
     if (!SDL_Init(SDL_INIT_VIDEO)) throw SDLException("Could not initialize SDL");
 
     _window = std::make_unique<Window>(windowData);
-    _window->show();
 
     addSystemEventHandler<WindowCloseEvent>(
         [&](const auto& /*event*/)
@@ -27,6 +27,12 @@ Application::Application(const AppData& data, const WindowData& windowData)
             _done = true;
             return true;
         });
+
+    _context = std::make_unique<GraphicsContext>(_window.get());
+    _context->setClearColor({0.0F, 0.0F, 1.0F, 1.0F});
+    _context->clear();
+
+    _window->show();
 }
 
 } // namespace Runic

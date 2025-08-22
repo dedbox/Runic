@@ -32,8 +32,8 @@ package Runic <<rectangle>> {
       # handleSystemEvent<T>(const T&): void
     }
 
-    Main *-- Application
-    AppData . (Main, Application)
+    Main *- Application
+    AppData .. (Main, Application)
 
     struct WindowData {
       + title: string
@@ -50,12 +50,8 @@ package Runic <<rectangle>> {
       + hide(): void
     }
 
-    Application *-right- Window
-    WindowData . (Application, Window)
-
-    class SDLException {
-      + SDLException(const string&)
-    }
+    Application *- Window
+    WindowData .. (Application, Window)
 
     class Log {
       {static} - CoreLogger: shared_ptr<spdlog::logger>
@@ -65,7 +61,7 @@ package Runic <<rectangle>> {
       {static} + GetClient(): shared_ptr<spdlog::logger>&
     }
 
-    Main --> Log : initializes
+     Application -up-> Log : initializes
 
     class Input {
       {static} + IsKeyPressed(Key): bool
@@ -117,7 +113,7 @@ package Runic <<rectangle>> {
       + handleEvent<T>(const T&): void
     }
 
-    Layer *-left- EventDispatcher
+    Layer *-- EventDispatcher
 
     class LayerManager {
       - layers: list<unique_ptr<Layer>>
@@ -138,8 +134,23 @@ package Runic <<rectangle>> {
     }
 
     LayerManager o-- "0..*" Layer
-
     Application *-- LayerManager
+
+    LayerManager -[hidden]left- Event
+    LayerManager -[hidden]right- Input
+  }
+
+  package Graphics {
+    class GraphicsContext {
+      - window: Window*
+      - context: SDL_GLContext
+      + GraphicsContext(Window*)
+      + setClearColor(const vec4&): void
+      + clear(): void
+    }
+
+    Application *- GraphicsContext
+    GraphicsContext -> Window
   }
 }
 

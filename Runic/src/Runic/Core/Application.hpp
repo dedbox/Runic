@@ -2,6 +2,7 @@
 
 #include "Event.hpp"
 #include "LayerManager.hpp"
+#include "Runic/Graphics/GraphicsContext.hpp"
 #include "Window.hpp"
 
 namespace Runic
@@ -64,6 +65,7 @@ protected:
 private:
     AppData _data;
     std::unique_ptr<Window> _window;
+    std::unique_ptr<GraphicsContext> _context;
     EventDispatcher _systemDispatcher;
     LayerManager _layers;
     bool _done{false};

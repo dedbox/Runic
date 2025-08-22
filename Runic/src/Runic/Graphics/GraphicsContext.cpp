@@ -1,0 +1,41 @@
+#include "GraphicsContext.hpp"
+
+#include "SDL3/SDL_video.h"
+#include "glad/gl.h"
+
+#include "Runic/Core/Log.hpp"
+#include "Runic/Core/SDLException.hpp"
+
+namespace Runic
+{
+
+GraphicsContext::GraphicsContext(Window* window)
+    : _window(window)
+    , _context(SDL_GL_CreateContext(_window->getNative()))
+{
+    if (!_context) throw SDLException("Could not create OpenGL context");
+
+    const int version = gladLoadGL(SDL_GL_GetProcAddress);
+    if (!version) throw std::runtime_error("Could not initialize OpenGL loader!");
+
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+    Core::Info("OpenGL initialized!");
+    Core::Info("    Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+    Core::Info("    Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+    Core::Info("    Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+}
+
+void GraphicsContext::setClearColor(const glm::vec4& color)
+{
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+    glClearColor(color.r, color.g, color.b, color.a);
+}
+
+void GraphicsContext::clear()
+{
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+} // namespace Runic

@@ -13,20 +13,17 @@ Window::Window(WindowData data)
           static_cast<int>(_data.height),
           SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL))
 {
-    if (!_native)
-        throw SDLException("Could not create window");
+    if (!_native) throw SDLException("Could not create window");
 }
 
 void Window::show() const
 {
-    if (!SDL_ShowWindow(_native))
-        throw SDLException("Could not show window");
+    if (!SDL_ShowWindow(_native)) throw SDLException("Could not show window");
 }
 
 void Window::hide() const
 {
-    if (!SDL_HideWindow(_native))
-        throw SDLException("Could not hide window");
+    if (!SDL_HideWindow(_native)) throw SDLException("Could not hide window");
 }
 
 } // namespace Runic
