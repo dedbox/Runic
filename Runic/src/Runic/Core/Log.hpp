@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Runic/Core.hpp"
-
 #include "spdlog/logger.h"
 
 namespace Runic
@@ -10,7 +8,7 @@ namespace Runic
 class Log
 {
 public:
-    static void Init();
+    static void Init(const std::string& clientName);
 
     static std::shared_ptr<spdlog::logger>& Core() { return CoreLogger; }
     static std::shared_ptr<spdlog::logger>& Client() { return ClientLogger; }
@@ -20,20 +18,75 @@ private:
     static std::shared_ptr<spdlog::logger> ClientLogger;
 };
 
+namespace Core
+{
+
+#ifdef NDEBUG
+constexpr bool Debugging = false;
+#else
+constexpr bool Debugging = true;
+#endif
+
+template <typename Fmt, typename... Args>
+void Trace(Fmt fmt, Args... args)
+{
+    if (Debugging) ::Runic::Log::Core()->trace(fmt::runtime(fmt), args...);
+}
+
+template <typename Fmt, typename... Args>
+void Info(Fmt fmt, Args... args)
+{
+    if (Debugging) ::Runic::Log::Core()->info(fmt::runtime(fmt), args...);
+}
+
+template <typename Fmt, typename... Args>
+void Warn(Fmt fmt, Args... args)
+{
+    if (Debugging) ::Runic::Log::Core()->warn(fmt::runtime(fmt), args...);
+}
+
+template <typename Fmt, typename... Args>
+void Error(Fmt fmt, Args... args)
+{
+    if (Debugging) ::Runic::Log::Core()->error(fmt::runtime(fmt), args...);
+}
+
+template <typename Fmt, typename... Args>
+void Critical(Fmt fmt, Args... args)
+{
+    if (Debugging) ::Runic::Log::Core()->critical(fmt::runtime(fmt), args...);
+}
+
+} // namespace Core
+
+template <typename Fmt, typename... Args>
+void Trace(Fmt fmt, Args... args)
+{
+    if (Core::Debugging) ::Runic::Log::Client()->trace(fmt::runtime(fmt), args...);
+}
+
+template <typename Fmt, typename... Args>
+void Info(Fmt fmt, Args... args)
+{
+    if (Core::Debugging) ::Runic::Log::Client()->info(fmt::runtime(fmt), args...);
+}
+
+template <typename Fmt, typename... Args>
+void Warn(Fmt fmt, Args... args)
+{
+    if (Core::Debugging) ::Runic::Log::Client()->warn(fmt::runtime(fmt), args...);
+}
+
+template <typename Fmt, typename... Args>
+void Error(Fmt fmt, Args... args)
+{
+    if (Core::Debugging) ::Runic::Log::Client()->error(fmt::runtime(fmt), args...);
+}
+
+template <typename Fmt, typename... Args>
+void Critical(Fmt fmt, Args... args)
+{
+    if (Core::Debugging) ::Runic::Log::Client()->critical(fmt::runtime(fmt), args...);
+}
+
 } // namespace Runic
-
-// NOLINTBEGIN(cppcoreguidelines-macro-usage)
-// clang-format off
-#define RUNIC_CORE_TRACE(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Core()->trace(__VA_ARGS__)
-#define RUNIC_CORE_INFO(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Core()->info(__VA_ARGS__)
-#define RUNIC_CORE_WARN(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Core()->warn(__VA_ARGS__)
-#define RUNIC_CORE_ERROR(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Core()->error(__VA_ARGS__)
-#define RUNIC_CORE_CRITICAL(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Core()->critical(__VA_ARGS__)
-
-#define RUNIC_TRACE(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Client()->trace(__VA_ARGS__)
-#define RUNIC_INFO(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Client()->info(__VA_ARGS__)
-#define RUNIC_WARN(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Client()->warn(__VA_ARGS__)
-#define RUNIC_ERROR(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Client()->error(__VA_ARGS__)
-#define RUNIC_CRITICAL(...) if constexpr(::Runic::Core::Debugging) ::Runic::Log::Client()->critical(__VA_ARGS__)
-// clang-format on
-// NOLINTEND(cppcoreguidelines-macro-usage)

@@ -2,7 +2,6 @@
 
 #include "Application.hpp"
 #include "Event.hpp"
-#include "Log.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1
 
@@ -12,8 +11,6 @@
 
 inline SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*arg*/)
 {
-    Runic::Log::Init();
-
     std::unique_ptr<Runic::Application> app{Runic::CreateApplication()};
 
     *appstate = app.release();

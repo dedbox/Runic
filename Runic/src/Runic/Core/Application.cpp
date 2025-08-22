@@ -1,5 +1,6 @@
 #include "Application.hpp"
 
+#include "Log.hpp"
 #include "SDLException.hpp"
 
 #include "SDL3/SDL_init.h"
@@ -10,6 +11,8 @@ namespace Runic
 Application::Application(const AppData& data, const WindowData& windowData)
     : _data{data}
 {
+    Runic::Log::Init(_data.name);
+
     if (!SDL_SetAppMetadata(data.name.c_str(), data.version.c_str(), data.identifier.c_str()))
         throw SDLException("Could not set app metadata");
 

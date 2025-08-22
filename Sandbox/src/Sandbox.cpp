@@ -9,7 +9,7 @@ public:
         addEventHandler<Runic::KeyPressEvent>(
             [loc](const Runic::KeyPressEvent& event)
             {
-                if (!event.repeat) RUNIC_INFO(loc);
+                if (!event.repeat) Runic::Info(loc);
                 return false;
             });
     }
@@ -19,6 +19,7 @@ class SandboxApplication : public Runic::Application
 {
 public:
     SandboxApplication()
+        : Application({.name = "Sandbox"})
     {
         Runic::LayerManager& layers = getLayerManager();
 
