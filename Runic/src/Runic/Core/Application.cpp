@@ -1,7 +1,7 @@
 #include "Application.hpp"
 
 #include "Log.hpp"
-#include "Runic/Graphics/GraphicsContext.hpp"
+#include "Runic/Core/Event.hpp"
 #include "SDLException.hpp"
 
 #include "SDL3/SDL_init.h"
@@ -29,6 +29,14 @@ Application::Application(const AppData& data, const WindowData& windowData)
         });
 
     _context = std::make_unique<GraphicsContext>(_window.get());
+    _context->setViewport({windowData.width, windowData.height});
+
+    addSystemEventHandler<WindowResizeEvent>(
+        [&](const WindowResizeEvent& event)
+        {
+            _context->setViewport({event.width, event.height});
+            return true;
+        });
 
     _window->show();
 }

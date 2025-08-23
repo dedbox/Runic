@@ -2,7 +2,7 @@
 
 #include "Event.hpp"
 #include "LayerManager.hpp"
-#include "Runic/Graphics/GraphicsContext.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
 #include "Window.hpp"
 
 namespace Runic

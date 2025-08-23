@@ -1,6 +1,5 @@
 #include "GraphicsContext.hpp"
 
-#include "SDL3/SDL_video.h"
 #include "glad/gl.h"
 
 #include "Runic/Core/Log.hpp"
@@ -24,6 +23,12 @@ GraphicsContext::GraphicsContext(Window* window)
     Core::Info("    Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
     Core::Info("    Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
     // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+}
+
+void GraphicsContext::setViewport(const glm::ivec2& size, const glm::ivec2& offset)
+{
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+    glViewport(offset.x, offset.y, size.x, size.y);
 }
 
 void GraphicsContext::setClearColor(const glm::vec4& color)

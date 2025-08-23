@@ -141,11 +141,12 @@ package Runic <<rectangle>> {
     LayerManager -[hidden]right- Input
   }
 
-  package Graphics {
+  package Renderer {
     class GraphicsContext {
       - window: Window*
       - context: SDL_GLContext
       + GraphicsContext(Window*)
+      + setViewport(const vec4&, const vec4&): void
       + setClearColor(const vec4&): void
       + clear(): void
       + swapBuffers(): void
