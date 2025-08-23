@@ -1,35 +1,29 @@
 #include <Runic.hpp>
 
-class ClearLayer : public Runic::Layer
-{
-public:
-    explicit ClearLayer(Runic::GraphicsContext& context, const glm::vec4& color)
-        : _context(context)
-        , _color(color)
-    {
-    }
-
-    void onUpdate() override
-    {
-        _context.setClearColor(_color);
-        _context.clear();
-    }
-
-private:
-    Runic::GraphicsContext& _context;
-    const glm::vec4 _color;
-};
+static constexpr auto Taupe  = Runic::Color::hex(0x463F3AFF);
+static constexpr auto Gray   = Runic::Color::hex(0x8A817CFF);
+static constexpr auto Silver = Runic::Color::hex(0xBCB8B1FF);
+static constexpr auto Ivory  = Runic::Color::hex(0xF4F3EEFF);
+static constexpr auto Melon  = Runic::Color::hex(0xE0AFA0FF);
 
 class SandboxApplication : public Runic::Application
 {
 public:
     SandboxApplication()
         : Application({.name = "Sandbox"})
+        , _context(getGraphicsContext())
     {
-        auto context                = getGraphicsContext();
-        Runic::LayerManager& layers = getLayerManager();
-        layers.push_back(std::make_unique<ClearLayer>(context, glm::vec4(0.0F, 1.0F, 0.0F, 1.0F)));
     }
+
+    void onUpdate() override
+    {
+        _context.setClearColor(Taupe);
+        _context.clear();
+        _context.swapBuffers();
+    }
+
+private:
+    Runic::GraphicsContext& _context;
 };
 
 std::unique_ptr<Runic::Application> Runic::CreateApplication()

@@ -11,4 +11,5 @@
 #include <Runic/Core/Main.hpp>
 
 // The Graphics API
+#include <Runic/Renderer/Color.hpp>
 #include <Runic/Renderer/GraphicsContext.hpp>
