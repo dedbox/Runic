@@ -25,8 +25,7 @@ std::string flatten_layers(const Runic::LayerManager& layers)
 
 } // namespace
 
-// NOLINTBEGIN(misc-use-anonymous-namespace, cppcoreguidelines-avoid-do-while,
-// cppcorebuidelines-avoid-magic-numbers)
+// NOLINTBEGIN(misc-use-anonymous-namespace, cppcoreguidelines-avoid-do-while)
 
 TEST_CASE("empty LayerManager can grow")
 {
@@ -133,5 +132,4 @@ TEST_CASE("populated ListManager can shrink")
     }
 }
 
-// NOLINTEND(misc-use-anonymous-namespace, cppcoreguidelines-avoid-do-while,
-// cppcorebuidelines-avoid-magic-numbers)
+// NOLINTEND(misc-use-anonymous-namespace, cppcoreguidelines-avoid-do-while)

@@ -11,7 +11,6 @@ using color = glm::vec4;
 namespace Color
 {
 
-// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
 constexpr uint8_t hex_r(uint32_t value)
 {
     return (value >> 24U) & 0xFFU;
@@ -41,7 +40,6 @@ constexpr inline color hex(uint32_t value)
         static_cast<float>(hex_a(value)) / 255.0F,
     };
 }
-// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 
 static constexpr color Black = Color::hex(0x000000FF);
 static constexpr color White = Color::hex(0xFFFFFFFF);
