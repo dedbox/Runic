@@ -90,7 +90,7 @@ target_precompile_headers(
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR}
-                                         ${glad_INCLUDE_DIR})
+                                         ${glad_INCLUDE_DIR} ${glm_INCLUDE_DIR})
 
 install(TARGETS Runic DESTINATION lib)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/Runic.hpp DESTINATION include)
