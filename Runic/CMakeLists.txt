@@ -59,9 +59,13 @@ FetchContent_MakeAvailable(glm)
 
 add_library(
   Runic STATIC
-  src/Runic/Core/Application.cpp src/Runic/Core/Input.cpp
-  src/Runic/Core/LayerManager.cpp src/Runic/Core/Log.cpp
-  src/Runic/Core/Window.cpp src/Runic/Renderer/GraphicsContext.cpp)
+  src/Runic/Core/Application.cpp
+  src/Runic/Core/Input.cpp
+  src/Runic/Core/LayerManager.cpp
+  src/Runic/Core/Log.cpp
+  src/Runic/Core/Window.cpp
+  src/Runic/Renderer/GraphicsContext.cpp
+  src/Runic/Renderer/Renderer.cpp)
 
 target_link_libraries(Runic PUBLIC glm::glm)
 target_link_libraries(Runic PRIVATE SDL3::SDL3 spdlog::spdlog

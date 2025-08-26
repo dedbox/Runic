@@ -11,19 +11,20 @@ class SandboxApplication : public Runic::Application
 public:
     SandboxApplication()
         : Application({.name = "Sandbox"})
-        , _context(getGraphicsContext())
+        , _renderer(getRenderer())
     {
     }
 
     void onUpdate() override
     {
-        _context.setClearColor(Taupe);
-        _context.clear();
-        _context.swapBuffers();
+        _renderer.beginFrame();
+        _renderer.setClearColor(Taupe);
+        _renderer.clear();
+        _renderer.endFrame();
     }
 
 private:
-    Runic::GraphicsContext& _context;
+    Runic::Renderer& _renderer;
 };
 
 std::unique_ptr<Runic::Application> Runic::CreateApplication()

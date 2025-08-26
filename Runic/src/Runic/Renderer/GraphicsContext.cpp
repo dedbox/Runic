@@ -99,27 +99,4 @@ void GraphicsContext::init()
     }
 }
 
-void GraphicsContext::setViewport(const glm::ivec2& size, const glm::ivec2& offset)
-{
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-    glViewport(offset.x, offset.y, size.x, size.y);
-}
-
-void GraphicsContext::setClearColor(const glm::vec4& color)
-{
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-    glClearColor(color.r, color.g, color.b, color.a);
-}
-
-void GraphicsContext::clear() const
-{
-    // NOLINTNEXTLINE(hicpp-signed-bitwise)
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void GraphicsContext::swapBuffers() const
-{
-    SDL_GL_SwapWindow(_window.getNative());
-}
-
 } // namespace Runic

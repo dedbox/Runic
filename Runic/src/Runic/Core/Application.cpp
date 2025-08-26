@@ -1,9 +1,6 @@
 #include "Application.hpp"
 
-#include "Runic/Core/Event.hpp"
-#include "Runic/Renderer/GraphicsContext.hpp"
 #include "SDLException.hpp"
-#include "Window.hpp"
 
 #include "SDL3/SDL_init.h"
 
@@ -21,10 +18,11 @@ Application::Application(const AppData& appData, const WindowData& windowData)
         throw SDLException("Could not set app metadata");
 
     Window window(windowData);
+    GraphicsContext gc(window);
+    gc.init();
 
-    _gc = std::make_unique<GraphicsContext>(window);
-    _gc->init();
-    _gc->setViewport({windowData.width, windowData.height});
+    _renderer = std::make_unique<Renderer>(gc);
+    _renderer->setViewport({windowData.width, windowData.height});
 
     addSystemEventHandler<WindowCloseEvent>(
         [&](const auto& /*event*/)
@@ -36,11 +34,21 @@ Application::Application(const AppData& appData, const WindowData& windowData)
     addSystemEventHandler<WindowResizeEvent>(
         [&](const WindowResizeEvent& event)
         {
-            _gc->setViewport({event.width, event.height});
+            _renderer->setViewport({event.width, event.height});
             return true;
         });
 
     window.show();
+}
+
+void Application::onUpdate()
+{
+    _renderer->beginFrame();
+
+    for (auto& _layer : _layers)
+        _layer->onUpdate();
+
+    _renderer->endFrame();
 }
 
 } // namespace Runic

@@ -21,10 +21,11 @@ package Runic <<rectangle>> {
       - systemDispatcher: EventDispatcher
       - done: bool
       + Application(const AppData&, const WindowData&)
+      + getRenderer(): Renderer&
       + getGraphicsContext(): GraphicsContext&
+      + getWindow(): Window&
       + getLayerManager(): LayerManager&
       + onUpdate(): void
-      + onUpdateLayers(): void
       + dispatchEvent<T>(const T&): void
       + isDone(): bool
       # addSystemEventHandler<T>(bool(const T&)): void
@@ -147,14 +148,24 @@ package Runic <<rectangle>> {
       + GraphicsContext(const Window&)
       + init(): void
       + getWindow(): Window&
-      + setViewport(const vec4&, const vec4&): void
-      + setClearColor(const vec4&): void
-      + clear(): void
-      + swapBuffers(): void
     }
 
-    Application *- GraphicsContext
+    Application -> GraphicsContext : constructs
     GraphicsContext *- Window
+
+    class Renderer {
+      - gc: optional<GraphicsContext>
+      + Renderer(const GraphicsContext&)
+      + getGraphicsContext(): GraphicsContext&
+      + beginFrame(): void
+      + endFrame(): void
+      + setViewport(const glm::ivec2&, ?const glm::ivec2&): void
+      + setClearColor(const glm::vec4&): void
+      + clear(): void
+    }
+
+    GraphicsContext -* Renderer
+    Application *- Renderer
   }
 }
 
