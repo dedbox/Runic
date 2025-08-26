@@ -18,17 +18,15 @@ struct WindowData
 class Window
 {
 public:
-    explicit Window(WindowData data);
+    explicit Window(const WindowData& data);
 
-    [[nodiscard]] const WindowData& getData() const { return _data; }
     [[nodiscard]] SDL_Window* getNative() const { return _native; }
 
     void show() const;
     void hide() const;
 
 private:
-    WindowData _data;
-    SDL_Window* _native;
+    SDL_Window* _native{nullptr};
 };
 
 } // namespace Runic

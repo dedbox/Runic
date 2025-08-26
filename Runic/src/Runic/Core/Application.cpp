@@ -1,25 +1,30 @@
 #include "Application.hpp"
 
-#include "Log.hpp"
 #include "Runic/Core/Event.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
 #include "SDLException.hpp"
+#include "Window.hpp"
 
 #include "SDL3/SDL_init.h"
 
 namespace Runic
 {
 
-Application::Application(const AppData& data, const WindowData& windowData)
-    : _data{data}
+Application::Application(const AppData& appData, const WindowData& windowData)
 {
-    Runic::Log::Init(_data.name);
-
-    if (!SDL_SetAppMetadata(data.name.c_str(), data.version.c_str(), data.identifier.c_str()))
-        throw SDLException("Could not set app metadata");
+    Runic::Log::Init(appData.name);
 
     if (!SDL_Init(SDL_INIT_VIDEO)) throw SDLException("Could not initialize SDL");
 
-    _window = std::make_unique<Window>(windowData);
+    if (!SDL_SetAppMetadata(
+            appData.name.c_str(), appData.version.c_str(), appData.identifier.c_str()))
+        throw SDLException("Could not set app metadata");
+
+    Window window(windowData);
+
+    _gc = std::make_unique<GraphicsContext>(window);
+    _gc->init();
+    _gc->setViewport({windowData.width, windowData.height});
 
     addSystemEventHandler<WindowCloseEvent>(
         [&](const auto& /*event*/)
@@ -28,17 +33,14 @@ Application::Application(const AppData& data, const WindowData& windowData)
             return true;
         });
 
-    _context = std::make_unique<GraphicsContext>(_window.get());
-    _context->setViewport({windowData.width, windowData.height});
-
     addSystemEventHandler<WindowResizeEvent>(
         [&](const WindowResizeEvent& event)
         {
-            _context->setViewport({event.width, event.height});
+            _gc->setViewport({event.width, event.height});
             return true;
         });
 
-    _window->show();
+    window.show();
 }
 
 } // namespace Runic

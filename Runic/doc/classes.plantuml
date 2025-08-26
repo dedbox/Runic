@@ -17,14 +17,12 @@ package Runic <<rectangle>> {
     }
 
     class Application {
-      - data: AppData
-      - window: unique_ptr<Window>
+      - gc: unique_ptr<GraphicsContext>
       - systemDispatcher: EventDispatcher
       - done: bool
       + Application(const AppData&, const WindowData&)
-      + getWindow(): const Window&
-      + getLayerManager(): LayerManager&
       + getGraphicsContext(): GraphicsContext&
+      + getLayerManager(): LayerManager&
       + onUpdate(): void
       + onUpdateLayers(): void
       + dispatchEvent<T>(const T&): void
@@ -43,7 +41,6 @@ package Runic <<rectangle>> {
     }
 
     class Window {
-      - data: WindowData
       - native: SDL_window*
       + Window(WindowData)
       + getData(): const WindowData&
@@ -51,7 +48,7 @@ package Runic <<rectangle>> {
       + hide(): void
     }
 
-    Application *- Window
+    Application -> Window : constructs
     WindowData .. (Application, Window)
 
     class Log {
@@ -62,7 +59,7 @@ package Runic <<rectangle>> {
       {static} + GetClient(): shared_ptr<spdlog::logger>&
     }
 
-     Application -up-> Log : initializes
+    Application -up-> Log : initializes
 
     class Input {
       {static} + IsKeyPressed(Key): bool
@@ -141,11 +138,15 @@ package Runic <<rectangle>> {
     LayerManager -[hidden]right- Input
   }
 
+  ' Renderer -------------------------------------------------------------------
+
   package Renderer {
     class GraphicsContext {
-      - window: Window*
-      - context: SDL_GLContext
-      + GraphicsContext(Window*)
+      - window: Window
+      - native: SDL_GLContext
+      + GraphicsContext(const Window&)
+      + init(): void
+      + getWindow(): Window&
       + setViewport(const vec4&, const vec4&): void
       + setClearColor(const vec4&): void
       + clear(): void
@@ -153,7 +154,7 @@ package Runic <<rectangle>> {
     }
 
     Application *- GraphicsContext
-    GraphicsContext -> Window
+    GraphicsContext *- Window
   }
 }
 

@@ -12,17 +12,20 @@ namespace Runic
 class GraphicsContext
 {
 public:
-    explicit GraphicsContext(Window* window);
+    explicit GraphicsContext(const Window& window);
+
+    void init();
+
+    Window& getWindow() { return _window; }
 
     void setViewport(const glm::ivec2& size, const glm::ivec2& offset = {0, 0});
-
     void setClearColor(const glm::vec4& color);
     void clear() const;
     void swapBuffers() const;
 
 private:
-    Window* _window;
-    SDL_GLContext _context;
+    Window _window;
+    SDL_GLContext _native{nullptr};
 };
 
 } // namespace Runic

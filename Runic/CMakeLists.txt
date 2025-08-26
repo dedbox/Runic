@@ -86,7 +86,8 @@ target_precompile_headers(
   <string>
   <typeindex>
   <utility>
-  <vector>)
+  <vector>
+  src/Runic/Core/Log.hpp)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR}

@@ -3,7 +3,6 @@
 #include "Event.hpp"
 #include "LayerManager.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
-#include "Window.hpp"
 
 namespace Runic
 {
@@ -27,12 +26,10 @@ public:
     Application& operator=(const Application& other)     = delete;
     Application& operator=(Application&& other) noexcept = delete;
 
-    [[nodiscard]] const Window& getWindow() const { return *_window; }
-
+    [[nodiscard]] GraphicsContext& getGraphicsContext() { return *_gc; }
     LayerManager& getLayerManager() { return _layers; }
-    GraphicsContext& getGraphicsContext() { return *_context; }
 
-    virtual void onUpdate() { _context->swapBuffers(); }
+    virtual void onUpdate() { _gc->swapBuffers(); }
 
     void onUpdateLayers()
     {
@@ -64,9 +61,7 @@ protected:
     }
 
 private:
-    AppData _data;
-    std::unique_ptr<Window> _window;
-    std::unique_ptr<GraphicsContext> _context;
+    std::unique_ptr<GraphicsContext> _gc;
     EventDispatcher _systemDispatcher;
     LayerManager _layers;
     bool _done{false};
