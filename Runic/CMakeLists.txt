@@ -92,7 +92,8 @@ target_precompile_headers(
   <typeindex>
   <utility>
   <vector>
-  src/Runic/Core/Log.hpp)
+  src/Runic/Core/Log.hpp
+  src/Runic/Core/SDLException.hpp)
 
 target_include_directories(
   Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src ${OPENGL_INCLUDE_DIR}

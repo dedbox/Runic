@@ -1,7 +1,5 @@
 #include "Application.hpp"
 
-#include "SDLException.hpp"
-
 #include "SDL3/SDL_init.h"
 
 namespace Runic

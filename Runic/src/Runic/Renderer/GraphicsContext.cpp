@@ -1,8 +1,5 @@
 #include "GraphicsContext.hpp"
 
-// TODO add SDLException to precompiled headers
-#include "Runic/Core/SDLException.hpp"
-
 namespace Runic
 {
 

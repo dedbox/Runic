@@ -1,6 +1,5 @@
 #include "Runic/Core/Window.hpp"
 
-#include "Runic/Core/SDLException.hpp"
 #include "SDL3/SDL_video.h"
 
 namespace Runic
