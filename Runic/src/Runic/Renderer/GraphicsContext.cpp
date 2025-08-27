@@ -1,8 +1,5 @@
 #include "GraphicsContext.hpp"
 
-#include "SDL3/SDL_video.h"
-#include "glad/gl.h"
-
 // TODO add SDLException to precompiled headers
 #include "Runic/Core/SDLException.hpp"
 
@@ -97,6 +94,98 @@ void GraphicsContext::init()
         else
             Core::Warn("Debug context NOT created.");
     }
+}
+
+RendererId GraphicsContext::createVertexArray() const
+{
+    RendererId id{};
+    glGenVertexArrays(1, &id);
+    return id;
+}
+
+void GraphicsContext::deleteVertexArray(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to delete zero array id");
+    glDeleteVertexArrays(1, &id);
+}
+
+void GraphicsContext::bindVertexArray(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to bind a non-zero array id");
+    glBindVertexArray(id);
+}
+
+void GraphicsContext::unbindVertexArray() const
+{
+    glBindVertexArray(0);
+}
+
+void GraphicsContext::enableVertexAttribute(uint32_t index) const
+{
+    glEnableVertexAttribArray(index);
+}
+
+void GraphicsContext::defineVertexAttributeData(
+    uint32_t index,
+    size_t count,
+    ElementType type,
+    bool normalized,
+    size_t stride,
+    const void* offset) const
+{
+    glVertexAttribPointer(
+        index, static_cast<GLint>(count), ElementTypeToGLenum(type),
+        normalized ? GL_TRUE : GL_FALSE, static_cast<GLsizei>(stride), offset);
+}
+
+RendererId
+GraphicsContext::createVertexBuffer(const void* data, size_t size, BufferUsage usage) const
+{
+    RendererId id{};
+    glGenBuffers(1, &id);
+    glBindBuffer(GL_ARRAY_BUFFER, id);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), data, BufferUsageToGLenum(usage));
+    return id;
+}
+
+void GraphicsContext::bindVertexBuffer(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to bind non-zero vertex buffer id");
+    glBindBuffer(GL_ARRAY_BUFFER, id);
+}
+
+void GraphicsContext::unbindVertexBuffer() const
+{
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+RendererId GraphicsContext::createIndexBuffer(
+    const void* data, size_t count, IndexType type, BufferUsage usage) const
+{
+    RendererId id{};
+    glGenBuffers(1, &id);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(IndexTypeToGLenum(type))),
+        data, BufferUsageToGLenum(usage));
+    return id;
+}
+
+void GraphicsContext::bindIndexBuffer(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to bind non-zero index buffer id");
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+}
+
+void GraphicsContext::unbindIndexBuffer() const
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void GraphicsContext::deleteBuffer(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to delete non-zero buffer id");
+    glDeleteBuffers(1, &id);
 }
 
 } // namespace Runic

@@ -1,12 +1,10 @@
 #include "Renderer.hpp"
 
-#include "glad/gl.h"
-
 namespace Runic
 {
 
-Renderer::Renderer(const GraphicsContext& gc)
-    : _gc(gc)
+Renderer::Renderer(std::unique_ptr<GraphicsContext> gc)
+    : _gc(std::move(gc))
 {
 }
 
@@ -33,6 +31,26 @@ void Renderer::clear() const
 {
     // NOLINTNEXTLINE(hicpp-signed-bitwise)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+std::unique_ptr<VertexArray> Renderer::createVertexArray() const
+{
+    RendererId id = _gc->createVertexArray();
+    return std::make_unique<VertexArray>(_gc.get(), id);
+}
+
+std::unique_ptr<VertexBuffer>
+Renderer::createVertexBuffer(const void* data, size_t size, BufferUsage usage)
+{
+    RendererId id = _gc->createVertexBuffer(data, size, usage);
+    return std::make_unique<VertexBuffer>(_gc.get(), id, size);
+}
+
+std::unique_ptr<IndexBuffer>
+Renderer::createIndexBuffer(const void* data, size_t count, IndexType type, BufferUsage usage)
+{
+    RendererId id = _gc->createIndexBuffer(data, count, type, usage);
+    return std::make_unique<IndexBuffer>(_gc.get(), id, count, type);
 }
 
 } // namespace Runic

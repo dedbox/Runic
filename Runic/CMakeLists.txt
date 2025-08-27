@@ -64,12 +64,13 @@ add_library(
   src/Runic/Core/LayerManager.cpp
   src/Runic/Core/Log.cpp
   src/Runic/Core/Window.cpp
+  src/Runic/Renderer/Buffer.cpp
   src/Runic/Renderer/GraphicsContext.cpp
-  src/Runic/Renderer/Renderer.cpp)
+  src/Runic/Renderer/Renderer.cpp
+  src/Runic/Renderer/VertexArray.cpp)
 
-target_link_libraries(Runic PUBLIC glm::glm)
-target_link_libraries(Runic PRIVATE SDL3::SDL3 spdlog::spdlog
-                                    ${OPENGL_LIBRARIES} glad_gl_core_46)
+target_link_libraries(Runic PUBLIC ${OPENGL_LIBRARIES} glad_gl_core_46 glm::glm)
+target_link_libraries(Runic PRIVATE SDL3::SDL3 spdlog::spdlog)
 
 target_precompile_headers(
   Runic
@@ -93,9 +94,9 @@ target_precompile_headers(
   <vector>
   src/Runic/Core/Log.hpp)
 
-target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR}
-                                         ${glad_INCLUDE_DIR} ${glm_INCLUDE_DIR})
+target_include_directories(
+  Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src ${OPENGL_INCLUDE_DIR}
+               ${glad_INCLUDE_DIR} ${glm_INCLUDE_DIR})
 
 install(TARGETS Runic DESTINATION lib)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/Runic.hpp DESTINATION include)

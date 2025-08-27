@@ -3,7 +3,9 @@
 #include "glm/ext/vector_float4.hpp"
 #include "glm/ext/vector_int2.hpp"
 
+#include "Runic/Renderer/Buffer.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
+#include "Runic/Renderer/VertexArray.hpp"
 
 namespace Runic
 {
@@ -11,7 +13,7 @@ namespace Runic
 class Renderer
 {
 public:
-    explicit Renderer(const GraphicsContext& context);
+    explicit Renderer(std::unique_ptr<GraphicsContext> gc);
 
     GraphicsContext& getGraphicsContext() { return *_gc; }
 
@@ -22,8 +24,16 @@ public:
     void setClearColor(const glm::vec4& color) const;
     void clear() const;
 
+    [[nodiscard]] std::unique_ptr<VertexArray> createVertexArray() const;
+
+    std::unique_ptr<VertexBuffer>
+    createVertexBuffer(const void* data, size_t size, BufferUsage usage);
+
+    std::unique_ptr<IndexBuffer>
+    createIndexBuffer(const void* data, size_t count, IndexType type, BufferUsage usage);
+
 private:
-    std::optional<GraphicsContext> _gc;
+    std::unique_ptr<GraphicsContext> _gc;
 };
 
 } // namespace Runic

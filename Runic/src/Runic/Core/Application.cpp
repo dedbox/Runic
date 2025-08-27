@@ -18,10 +18,10 @@ Application::Application(const AppData& appData, const WindowData& windowData)
         throw SDLException("Could not set app metadata");
 
     Window window(windowData);
-    GraphicsContext gc(window);
-    gc.init();
+    std::unique_ptr<GraphicsContext> gc = std::make_unique<GraphicsContext>(window);
+    gc->init();
 
-    _renderer = std::make_unique<Renderer>(gc);
+    _renderer = std::make_unique<Renderer>(std::move(gc));
     _renderer->setViewport({windowData.width, windowData.height});
 
     addSystemEventHandler<WindowCloseEvent>(

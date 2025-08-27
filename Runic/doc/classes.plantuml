@@ -142,30 +142,132 @@ package Runic <<rectangle>> {
   ' Renderer -------------------------------------------------------------------
 
   package Renderer {
-    class GraphicsContext {
-      - window: Window
-      - native: SDL_GLContext
-      + GraphicsContext(const Window&)
-      + init(): void
-      + getWindow(): Window&
-    }
-
-    Application -> GraphicsContext : constructs
-    GraphicsContext *- Window
-
     class Renderer {
-      - gc: optional<GraphicsContext>
-      + Renderer(const GraphicsContext&)
+      - gc: unique_ptr<GraphicsContext>
+      + Renderer(unique_ptr<GraphicsContext>)
       + getGraphicsContext(): GraphicsContext&
       + beginFrame(): void
       + endFrame(): void
       + setViewport(const glm::ivec2&, ?const glm::ivec2&): void
       + setClearColor(const glm::vec4&): void
       + clear(): void
+      + createVertexArray(): unique_ptr<VertexArray>
+      + createVertexBuffer(const void*, size_t, BufferUsage): unique_ptr<VertexBuffer>
+      + createIndexBuffer(const void*, size_t, IndexType, BufferUsage): unique_ptr<IndexBuffer>
     }
 
-    GraphicsContext -* Renderer
     Application *- Renderer
+
+    package GraphicsContext as GraphicsContextPkg <<Frame>> {
+      class GraphicsContext {
+        - window: Window
+        - native: SDL_GLContext
+        + GraphicsContext(const Window&)
+        + init(): void
+        + getWindow(): Window&
+        + createVertexArray(): RendererId
+        + deleteVertexArray(RendererId): void
+        + bindVertexArray(RendererId): void
+        + unbindVertexArray(): void
+        + enableVertexAttribute(uint32): void
+        + defineVertexAttribute(uint32, size_t, ElementType, bool, size_t, const void*): void
+        + createVertexBuffer(const void*, size_t, BufferUsage): RendererId
+        + bindVertexBuffer(RendererId): void
+        + unbindVertexBuffer(): void
+        + createIndexBuffer(const void*, size_t, IndexType, BufferUsage): RendererId
+        + bindIndexBuffer(RendererId): void
+        + unbindIndexBuffer(): void
+        + deleteBuffer(RendererId): void
+      }
+
+      GraphicsContext *- Window
+
+      enum BufferUsage {
+        Transient
+        Static
+        Dynamic
+      }
+
+      enum IndexType {
+        Byte
+        Short
+        Int
+      }
+
+      enum ElementType {
+        None
+        Bool
+        Int Int2 Int3 Int4
+        Float Float2 Float3 Float4
+        Mat3 Mat4
+      }
+
+      GraphicsContext --> BufferUsage
+      GraphicsContext --> IndexType
+      GraphicsContext --> ElementType
+    }
+
+    Renderer *-left- GraphicsContext
+    Application -> GraphicsContext : constructs
+
+      class VertexArray {
+        - gc: GraphicsContext*
+        - id: RendererId
+        - vertexBuffers: vector<unique_ptr<VertexBuffer>>
+        - indexBuffer: unique_ptr<IndexBuffer>
+        + VertexArray(GraphicsContext*, RendererId)
+        + ~VertexArray()
+        + VertexArray(VertexArray&&)
+        + operator=(VertexArray&&): VertexArray&
+        + bind(): void
+        + unbind(): void
+        + addVertexBuffer(unique_ptr<VertexBuffer>, vector<LayoutElement>): void
+        + setIndexBuffer(unique_ptr<IndexBuffer>): void
+      }
+
+      struct LayoutElement {
+        + type: ElementType
+        + normalized: bool
+      }
+
+    Renderer -> VertexArray : constructs
+    LayoutElement . (Renderer, VertexArray)
+
+    package Buffer as BufferPkg <<Frame>> {
+      class VertexBuffer {
+        - size: size_t
+        + VertexBuffer(GraphicsContext*, RendererId, size_t)
+        + bind(): void
+        + unbind(): void
+      }
+
+      VertexBuffer --|> Buffer
+
+      class IndexBuffer {
+        - count: size_t
+        - type: IndexType
+        + IndexBuffer(GraphicsContext*, RendererId, size_t, IndexType)
+        + bind(): void
+        + unbind(): void
+      }
+
+      abstract class Buffer {
+        - gc: GraphicsContext*
+        - id: RendererId
+        # Buffer(GraphicsContext*, RendererId)
+        + ~Buffer()
+        + Buffer(Buffer&&)
+        + operator=(Buffer&&): Buffer&
+        {abstract} + bind(): void
+        {abstract} + unbind(): void
+      }
+
+      IndexBuffer --|> Buffer
+    }
+
+    Renderer --> VertexBuffer : constructs
+    Renderer --> IndexBuffer : constructs
+    VertexArray --> BufferPkg
   }
 }
 
