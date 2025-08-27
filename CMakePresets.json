@@ -21,6 +21,7 @@
             "name" : "linux-internal",
             "displayName" : "Linux Internal",
             "binaryDir" : "${sourceDir}/build/linux-relwithdebinfo",
+            "generator" : "Ninja",
             "cacheVariables" : {
                 "CMAKE_BUILD_TYPE" : "RelWithDebInfo",
                 "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON"
@@ -30,6 +31,7 @@
             "name" : "linux-release",
             "displayName" : "Linux Release",
             "binaryDir" : "${sourceDir}/build/linux-release",
+            "generator" : "Ninja",
             "cacheVariables" : {
                 "CMAKE_BUILD_TYPE" : "Release",
                 "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON"
