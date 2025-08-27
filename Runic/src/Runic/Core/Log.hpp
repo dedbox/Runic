@@ -57,6 +57,18 @@ void Critical(Fmt fmt, Args... args)
     if constexpr (Debugging) ::Runic::Log::Core()->critical(fmt::runtime(fmt), args...);
 }
 
+constexpr void Assert(bool test, const std::string& errMsg)
+{
+    if constexpr (Debugging)
+    {
+        if (!test)
+        {
+            Error("Assertion failed: {}", errMsg);
+            if (!raise(SIGTRAP)) abort();
+        }
+    }
+}
+
 } // namespace Core
 
 template <typename Fmt, typename... Args>
@@ -87,6 +99,18 @@ template <typename Fmt, typename... Args>
 void Critical(Fmt fmt, Args... args)
 {
     if constexpr (Core::Debugging) ::Runic::Log::Client()->critical(fmt::runtime(fmt), args...);
+}
+
+constexpr void Assert(bool test, const std::string& errMsg)
+{
+    if constexpr (Core::Debugging)
+    {
+        if (!test)
+        {
+            Error("Assertion failed: {}", errMsg);
+            if (!raise(SIGTRAP)) abort();
+        }
+    }
 }
 
 } // namespace Runic
