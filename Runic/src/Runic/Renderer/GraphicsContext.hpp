@@ -127,6 +127,20 @@ inline std::string format_as(const ShaderType& type)
     return "unknown";
 }
 
+// Polygon Mode ----------------------------------------------------------------
+
+enum class PolygonMode : uint16_t
+{
+    Point = GL_POINT,
+    Line  = GL_LINE,
+    Fill  = GL_FILL,
+};
+
+inline GLenum PolygonModeToGLenum(PolygonMode mode)
+{
+    return static_cast<GLenum>(mode);
+}
+
 // Graphics Context ------------------------------------------------------------
 
 class GraphicsContext
@@ -214,6 +228,8 @@ public:
     [[nodiscard]] RendererId getUniformLocation(RendererId id, const std::string& name) const;
 
     // Drawing
+
+    void setPolygonMode(PolygonMode mode) const;
 
     void drawElements(IndexMode mode, size_t count, IndexType type, const void* offset) const;
 

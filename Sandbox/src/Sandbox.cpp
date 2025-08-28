@@ -79,6 +79,7 @@ public:
     {
         _renderer.setClearColor(Taupe);
         _renderer.clear();
+        _renderer.getGraphicsContext().setPolygonMode(Runic::PolygonMode::Line);
         _mesh->draw(*_shaderProgram);
     }
 

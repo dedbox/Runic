@@ -351,6 +351,11 @@ RendererId GraphicsContext::getUniformLocation(RendererId id, const std::string&
 
 // Drawing ---------------------------------------------------------------------
 
+void GraphicsContext::setPolygonMode(PolygonMode mode) const
+{
+    glPolygonMode(GL_FRONT_AND_BACK, PolygonModeToGLenum(mode));
+}
+
 void GraphicsContext::drawElements(
     IndexMode mode, size_t count, IndexType type, const void* offset) const
 {

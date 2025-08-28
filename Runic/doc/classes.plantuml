@@ -194,6 +194,7 @@ package Runic <<rectangle>> {
         + setUniformBool(RendererId, bool): void
         {method} ...
         + getUniformLocation(RendererId, const string*): RendererId
+        + setPolygonMode(PolygonMode): void
         + drawElements(IndexMode, size_t, IndexType, const void*): void
       }
 
@@ -231,11 +232,18 @@ package Runic <<rectangle>> {
         Fragment
       }
 
+      enum PolygonMode {
+        Point
+        Line
+        Fill
+      }
+
       GraphicsContext --> BufferUsage
       GraphicsContext --> ElementType
       GraphicsContext --> IndexType
       GraphicsContext --> IndexMode
       GraphicsContext --> ShaderType
+      GraphicsContext --> PolygonMode
     }
 
     Renderer *-left- GraphicsContext
