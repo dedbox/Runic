@@ -66,6 +66,7 @@ add_library(
   src/Runic/Core/Window.cpp
   src/Runic/Renderer/Buffer.cpp
   src/Runic/Renderer/GraphicsContext.cpp
+  src/Runic/Renderer/Mesh.cpp
   src/Runic/Renderer/Renderer.cpp
   src/Runic/Renderer/Shader.cpp
   src/Runic/Renderer/ShaderProgram.cpp
@@ -97,9 +98,11 @@ target_precompile_headers(
   src/Runic/Core/Log.hpp
   src/Runic/Core/SDLException.hpp)
 
+target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+                                        ${glm_INCLUDE_DIR})
 target_include_directories(
-  Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src ${OPENGL_INCLUDE_DIR}
-               ${glad_INCLUDE_DIR} ${glm_INCLUDE_DIR})
+  Runic PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${OPENGL_INCLUDE_DIR}
+                ${glad_INCLUDE_DIR})
 
 install(TARGETS Runic DESTINATION lib)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/Runic.hpp DESTINATION include)

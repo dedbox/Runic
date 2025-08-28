@@ -305,6 +305,18 @@ package Runic <<rectangle>> {
     Renderer --> IndexBuffer : constructs
     VertexArray --> BufferPkg
 
+    class Mesh {
+      - renderer: Renderer*
+      - vertexArray: unique_ptr<VertexArray>
+      + Mesh(Renderer*)
+      + addVertices(const vector<float>, const vector<LayoutElement>, BufferUsage): void
+      + setIndices(const vector<uint32>, IndexMode, BufferUsage): void
+      + draw(const ShaderProgram&): void
+    }
+
+    Mesh -left-> ShaderProgram
+    Mesh *-down- VertexArray
+
     class ShaderProgram {
       - gc: GraphicsContext*
       - id: RendererId

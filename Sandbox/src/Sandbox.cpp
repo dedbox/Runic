@@ -1,9 +1,5 @@
 #include <Runic.hpp>
 
-#include "Runic/Renderer/Buffer.hpp"
-#include "Runic/Renderer/GraphicsContext.hpp"
-#include "Runic/Renderer/VertexArray.hpp"
-
 static constexpr auto Taupe  = Runic::Color::hex(0x463F3AFF);
 static constexpr auto Gray   = Runic::Color::hex(0x8A817CFF);
 static constexpr auto Silver = Runic::Color::hex(0xBCB8B1FF);
@@ -64,24 +60,17 @@ public:
 
         const std::vector<uint32_t> indices = {0, 1, 2};
 
-        _vertexArray = _renderer.createVertexArray();
+        _mesh = std::make_unique<Runic::Mesh>(&_renderer);
+        _mesh->addVertices(vertices, layout, Runic::BufferUsage::Static);
+        _mesh->setIndices(indices, Runic::IndexMode::Triangles, Runic::BufferUsage::Static);
 
-        _vertexBuffer = _renderer.createVertexBuffer(
-            vertices.data(), vertices.size() * sizeof(float), Runic::BufferUsage::Static);
+        const auto vertexShader =
+            _renderer.createShader(FlatShaderVertexSrc(), Runic::ShaderType::Vertex);
 
-        _vertexArray->addVertexBuffer(std::move(_vertexBuffer), layout);
-
-        _indexBuffer = _renderer.createIndexBuffer(
-            indices.data(), indices.size(), Runic::IndexType::Int, Runic::IndexMode::Triangles,
-            Runic::BufferUsage::Static);
-
-        _vertexArray->setIndexBuffer(std::move(_indexBuffer));
-
-        _vertexShader = _renderer.createShader(FlatShaderVertexSrc(), Runic::ShaderType::Vertex);
-        _fragmentShader =
+        const auto fragmentShader =
             _renderer.createShader(FlatShaderFragmentSrc(), Runic::ShaderType::Fragment);
 
-        _shaderProgram = _renderer.createShaderProgram(*_vertexShader, *_fragmentShader);
+        _shaderProgram = _renderer.createShaderProgram(*vertexShader, *fragmentShader);
         _shaderProgram->use();
         _shaderProgram->setUniformFloat4("u_Color", Melon);
     }
@@ -90,20 +79,13 @@ public:
     {
         _renderer.setClearColor(Taupe);
         _renderer.clear();
-
-        _shaderProgram->use();
-        _vertexArray->bind();
-        _vertexArray->draw();
+        _mesh->draw(*_shaderProgram);
     }
 
 private:
     Runic::Renderer& _renderer;
 
-    std::unique_ptr<Runic::VertexArray> _vertexArray;
-    std::unique_ptr<Runic::VertexBuffer> _vertexBuffer;
-    std::unique_ptr<Runic::IndexBuffer> _indexBuffer;
-    std::unique_ptr<Runic::Shader> _vertexShader;
-    std::unique_ptr<Runic::Shader> _fragmentShader;
+    std::unique_ptr<Runic::Mesh> _mesh;
     std::unique_ptr<Runic::ShaderProgram> _shaderProgram;
 };
 
