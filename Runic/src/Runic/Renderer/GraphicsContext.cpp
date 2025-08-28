@@ -76,7 +76,8 @@ void GraphicsContext::init()
     if (!version) throw std::runtime_error("Could not initialize OpenGL loader!");
 
     // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-    Core::Info("OpenGL initialized!");
+    Core::Info(
+        "OpenGL {}.{} initialized!", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
     Core::Info("    Vendor: {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
     Core::Info("    Renderer: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
     Core::Info("    Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
