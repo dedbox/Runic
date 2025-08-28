@@ -155,7 +155,7 @@ package Runic <<rectangle>> {
       + createVertexBuffer(const void*, size_t, BufferUsage): unique_ptr<VertexBuffer>
       + createIndexBuffer(const void*, size_t, IndexType, IndexMode, BufferUsage): unique_ptr<IndexBuffer>
       + createShader(const string&, ShaderType): unique_ptr<Shader>
-      + createShaderProgram(const Shader&, const Shader&): unique_ptr<ShaderProgram>
+      + createShaderProgram(const Shader&, const Shader&): shared_ptr<ShaderProgram>
     }
 
     Application *- Renderer
@@ -325,6 +325,12 @@ package Runic <<rectangle>> {
     Mesh -left-> ShaderProgram
     Mesh *-down- VertexArray
 
+    class ShaderManager {
+      {static} - shaders: unordered_map<string, shared_ptr<ShaderProgram>>
+      {static} + LoadShader(const Renderer&, const string&, const string&, const string&): void
+      {static} + GetShader(const string&): shared_ptr<ShaderProgram>
+    }
+
     class ShaderProgram {
       - gc: GraphicsContext*
       - id: RendererId
@@ -340,6 +346,8 @@ package Runic <<rectangle>> {
 
     Renderer -up-> Shader : constructs
     Renderer -up-> ShaderProgram : constructs
+
+    ShaderManager o- "0..*" ShaderProgram
 
     class Shader {
       - gc: GraphicsContext*

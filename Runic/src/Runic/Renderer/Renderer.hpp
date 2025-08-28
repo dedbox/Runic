@@ -37,7 +37,7 @@ public:
     [[nodiscard]] std::unique_ptr<Shader>
     createShader(const std::string& source, ShaderType type) const;
 
-    [[nodiscard]] std::unique_ptr<ShaderProgram>
+    [[nodiscard]] std::shared_ptr<ShaderProgram>
     createShaderProgram(const Shader& vertexShader, const Shader& fragmentShader) const;
 
 private:

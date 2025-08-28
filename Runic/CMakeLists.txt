@@ -69,6 +69,7 @@ add_library(
   src/Runic/Renderer/Mesh.cpp
   src/Runic/Renderer/Renderer.cpp
   src/Runic/Renderer/Shader.cpp
+  src/Runic/Renderer/ShaderManager.cpp
   src/Runic/Renderer/ShaderProgram.cpp
   src/Runic/Renderer/VertexArray.cpp)
 
@@ -81,7 +82,9 @@ target_precompile_headers(
   <csignal>
   <cstddef>
   <cstdint>
+  <filesystem>
   <format>
+  <fstream>
   <functional>
   <iterator>
   <list>

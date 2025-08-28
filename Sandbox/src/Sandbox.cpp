@@ -6,41 +6,6 @@ static constexpr auto Silver = Runic::Color::hex(0xBCB8B1FF);
 static constexpr auto Ivory  = Runic::Color::hex(0xF4F3EEFF);
 static constexpr auto Melon  = Runic::Color::hex(0xE0AFA0FF);
 
-namespace
-{
-
-constexpr std::string FlatShaderVertexSrc()
-{
-    return R"EOF(
-#version 330 core
-
-layout (location = 0) in vec3 a_Position;
-
-void main()
-{
-    gl_Position = vec4(a_Position, 1.0);
-}
-)EOF";
-}
-
-constexpr std::string FlatShaderFragmentSrc()
-{
-    return R"EOF(
-#version 330 core
-
-layout (location = 0) out vec4 color;
-
-uniform vec4 u_Color;
-
-void main()
-{
-    color = u_Color;
-}
-)EOF";
-}
-
-} // namespace
-
 class TriangleLayer : public Runic::Layer
 {
 public:
@@ -64,13 +29,7 @@ public:
         _mesh->addVertices(vertices, layout, Runic::BufferUsage::Static);
         _mesh->setIndices(indices, Runic::IndexMode::Triangles, Runic::BufferUsage::Static);
 
-        const auto vertexShader =
-            _renderer.createShader(FlatShaderVertexSrc(), Runic::ShaderType::Vertex);
-
-        const auto fragmentShader =
-            _renderer.createShader(FlatShaderFragmentSrc(), Runic::ShaderType::Fragment);
-
-        _shaderProgram = _renderer.createShaderProgram(*vertexShader, *fragmentShader);
+        _shaderProgram = Runic::ShaderManager::getShader("Position-FlatUniform");
         _shaderProgram->use();
         _shaderProgram->setUniform("u_Color", Melon);
     }
@@ -79,7 +38,7 @@ public:
     {
         _renderer.setClearColor(Taupe);
         _renderer.clear();
-        _renderer.getGraphicsContext().setPolygonMode(Runic::PolygonMode::Line);
+        // _renderer.getGraphicsContext().setPolygonMode(Runic::PolygonMode::Line);
         _mesh->draw(*_shaderProgram);
     }
 
@@ -87,7 +46,7 @@ private:
     Runic::Renderer& _renderer;
 
     std::unique_ptr<Runic::Mesh> _mesh;
-    std::unique_ptr<Runic::ShaderProgram> _shaderProgram;
+    std::shared_ptr<Runic::ShaderProgram> _shaderProgram;
 };
 
 class SandboxApplication : public Runic::Application
@@ -97,6 +56,9 @@ public:
         : Application({.name = "Sandbox"})
         , _renderer(getRenderer())
     {
+        Runic::ShaderManager::LoadShader(
+            getRenderer(), "Position-FlatUniform", "shaders/Position.vert",
+            "shaders/FlatUniform.frag");
         getLayerManager().push_back(std::make_unique<TriangleLayer>(getRenderer()));
     }
 

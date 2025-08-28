@@ -9,6 +9,9 @@ Application::Application(const AppData& appData, const WindowData& windowData)
 {
     Runic::Log::Init(appData.name);
 
+    const std::string cwd = std::filesystem::current_path();
+    Core::Info("Current working directory is {}", cwd);
+
     if (!SDL_Init(SDL_INIT_VIDEO)) throw SDLException("Could not initialize SDL");
 
     if (!SDL_SetAppMetadata(

@@ -59,11 +59,11 @@ std::unique_ptr<Shader> Renderer::createShader(const std::string& source, Shader
     return std::make_unique<Shader>(_gc.get(), id, source);
 }
 
-std::unique_ptr<ShaderProgram>
+std::shared_ptr<ShaderProgram>
 Renderer::createShaderProgram(const Shader& vertexShader, const Shader& fragmentShader) const
 {
     RendererId id = _gc->createShaderProgram();
-    return std::make_unique<ShaderProgram>(_gc.get(), id, vertexShader, fragmentShader);
+    return std::make_shared<ShaderProgram>(_gc.get(), id, vertexShader, fragmentShader);
 }
 
 } // namespace Runic
