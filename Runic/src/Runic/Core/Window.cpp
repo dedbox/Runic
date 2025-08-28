@@ -1,7 +1,5 @@
 #include "Runic/Core/Window.hpp"
 
-#include "SDL3/SDL_video.h"
-
 namespace Runic
 {
 

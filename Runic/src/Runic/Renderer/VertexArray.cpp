@@ -59,32 +59,7 @@ VertexArray::VertexArray(GraphicsContext* gc, RendererId id)
     : _gc(gc)
     , _id(id)
 {
-}
-
-VertexArray::VertexArray(VertexArray&& other) noexcept
-    : _gc(other._gc)
-    , _id(other._id)
-    , _vertexBuffers(std::move(other._vertexBuffers))
-    , _indexBuffer(std::move(other._indexBuffer))
-{
-    other._id = 0;
-}
-
-VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
-{
-    if (this != &other)
-    {
-        if (_id != 0)
-        {
-            Core::Assert(_id != other._id, "duplicate array id");
-            _gc->deleteVertexArray(_id);
-        }
-        _id            = other._id;
-        _vertexBuffers = std::move(other._vertexBuffers);
-        _indexBuffer   = std::move(other._indexBuffer);
-        other._id      = 0;
-    }
-    return *this;
+    bind();
 }
 
 VertexArray::~VertexArray()
@@ -94,6 +69,23 @@ VertexArray::~VertexArray()
         _gc->deleteVertexArray(_id);
         _id = 0;
     }
+}
+
+VertexArray::VertexArray(VertexArray&& other) noexcept
+    : _gc(std::exchange(other._gc, nullptr))
+    , _id(std::exchange(other._id, 0))
+{
+}
+
+VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
+{
+    if (this != &other)
+    {
+        _gc->deleteVertexArray(_id);
+        _gc = std::exchange(other._gc, nullptr);
+        _id = std::exchange(other._id, 0);
+    }
+    return *this;
 }
 
 void VertexArray::bind() const
@@ -109,9 +101,6 @@ void VertexArray::unbind() const
 void VertexArray::addVertexBuffer(
     std::unique_ptr<VertexBuffer> vertexBuffer, const std::vector<LayoutElement>& layout)
 {
-    bind();
-    vertexBuffer->bind();
-
     uint32_t stride = 0;
     for (const auto& element : layout)
         stride += ElementTypeSize(element.type);
@@ -121,8 +110,7 @@ void VertexArray::addVertexBuffer(
     {
         _gc->enableVertexAttribute(index);
         _gc->defineVertexAttributeData(
-            index, ElementTypeComponentCount(element.type), element.type, element.normalized,
-            stride,
+            index, ElementTypeComponentCount(element.type), element.type, element.normalize, stride,
             reinterpret_cast<const void*>(offset)); // NOLINT
         offset += ElementTypeSize(element.type);
     }
@@ -132,9 +120,13 @@ void VertexArray::addVertexBuffer(
 
 void VertexArray::setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
 {
-    bind();
-    indexBuffer->bind();
     _indexBuffer = std::move(indexBuffer);
+}
+
+void VertexArray::draw() const
+{
+    _gc->drawElements(
+        _indexBuffer->getMode(), _indexBuffer->getCount(), _indexBuffer->getType(), nullptr);
 }
 
 } // namespace Runic

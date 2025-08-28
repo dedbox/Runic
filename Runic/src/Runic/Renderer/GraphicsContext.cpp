@@ -1,5 +1,8 @@
 #include "GraphicsContext.hpp"
 
+#include "glad/gl.h"
+#include "glm/gtc/type_ptr.hpp"
+
 namespace Runic
 {
 
@@ -46,15 +49,17 @@ void GLAPIENTRY GLDebugMessageCallback(
 
     switch (severity)
     {
-    case GL_DEBUG_SEVERITY_HIGH: Core::Error(fmt, id, sourceStr, typeStr, msg);
-    case GL_DEBUG_SEVERITY_MEDIUM: Core::Warn(fmt, id, sourceStr, typeStr, msg);
-    case GL_DEBUG_SEVERITY_LOW: Core::Info(fmt, id, sourceStr, typeStr, msg);
+    case GL_DEBUG_SEVERITY_HIGH: Core::Error(fmt, id, sourceStr, typeStr, msg); break;
+    case GL_DEBUG_SEVERITY_MEDIUM: Core::Warn(fmt, id, sourceStr, typeStr, msg); break;
+    case GL_DEBUG_SEVERITY_LOW: Core::Info(fmt, id, sourceStr, typeStr, msg); break;
     case GL_DEBUG_SEVERITY_NOTIFICATION:
-    default: Core::Trace(fmt, id, sourceStr, typeStr, msg);
+    default: Core::Trace(fmt, id, sourceStr, typeStr, msg); break;
     }
 }
 
 } // namespace
+
+// Graphics Context ------------------------------------------------------------
 
 GraphicsContext::GraphicsContext(const Window& window)
     : _window(window)
@@ -93,6 +98,8 @@ void GraphicsContext::init()
     }
 }
 
+// Vertex Array ----------------------------------------------------------------
+
 RendererId GraphicsContext::createVertexArray() const
 {
     RendererId id{};
@@ -108,7 +115,7 @@ void GraphicsContext::deleteVertexArray(RendererId id) const
 
 void GraphicsContext::bindVertexArray(RendererId id) const
 {
-    Core::Assert(id != 0, "attempt to bind a non-zero array id");
+    Core::Assert(id != 0, "attempt to bind a zero array id");
     glBindVertexArray(id);
 }
 
@@ -116,6 +123,8 @@ void GraphicsContext::unbindVertexArray() const
 {
     glBindVertexArray(0);
 }
+
+// Vertex Attribute ------------------------------------------------------------
 
 void GraphicsContext::enableVertexAttribute(uint32_t index) const
 {
@@ -126,14 +135,16 @@ void GraphicsContext::defineVertexAttributeData(
     uint32_t index,
     size_t count,
     ElementType type,
-    bool normalized,
+    bool normalize,
     size_t stride,
     const void* offset) const
 {
     glVertexAttribPointer(
-        index, static_cast<GLint>(count), ElementTypeToGLenum(type),
-        normalized ? GL_TRUE : GL_FALSE, static_cast<GLsizei>(stride), offset);
+        index, static_cast<GLint>(count), ElementTypeToGLenum(type), normalize ? GL_TRUE : GL_FALSE,
+        static_cast<GLsizei>(stride), offset);
 }
+
+// Vertex Buffer ---------------------------------------------------------------
 
 RendererId
 GraphicsContext::createVertexBuffer(const void* data, size_t size, BufferUsage usage) const
@@ -155,6 +166,8 @@ void GraphicsContext::unbindVertexBuffer() const
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+// Index Buffer ----------------------------------------------------------------
 
 RendererId GraphicsContext::createIndexBuffer(
     const void* data, size_t count, IndexType type, BufferUsage usage) const
@@ -179,10 +192,170 @@ void GraphicsContext::unbindIndexBuffer() const
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+// Buffer (both) ---------------------------------------------------------------
+
 void GraphicsContext::deleteBuffer(RendererId id) const
 {
     Core::Assert(id != 0, "attempt to delete non-zero buffer id");
     glDeleteBuffers(1, &id);
+}
+
+// Shader ----------------------------------------------------------------------
+
+RendererId GraphicsContext::createShader(ShaderType type) const
+{
+    return glCreateShader(ShaderTypeToGLenum(type));
+}
+
+void GraphicsContext::deleteShader(RendererId id) const
+{
+    glDeleteShader(id);
+}
+
+bool GraphicsContext::compileShader(RendererId id, const std::string& source) const
+{
+    const char* raw_source = source.c_str();
+    glShaderSource(id, 1, &raw_source, nullptr);
+    glCompileShader(id);
+
+    GLint succeeded = GL_FALSE;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &succeeded);
+    return succeeded == GL_TRUE;
+}
+
+std::string GraphicsContext::getShaderInfoLog(RendererId id) const
+{
+    GLint length = 0;
+    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+
+    std::vector<GLchar> log(length);
+    glGetShaderInfoLog(id, length, &length, &log[0]);
+
+    return log.data();
+}
+
+// Shader Program --------------------------------------------------------------
+
+RendererId GraphicsContext::createShaderProgram() const
+{
+    return glCreateProgram();
+}
+
+void GraphicsContext::deleteShaderProgram(RendererId id) const
+{
+    glDeleteProgram(id);
+}
+
+void GraphicsContext::attachShader(RendererId programId, RendererId id) const
+{
+    glAttachShader(programId, id);
+}
+
+void GraphicsContext::detachShader(RendererId programId, RendererId id) const
+{
+    glDetachShader(programId, id);
+}
+
+bool GraphicsContext::linkShaderProgram(RendererId id) const
+{
+    glLinkProgram(id);
+
+    GLint succeeded = GL_FALSE;
+    glGetProgramiv(id, GL_LINK_STATUS, &succeeded);
+    return succeeded == GL_TRUE;
+}
+
+std::string GraphicsContext::getShaderProgramInfoLog(RendererId id) const
+{
+    GLint length = 0;
+    glGetProgramiv(id, GL_INFO_LOG_LENGTH, &length);
+
+    std::vector<GLchar> log(length);
+    glGetProgramInfoLog(id, length, &length, &log[0]);
+
+    return log.data();
+}
+
+void GraphicsContext::useShaderProgram(RendererId id) const
+{
+    glUseProgram(id);
+}
+
+// Shader Uniform --------------------------------------------------------------
+
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+
+void GraphicsContext::setUniformBool(RendererId id, bool value) const
+{
+    glUniform1ui(static_cast<GLint>(id), value);
+}
+
+void GraphicsContext::setUniformInt(RendererId id, int value) const
+{
+    glUniform1i(static_cast<GLint>(id), value);
+}
+
+void GraphicsContext::setUniformInt2(RendererId id, glm::ivec2 value) const
+{
+    glUniform2i(static_cast<GLint>(id), value.x, value.y);
+}
+
+void GraphicsContext::setUniformInt3(RendererId id, glm::ivec3 value) const
+{
+    glUniform3i(static_cast<GLint>(id), value.x, value.y, value.z);
+}
+
+void GraphicsContext::setUniformInt4(RendererId id, glm::ivec4 value) const
+{
+    glUniform4i(static_cast<GLint>(id), value.x, value.y, value.z, value.w);
+}
+
+void GraphicsContext::setUniformFloat(RendererId id, float value) const
+{
+    glUniform1f(static_cast<GLint>(id), value);
+}
+
+void GraphicsContext::setUniformFloat2(RendererId id, glm::vec2 value) const
+{
+    glUniform2f(static_cast<GLint>(id), value.x, value.y);
+}
+
+void GraphicsContext::setUniformFloat3(RendererId id, glm::vec3 value) const
+{
+    glUniform3f(static_cast<GLint>(id), value.x, value.y, value.z);
+}
+
+void GraphicsContext::setUniformFloat4(RendererId id, glm::vec4 value) const
+{
+    glUniform4f(static_cast<GLint>(id), value.x, value.y, value.z, value.w);
+}
+
+void GraphicsContext::setUniformMat3(RendererId id, glm::mat3 value) const
+{
+    glUniformMatrix3fv(static_cast<GLint>(id), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void GraphicsContext::setUniformMat4(RendererId id, glm::mat4 value) const
+{
+    glUniformMatrix4fv(static_cast<GLint>(id), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+// NOLINTEND(cppcoreguidelines-pro-type-union-access)
+
+RendererId GraphicsContext::getUniformLocation(RendererId id, const std::string& name) const
+{
+    int location = glGetUniformLocation(id, name.c_str());
+    if (location == -1) Core::Error("Could not find uniform `{}'!", name);
+    return location;
+}
+
+// Drawing ---------------------------------------------------------------------
+
+void GraphicsContext::drawElements(
+    IndexMode mode, size_t count, IndexType type, const void* offset) const
+{
+    glDrawElements(
+        IndexModeToGLenum(mode), static_cast<GLsizei>(count), IndexTypeToGLenum(type), offset);
 }
 
 } // namespace Runic

@@ -3,7 +3,7 @@
 namespace Runic
 {
 
-Renderer::Renderer(std::unique_ptr<GraphicsContext> gc)
+Renderer::Renderer(std::unique_ptr<GraphicsContext>&& gc)
     : _gc(std::move(gc))
 {
 }
@@ -40,17 +40,30 @@ std::unique_ptr<VertexArray> Renderer::createVertexArray() const
 }
 
 std::unique_ptr<VertexBuffer>
-Renderer::createVertexBuffer(const void* data, size_t size, BufferUsage usage)
+Renderer::createVertexBuffer(const void* data, size_t size, BufferUsage usage) const
 {
     RendererId id = _gc->createVertexBuffer(data, size, usage);
     return std::make_unique<VertexBuffer>(_gc.get(), id, size);
 }
 
-std::unique_ptr<IndexBuffer>
-Renderer::createIndexBuffer(const void* data, size_t count, IndexType type, BufferUsage usage)
+std::unique_ptr<IndexBuffer> Renderer::createIndexBuffer(
+    const void* data, size_t count, IndexType type, IndexMode mode, BufferUsage usage) const
 {
     RendererId id = _gc->createIndexBuffer(data, count, type, usage);
-    return std::make_unique<IndexBuffer>(_gc.get(), id, count, type);
+    return std::make_unique<IndexBuffer>(_gc.get(), id, count, type, mode);
+}
+
+std::unique_ptr<Shader> Renderer::createShader(const std::string& source, ShaderType type) const
+{
+    RendererId id = _gc->createShader(type);
+    return std::make_unique<Shader>(_gc.get(), id, source);
+}
+
+std::unique_ptr<ShaderProgram>
+Renderer::createShaderProgram(const Shader& vertexShader, const Shader& fragmentShader) const
+{
+    RendererId id = _gc->createShaderProgram();
+    return std::make_unique<ShaderProgram>(_gc.get(), id, vertexShader, fragmentShader);
 }
 
 } // namespace Runic

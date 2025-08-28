@@ -3,9 +3,11 @@
 #include "glm/ext/vector_float4.hpp"
 #include "glm/ext/vector_int2.hpp"
 
-#include "Runic/Renderer/Buffer.hpp"
-#include "Runic/Renderer/GraphicsContext.hpp"
-#include "Runic/Renderer/VertexArray.hpp"
+#include "Buffer.hpp"
+#include "GraphicsContext.hpp"
+#include "Shader.hpp"
+#include "ShaderProgram.hpp"
+#include "VertexArray.hpp"
 
 namespace Runic
 {
@@ -13,7 +15,7 @@ namespace Runic
 class Renderer
 {
 public:
-    explicit Renderer(std::unique_ptr<GraphicsContext> gc);
+    explicit Renderer(std::unique_ptr<GraphicsContext>&& gc);
 
     GraphicsContext& getGraphicsContext() { return *_gc; }
 
@@ -27,10 +29,16 @@ public:
     [[nodiscard]] std::unique_ptr<VertexArray> createVertexArray() const;
 
     std::unique_ptr<VertexBuffer>
-    createVertexBuffer(const void* data, size_t size, BufferUsage usage);
+    createVertexBuffer(const void* data, size_t size, BufferUsage usage) const;
 
-    std::unique_ptr<IndexBuffer>
-    createIndexBuffer(const void* data, size_t count, IndexType type, BufferUsage usage);
+    std::unique_ptr<IndexBuffer> createIndexBuffer(
+        const void* data, size_t count, IndexType type, IndexMode mode, BufferUsage usage) const;
+
+    [[nodiscard]] std::unique_ptr<Shader>
+    createShader(const std::string& source, ShaderType type) const;
+
+    [[nodiscard]] std::unique_ptr<ShaderProgram>
+    createShaderProgram(const Shader& vertexShader, const Shader& fragmentShader) const;
 
 private:
     std::unique_ptr<GraphicsContext> _gc;

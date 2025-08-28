@@ -67,6 +67,8 @@ add_library(
   src/Runic/Renderer/Buffer.cpp
   src/Runic/Renderer/GraphicsContext.cpp
   src/Runic/Renderer/Renderer.cpp
+  src/Runic/Renderer/Shader.cpp
+  src/Runic/Renderer/ShaderProgram.cpp
   src/Runic/Renderer/VertexArray.cpp)
 
 target_link_libraries(Runic PUBLIC ${OPENGL_LIBRARIES} glad_gl_core_46 glm::glm)

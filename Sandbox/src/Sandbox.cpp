@@ -1,7 +1,5 @@
 #include <Runic.hpp>
-#include <memory>
 
-#include "Runic/Core/Log.hpp"
 #include "Runic/Renderer/Buffer.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
 #include "Runic/Renderer/VertexArray.hpp"
@@ -62,24 +60,41 @@ public:
         // clang-format on
 
         const std::vector<Runic::LayoutElement> layout = {
-            {.type = Runic::ElementType::Float3, .normalized = false}};
+            {.type = Runic::ElementType::Float3, .normalize = false}};
 
         const std::vector<uint32_t> indices = {0, 1, 2};
 
         _vertexArray = _renderer.createVertexArray();
-        _vertexArray->unbind();
 
         _vertexBuffer = _renderer.createVertexBuffer(
             vertices.data(), vertices.size() * sizeof(float), Runic::BufferUsage::Static);
 
-        _indexBuffer = _renderer.createIndexBuffer(
-            indices.data(), indices.size(), Runic::IndexType::Int, Runic::BufferUsage::Static);
-
         _vertexArray->addVertexBuffer(std::move(_vertexBuffer), layout);
+
+        _indexBuffer = _renderer.createIndexBuffer(
+            indices.data(), indices.size(), Runic::IndexType::Int, Runic::IndexMode::Triangles,
+            Runic::BufferUsage::Static);
+
         _vertexArray->setIndexBuffer(std::move(_indexBuffer));
+
+        _vertexShader = _renderer.createShader(FlatShaderVertexSrc(), Runic::ShaderType::Vertex);
+        _fragmentShader =
+            _renderer.createShader(FlatShaderFragmentSrc(), Runic::ShaderType::Fragment);
+
+        _shaderProgram = _renderer.createShaderProgram(*_vertexShader, *_fragmentShader);
+        _shaderProgram->use();
+        _shaderProgram->setUniformFloat4("u_Color", Melon);
     }
 
-    void onUpdate() override {}
+    void onUpdate() override
+    {
+        _renderer.setClearColor(Taupe);
+        _renderer.clear();
+
+        _shaderProgram->use();
+        _vertexArray->bind();
+        _vertexArray->draw();
+    }
 
 private:
     Runic::Renderer& _renderer;
@@ -87,6 +102,9 @@ private:
     std::unique_ptr<Runic::VertexArray> _vertexArray;
     std::unique_ptr<Runic::VertexBuffer> _vertexBuffer;
     std::unique_ptr<Runic::IndexBuffer> _indexBuffer;
+    std::unique_ptr<Runic::Shader> _vertexShader;
+    std::unique_ptr<Runic::Shader> _fragmentShader;
+    std::unique_ptr<Runic::ShaderProgram> _shaderProgram;
 };
 
 class SandboxApplication : public Runic::Application
@@ -97,14 +115,6 @@ public:
         , _renderer(getRenderer())
     {
         getLayerManager().push_back(std::make_unique<TriangleLayer>(getRenderer()));
-    }
-
-    void onUpdate() override
-    {
-        _renderer.beginFrame();
-        _renderer.setClearColor(Taupe);
-        _renderer.clear();
-        _renderer.endFrame();
     }
 
 private:

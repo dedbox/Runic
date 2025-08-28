@@ -144,7 +144,7 @@ package Runic <<rectangle>> {
   package Renderer {
     class Renderer {
       - gc: unique_ptr<GraphicsContext>
-      + Renderer(unique_ptr<GraphicsContext>)
+      + Renderer(unique_ptr<GraphicsContext>&&)
       + getGraphicsContext(): GraphicsContext&
       + beginFrame(): void
       + endFrame(): void
@@ -153,7 +153,9 @@ package Runic <<rectangle>> {
       + clear(): void
       + createVertexArray(): unique_ptr<VertexArray>
       + createVertexBuffer(const void*, size_t, BufferUsage): unique_ptr<VertexBuffer>
-      + createIndexBuffer(const void*, size_t, IndexType, BufferUsage): unique_ptr<IndexBuffer>
+      + createIndexBuffer(const void*, size_t, IndexType, IndexMode, BufferUsage): unique_ptr<IndexBuffer>
+      + createShader(const string&, ShaderType): unique_ptr<Shader>
+      + createShaderProgram(const Shader&, const Shader&): unique_ptr<ShaderProgram>
     }
 
     Application *- Renderer
@@ -170,7 +172,7 @@ package Runic <<rectangle>> {
         + bindVertexArray(RendererId): void
         + unbindVertexArray(): void
         + enableVertexAttribute(uint32): void
-        + defineVertexAttribute(uint32, size_t, ElementType, bool, size_t, const void*): void
+        + defineVertexAttributeData(uint32, size_t, ElementType, bool, size_t, const void*): void
         + createVertexBuffer(const void*, size_t, BufferUsage): RendererId
         + bindVertexBuffer(RendererId): void
         + unbindVertexBuffer(): void
@@ -178,6 +180,21 @@ package Runic <<rectangle>> {
         + bindIndexBuffer(RendererId): void
         + unbindIndexBuffer(): void
         + deleteBuffer(RendererId): void
+        + createShader(ShaderType): RendererId
+        + deleteShader(RendererId): void
+        + compileShader(RendererId, const string*): bool
+        + getShaderInfoLog(RendererId): string
+        + createShaderProgram(): RendererId
+        + deleteShaderProgram(RendererId): void
+        + attachShader(RendererId, RendererId): void
+        + detachShader(RendererId, RendererId): void
+        + linkShaderProgram(RendererId): bool
+        + getShaderProgramInfoLog(RendererId): string
+        + useShaderProgram(RendererId): void
+        + setUniformBool(RendererId, bool): void
+        {method} ...
+        + getUniformLocation(RendererId, const string*): RendererId
+        + drawElements(IndexMode, size_t, IndexType, const void*): void
       }
 
       GraphicsContext *- Window
@@ -188,12 +205,6 @@ package Runic <<rectangle>> {
         Dynamic
       }
 
-      enum IndexType {
-        Byte
-        Short
-        Int
-      }
-
       enum ElementType {
         None
         Bool
@@ -202,33 +213,54 @@ package Runic <<rectangle>> {
         Mat3 Mat4
       }
 
+      enum IndexType {
+        Byte
+        Short
+        Int
+      }
+
+      enum IndexMode {
+        Points
+        Lines LineLoop LineStrip
+        Triangles TriangleStrip TriangleFan
+        ...
+      }
+
+      enum ShaderType {
+        Vertex
+        Fragment
+      }
+
       GraphicsContext --> BufferUsage
-      GraphicsContext --> IndexType
       GraphicsContext --> ElementType
+      GraphicsContext --> IndexType
+      GraphicsContext --> IndexMode
+      GraphicsContext --> ShaderType
     }
 
     Renderer *-left- GraphicsContext
     Application -> GraphicsContext : constructs
 
-      class VertexArray {
-        - gc: GraphicsContext*
-        - id: RendererId
-        - vertexBuffers: vector<unique_ptr<VertexBuffer>>
-        - indexBuffer: unique_ptr<IndexBuffer>
-        + VertexArray(GraphicsContext*, RendererId)
-        + ~VertexArray()
-        + VertexArray(VertexArray&&)
-        + operator=(VertexArray&&): VertexArray&
-        + bind(): void
-        + unbind(): void
-        + addVertexBuffer(unique_ptr<VertexBuffer>, vector<LayoutElement>): void
-        + setIndexBuffer(unique_ptr<IndexBuffer>): void
-      }
+    class VertexArray {
+      - gc: GraphicsContext*
+      - id: RendererId
+      - vertexBuffers: vector<unique_ptr<VertexBuffer>>
+      - indexBuffer: unique_ptr<IndexBuffer>
+      + VertexArray(GraphicsContext*, RendererId)
+      + ~VertexArray()
+      + VertexArray(VertexArray&&)
+      + operator=(VertexArray&&): VertexArray&
+      + bind(): void
+      + unbind(): void
+      + addVertexBuffer(unique_ptr<VertexBuffer>, vector<LayoutElement>): void
+      + setIndexBuffer(unique_ptr<IndexBuffer>): void
+      + draw(): void
+    }
 
-      struct LayoutElement {
-        + type: ElementType
-        + normalized: bool
-      }
+    struct LayoutElement {
+      + type: ElementType
+      + normalize: bool
+    }
 
     Renderer -> VertexArray : constructs
     LayoutElement . (Renderer, VertexArray)
@@ -246,7 +278,11 @@ package Runic <<rectangle>> {
       class IndexBuffer {
         - count: size_t
         - type: IndexType
+        - mode: IndexMode
         + IndexBuffer(GraphicsContext*, RendererId, size_t, IndexType)
+        + getCount(): size_t
+        + getType(): IndexType
+        + getMode(): IndexMode
         + bind(): void
         + unbind(): void
       }
@@ -268,6 +304,34 @@ package Runic <<rectangle>> {
     Renderer --> VertexBuffer : constructs
     Renderer --> IndexBuffer : constructs
     VertexArray --> BufferPkg
+
+    class ShaderProgram {
+      - gc: GraphicsContext*
+      - id: RendererId
+      - uniformLocations: unordered_map<string, RendererId>
+      + ShaderProgram(GraphicsContext*, RendererId, const Shader&, const Shader&)
+      + ~ShaderProgram
+      + ShaderProgram(ShaderProgram&&)
+      + operator=(ShaderProgram&&): ShaderProgram&
+      + use(): void
+      + setUniformBool(const string&, bool): void
+      {method} ...
+    }
+
+    Renderer -up-> Shader : constructs
+    Renderer -up-> ShaderProgram : constructs
+
+    class Shader {
+      - gc: GraphicsContext*
+      - id: RendererId
+      + Shader(GraphicsContext*, RendererId, const string)
+      + ~Shader
+      + Shader(Shader&&)
+      + operator=(Shader&&): Shader&
+      + getId(): RendererId
+    }
+
+    ShaderProgram --> Shader
   }
 }
 

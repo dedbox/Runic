@@ -8,29 +8,6 @@ Buffer::Buffer(GraphicsContext* gc, uint32_t id)
 {
 }
 
-Buffer::Buffer(Buffer&& other) noexcept
-    : _gc(other._gc)
-    , _id(other._id)
-{
-    other._id = 0;
-}
-
-Buffer& Buffer::operator=(Buffer&& other) noexcept
-{
-    if (this != &other)
-    {
-        if (_id != 0)
-        {
-            Core::Assert(_id != other._id, "duplicated buffer id");
-            _gc->deleteBuffer(_id);
-        }
-        _id       = other._id;
-        other._id = 0;
-    }
-
-    return *this;
-}
-
 Buffer::~Buffer()
 {
     if (_id != 0)
@@ -38,6 +15,23 @@ Buffer::~Buffer()
         _gc->deleteBuffer(_id);
         _id = 0;
     }
+}
+
+Buffer::Buffer(Buffer&& other) noexcept
+    : _gc(std::exchange(other._gc, nullptr))
+    , _id(std::exchange(other._id, 0))
+{
+}
+
+Buffer& Buffer::operator=(Buffer&& other) noexcept
+{
+    if (this != &other)
+    {
+        _gc->deleteBuffer(_id);
+        _gc = std::exchange(other._gc, nullptr);
+        _id = std::exchange(other._id, 0);
+    }
+    return *this;
 }
 
 // Vertex Buffer ---------------------------------------------------------------
@@ -60,10 +54,12 @@ void VertexBuffer::unbind() const
 
 // Index Buffer ----------------------------------------------------------------
 
-IndexBuffer::IndexBuffer(GraphicsContext* gc, uint32_t id, size_t count, IndexType type)
+IndexBuffer::IndexBuffer(
+    GraphicsContext* gc, uint32_t id, size_t count, IndexType type, IndexMode mode)
     : Buffer(gc, id)
     , _count(count)
     , _type(type)
+    , _mode(mode)
 {
 }
 
