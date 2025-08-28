@@ -72,7 +72,7 @@ public:
 
         _shaderProgram = _renderer.createShaderProgram(*vertexShader, *fragmentShader);
         _shaderProgram->use();
-        _shaderProgram->setUniformFloat4("u_Color", Melon);
+        _shaderProgram->setUniform("u_Color", Melon);
     }
 
     void onUpdate() override

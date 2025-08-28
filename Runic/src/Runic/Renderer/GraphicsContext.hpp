@@ -212,17 +212,17 @@ public:
 
     // Shader Uniform
 
-    void setUniformBool(RendererId id, bool value) const;
-    void setUniformInt(RendererId id, int value) const;
-    void setUniformInt2(RendererId id, glm::ivec2 value) const;
-    void setUniformInt3(RendererId id, glm::ivec3 value) const;
-    void setUniformInt4(RendererId id, glm::ivec4 value) const;
-    void setUniformFloat(RendererId id, float value) const;
-    void setUniformFloat2(RendererId id, glm::vec2 value) const;
-    void setUniformFloat3(RendererId id, glm::vec3 value) const;
-    void setUniformFloat4(RendererId id, glm::vec4 value) const;
-    void setUniformMat3(RendererId id, glm::mat3 value) const;
-    void setUniformMat4(RendererId id, glm::mat4 value) const;
+    void setUniform(RendererId id, bool value) const;
+    void setUniform(RendererId id, int value) const;
+    void setUniform(RendererId id, glm::ivec2 value) const;
+    void setUniform(RendererId id, glm::ivec3 value) const;
+    void setUniform(RendererId id, glm::ivec4 value) const;
+    void setUniform(RendererId id, float value) const;
+    void setUniform(RendererId id, glm::vec2 value) const;
+    void setUniform(RendererId id, glm::vec3 value) const;
+    void setUniform(RendererId id, glm::vec4 value) const;
+    void setUniform(RendererId id, glm::mat3 value) const;
+    void setUniform(RendererId id, glm::mat4 value) const;
 
     [[nodiscard]] RendererId getUniformLocation(RendererId id, const std::string& name) const;
 

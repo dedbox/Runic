@@ -191,7 +191,7 @@ package Runic <<rectangle>> {
         + linkShaderProgram(RendererId): bool
         + getShaderProgramInfoLog(RendererId): string
         + useShaderProgram(RendererId): void
-        + setUniformBool(RendererId, bool): void
+        + setUniform(RendererId, bool): void
         {method} ...
         + getUniformLocation(RendererId, const string*): RendererId
         + setPolygonMode(PolygonMode): void
@@ -334,7 +334,7 @@ package Runic <<rectangle>> {
       + ShaderProgram(ShaderProgram&&)
       + operator=(ShaderProgram&&): ShaderProgram&
       + use(): void
-      + setUniformBool(const string&, bool): void
+      + setUniform(const string&, bool): void
       {method} ...
     }
 

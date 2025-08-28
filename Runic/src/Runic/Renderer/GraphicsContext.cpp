@@ -285,57 +285,57 @@ void GraphicsContext::useShaderProgram(RendererId id) const
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
-void GraphicsContext::setUniformBool(RendererId id, bool value) const
+void GraphicsContext::setUniform(RendererId id, bool value) const
 {
     glUniform1ui(static_cast<GLint>(id), value);
 }
 
-void GraphicsContext::setUniformInt(RendererId id, int value) const
+void GraphicsContext::setUniform(RendererId id, int value) const
 {
     glUniform1i(static_cast<GLint>(id), value);
 }
 
-void GraphicsContext::setUniformInt2(RendererId id, glm::ivec2 value) const
+void GraphicsContext::setUniform(RendererId id, glm::ivec2 value) const
 {
     glUniform2i(static_cast<GLint>(id), value.x, value.y);
 }
 
-void GraphicsContext::setUniformInt3(RendererId id, glm::ivec3 value) const
+void GraphicsContext::setUniform(RendererId id, glm::ivec3 value) const
 {
     glUniform3i(static_cast<GLint>(id), value.x, value.y, value.z);
 }
 
-void GraphicsContext::setUniformInt4(RendererId id, glm::ivec4 value) const
+void GraphicsContext::setUniform(RendererId id, glm::ivec4 value) const
 {
     glUniform4i(static_cast<GLint>(id), value.x, value.y, value.z, value.w);
 }
 
-void GraphicsContext::setUniformFloat(RendererId id, float value) const
+void GraphicsContext::setUniform(RendererId id, float value) const
 {
     glUniform1f(static_cast<GLint>(id), value);
 }
 
-void GraphicsContext::setUniformFloat2(RendererId id, glm::vec2 value) const
+void GraphicsContext::setUniform(RendererId id, glm::vec2 value) const
 {
     glUniform2f(static_cast<GLint>(id), value.x, value.y);
 }
 
-void GraphicsContext::setUniformFloat3(RendererId id, glm::vec3 value) const
+void GraphicsContext::setUniform(RendererId id, glm::vec3 value) const
 {
     glUniform3f(static_cast<GLint>(id), value.x, value.y, value.z);
 }
 
-void GraphicsContext::setUniformFloat4(RendererId id, glm::vec4 value) const
+void GraphicsContext::setUniform(RendererId id, glm::vec4 value) const
 {
     glUniform4f(static_cast<GLint>(id), value.x, value.y, value.z, value.w);
 }
 
-void GraphicsContext::setUniformMat3(RendererId id, glm::mat3 value) const
+void GraphicsContext::setUniform(RendererId id, glm::mat3 value) const
 {
     glUniformMatrix3fv(static_cast<GLint>(id), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void GraphicsContext::setUniformMat4(RendererId id, glm::mat4 value) const
+void GraphicsContext::setUniform(RendererId id, glm::mat4 value) const
 {
     glUniformMatrix4fv(static_cast<GLint>(id), 1, GL_FALSE, glm::value_ptr(value));
 }
