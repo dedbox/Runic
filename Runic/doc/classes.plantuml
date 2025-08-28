@@ -10,127 +10,35 @@ package Runic <<rectangle>> {
     hide <<Artifact>> circle
     hide <<Artifact>> fields
 
-    struct AppData {
-      + name: string
-      + version: string
-      + identifier: string
-    }
+    struct AppData
 
-    class Application {
-      - gc: unique_ptr<GraphicsContext>
-      - systemDispatcher: EventDispatcher
-      - done: bool
-      + Application(const AppData&, const WindowData&)
-      + getRenderer(): Renderer&
-      + getGraphicsContext(): GraphicsContext&
-      + getWindow(): Window&
-      + getLayerManager(): LayerManager&
-      + onUpdate(): void
-      + dispatchEvent<T>(const T&): void
-      + isDone(): bool
-      # addSystemEventHandler<T>(bool(const T&)): void
-      # handleSystemEvent<T>(const T&): void
-    }
+    class Application
 
     Main *- Application
     AppData .. (Main, Application)
 
-    struct WindowData {
-      + title: string
-      + width: uint32
-      + height: uint32
-    }
+    struct WindowData
 
-    class Window {
-      - native: SDL_window*
-      + Window(WindowData)
-      + getData(): const WindowData&
-      + show(): void
-      + hide(): void
-    }
+    class Window
 
     Application -> Window : constructs
     WindowData .. (Application, Window)
 
-    class Log {
-      {static} - CoreLogger: shared_ptr<spdlog::logger>
-      {static} - ClientLogger: shared_ptr<spdlog::logger>
-      {static} + Init(): void
-      {static} + GetCore(): shared_ptr<spdlog::logger>&
-      {static} + GetClient(): shared_ptr<spdlog::logger>&
-    }
+    class Log
 
     Application -up-> Log : initializes
 
-    class Input {
-      {static} + IsKeyPressed(Key): bool
-      {static} + IsMouseButtonPressed(MouseButton): bool
-    }
+    class Input
 
-    package Input as InputPkg {
-      enum Key {
-        A
-        B
-        C
-        ...
-      }
-
-      enum MouseButton {
-        Left
-        Middle
-        Right
-        X1
-        X2
-      }
-    }
-
-    Input --> Key
-    Input --> MouseButton
-
-    package Event <<Frame>> {
-      struct "*Event ..." as ConcreteEvent
-
-      class EventDispatcher {
-        {field} - handlers: map<type_index, vector<bool(const void*)>>
-        + addHandler<T>(bool(const T&)): void
-        + dispatch<T>(const T&): bool
-      }
-    }
+    class EventDispatcher
 
     Application *-- EventDispatcher
 
-    class Layer {
-      - dispatcher: EventDispatcher
-      + name: string = "Layer"
-      + Layer(?name:string)
-      + onAttach(): void
-      + onDetach(): void
-      + onUpdate(): void
-      + onGuiRender(): void
-      + getName(): const string&
-      + addEventHandler<T>(bool(const T&)): void
-      + handleEvent<T>(const T&): void
-    }
+    class Layer
 
     Layer *-- EventDispatcher
 
-    class LayerManager {
-      - layers: list<unique_ptr<Layer>>
-      - sep: optional<list<unique_ptr<Layer>>::iterator>
-      + LayerManager()
-      + push_front(unique_ptr<Layer>): void
-      + push_back(unique_ptr<Layer>): void
-      + pop_front(): unique_ptr<Layer>
-      + pop_back(): unique_ptr<Layer>
-      + pushGui_front(unique_ptr<Layer>): void
-      + pushGui_back(unique_ptr<Layer>): void
-      + popGui_front(): unique_ptr<Layer>
-      + popGui_back(): unique_ptr<Layer>
-      + begin(): list<unique_ptr<Layer>>::iterator
-      + end(): list<unique_ptr<Layer>>::iterator
-      + rbegin(): list<unique_ptr<Layer>>::iterator
-      + rend(): list<unique_ptr<Layer>>::iterator
-    }
+    class LayerManager
 
     LayerManager o-- "0..*" Layer
     Application *-- LayerManager
@@ -142,224 +50,50 @@ package Runic <<rectangle>> {
   ' Renderer -------------------------------------------------------------------
 
   package Renderer {
-    class Renderer {
-      - gc: unique_ptr<GraphicsContext>
-      + Renderer(unique_ptr<GraphicsContext>&&)
-      + getGraphicsContext(): GraphicsContext&
-      + beginFrame(): void
-      + endFrame(): void
-      + setViewport(const glm::ivec2&, ?const glm::ivec2&): void
-      + setClearColor(const glm::vec4&): void
-      + clear(): void
-      + createVertexArray(): unique_ptr<VertexArray>
-      + createVertexBuffer(const void*, size_t, BufferUsage): unique_ptr<VertexBuffer>
-      + createIndexBuffer(const void*, size_t, IndexType, IndexMode, BufferUsage): unique_ptr<IndexBuffer>
-      + createShader(const string&, ShaderType): unique_ptr<Shader>
-      + createShaderProgram(const Shader&, const Shader&): shared_ptr<ShaderProgram>
-    }
+    class Renderer
 
     Application *- Renderer
 
-    package GraphicsContext as GraphicsContextPkg <<Frame>> {
-      class GraphicsContext {
-        - window: Window
-        - native: SDL_GLContext
-        + GraphicsContext(const Window&)
-        + init(): void
-        + getWindow(): Window&
-        + createVertexArray(): RendererId
-        + deleteVertexArray(RendererId): void
-        + bindVertexArray(RendererId): void
-        + unbindVertexArray(): void
-        + enableVertexAttribute(uint32): void
-        + defineVertexAttributeData(uint32, size_t, AttributeType, bool, size_t, const void*): void
-        + createVertexBuffer(const void*, size_t, BufferUsage): RendererId
-        + bindVertexBuffer(RendererId): void
-        + unbindVertexBuffer(): void
-        + createIndexBuffer(const void*, size_t, IndexType, BufferUsage): RendererId
-        + bindIndexBuffer(RendererId): void
-        + unbindIndexBuffer(): void
-        + deleteBuffer(RendererId): void
-        + createShader(ShaderType): RendererId
-        + deleteShader(RendererId): void
-        + compileShader(RendererId, const string*): bool
-        + getShaderInfoLog(RendererId): string
-        + createShaderProgram(): RendererId
-        + deleteShaderProgram(RendererId): void
-        + attachShader(RendererId, RendererId): void
-        + detachShader(RendererId, RendererId): void
-        + linkShaderProgram(RendererId): bool
-        + getShaderProgramInfoLog(RendererId): string
-        + useShaderProgram(RendererId): void
-        + setUniform(RendererId, bool): void
-        {method} ...
-        + getUniformLocation(RendererId, const string*): RendererId
-        + setPolygonMode(PolygonMode): void
-        + drawElements(IndexMode, size_t, IndexType, const void*): void
-      }
+    class GraphicsContext
 
-      GraphicsContext *- Window
-
-      enum BufferUsage {
-        Transient
-        Static
-        Dynamic
-      }
-
-      enum AttributeType {
-        None
-        Bool
-        Int Int2 Int3 Int4
-        Float Float2 Float3 Float4
-        Mat3 Mat4
-      }
-
-      enum IndexType {
-        Byte
-        Short
-        Int
-      }
-
-      enum IndexMode {
-        Points
-        Lines LineLoop LineStrip
-        Triangles TriangleStrip TriangleFan
-        ...
-      }
-
-      enum ShaderType {
-        Vertex
-        Fragment
-      }
-
-      enum PolygonMode {
-        Point
-        Line
-        Fill
-      }
-
-      GraphicsContext --> BufferUsage
-      GraphicsContext --> AttributeType
-      GraphicsContext --> IndexType
-      GraphicsContext --> IndexMode
-      GraphicsContext --> ShaderType
-      GraphicsContext --> PolygonMode
-    }
+    GraphicsContext *- Window
 
     Renderer *-left- GraphicsContext
     Application -> GraphicsContext : constructs
 
-    class VertexArray {
-      - gc: GraphicsContext*
-      - id: RendererId
-      - vertexBuffers: vector<unique_ptr<VertexBuffer>>
-      - indexBuffer: unique_ptr<IndexBuffer>
-      + VertexArray(GraphicsContext*, RendererId)
-      + ~VertexArray()
-      + VertexArray(VertexArray&&)
-      + operator=(VertexArray&&): VertexArray&
-      + bind(): void
-      + unbind(): void
-      + addVertexBuffer(unique_ptr<VertexBuffer>, vector<VertexAttribute>): void
-      + setIndexBuffer(unique_ptr<IndexBuffer>): void
-      + draw(): void
-    }
+    class VertexArray
 
-    struct VertexAttribute {
-      + type: AttributeType
-      + normalize: bool
-    }
+    struct VertexAttribute
 
     Renderer -> VertexArray : constructs
     VertexAttribute . (Renderer, VertexArray)
 
-    package Buffer as BufferPkg <<Frame>> {
-      class VertexBuffer {
-        - size: size_t
-        + VertexBuffer(GraphicsContext*, RendererId, size_t)
-        + bind(): void
-        + unbind(): void
-      }
+    abstract class Buffer
+    class VertexBuffer
+    class IndexBuffer
 
-      VertexBuffer --|> Buffer
+    Buffer <|-- VertexBuffer
+    Buffer <|-- IndexBuffer
 
-      class IndexBuffer {
-        - count: size_t
-        - type: IndexType
-        - mode: IndexMode
-        + IndexBuffer(GraphicsContext*, RendererId, size_t, IndexType)
-        + getCount(): size_t
-        + getType(): IndexType
-        + getMode(): IndexMode
-        + bind(): void
-        + unbind(): void
-      }
+    Renderer --> Buffer : constructs
 
-      abstract class Buffer {
-        - gc: GraphicsContext*
-        - id: RendererId
-        # Buffer(GraphicsContext*, RendererId)
-        + ~Buffer()
-        + Buffer(Buffer&&)
-        + operator=(Buffer&&): Buffer&
-        {abstract} + bind(): void
-        {abstract} + unbind(): void
-      }
-
-      IndexBuffer --|> Buffer
-    }
-
-    Renderer --> VertexBuffer : constructs
-    Renderer --> IndexBuffer : constructs
-    VertexArray --> BufferPkg
-
-    class Mesh {
-      - renderer: Renderer*
-      - vertexArray: unique_ptr<VertexArray>
-      + Mesh(Renderer*)
-      + addVertices(const vector<float>, const vector<VertexAttribute>, BufferUsage): void
-      + setIndices(const vector<uint32>, IndexMode, BufferUsage): void
-      + draw(const ShaderProgram&): void
-    }
+    class Mesh
 
     Mesh -left-> ShaderProgram
     Mesh *-down- VertexArray
 
-    class ShaderManager {
-      {static} - shaders: unordered_map<string, shared_ptr<ShaderProgram>>
-      {static} + LoadShader(const Renderer&, const string&, const string&, const string&): void
-      {static} + GetShader(const string&): shared_ptr<ShaderProgram>
-    }
+    class ShaderManager
 
-    class ShaderProgram {
-      - gc: GraphicsContext*
-      - id: RendererId
-      - uniformLocations: unordered_map<string, RendererId>
-      + ShaderProgram(GraphicsContext*, RendererId, const Shader&, const Shader&)
-      + ~ShaderProgram
-      + ShaderProgram(ShaderProgram&&)
-      + operator=(ShaderProgram&&): ShaderProgram&
-      + use(): void
-      + setUniform(const string&, bool): void
-      {method} ...
-    }
+    class ShaderProgram
 
     Renderer -up-> Shader : constructs
     Renderer -up-> ShaderProgram : constructs
 
-    ShaderManager o- "0..*" ShaderProgram
+    ShaderProgram "0..*" -o ShaderManager
 
-    class Shader {
-      - gc: GraphicsContext*
-      - id: RendererId
-      + Shader(GraphicsContext*, RendererId, const string)
-      + ~Shader
-      + Shader(Shader&&)
-      + operator=(Shader&&): Shader&
-      + getId(): RendererId
-    }
+    class Shader
 
-    ShaderProgram --> Shader
+    ShaderProgram -left-> Shader
   }
 }
 
