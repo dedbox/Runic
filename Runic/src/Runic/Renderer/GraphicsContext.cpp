@@ -134,14 +134,14 @@ void GraphicsContext::enableVertexAttribute(uint32_t index) const
 void GraphicsContext::defineVertexAttributeData(
     uint32_t index,
     size_t count,
-    ElementType type,
+    AttributeType type,
     bool normalize,
     size_t stride,
     const void* offset) const
 {
     glVertexAttribPointer(
-        index, static_cast<GLint>(count), ElementTypeToGLenum(type), normalize ? GL_TRUE : GL_FALSE,
-        static_cast<GLsizei>(stride), offset);
+        index, static_cast<GLint>(count), AttributeTypeToGLenum(type),
+        normalize ? GL_TRUE : GL_FALSE, static_cast<GLsizei>(stride), offset);
 }
 
 // Vertex Buffer ---------------------------------------------------------------

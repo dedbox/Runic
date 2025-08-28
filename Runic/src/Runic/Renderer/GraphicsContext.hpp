@@ -32,9 +32,9 @@ static GLenum BufferUsageToGLenum(BufferUsage usage)
     return static_cast<GLenum>(usage);
 }
 
-// Buffer Element Type ---------------------------------------------------------
+// Vertex Attribute Type -------------------------------------------------------
 
-enum class ElementType : uint8_t
+enum class AttributeType : uint8_t
 {
     // clang-format off
     None = 0,
@@ -45,24 +45,24 @@ enum class ElementType : uint8_t
     // clang-format on
 };
 
-static GLenum ElementTypeToGLenum(ElementType type)
+static GLenum AttributeTypeToGLenum(AttributeType type)
 {
     switch (type)
     {
-    case ElementType::None: return GL_NONE;
-    case ElementType::Bool: return GL_BOOL;
-    case ElementType::Int:
-    case ElementType::Int2:
-    case ElementType::Int3:
-    case ElementType::Int4: return GL_INT;
-    case ElementType::Float:
-    case ElementType::Float2:
-    case ElementType::Float3:
-    case ElementType::Float4:
-    case ElementType::Mat3:
-    case ElementType::Mat4: return GL_FLOAT;
+    case AttributeType::None: return GL_NONE;
+    case AttributeType::Bool: return GL_BOOL;
+    case AttributeType::Int:
+    case AttributeType::Int2:
+    case AttributeType::Int3:
+    case AttributeType::Int4: return GL_INT;
+    case AttributeType::Float:
+    case AttributeType::Float2:
+    case AttributeType::Float3:
+    case AttributeType::Float4:
+    case AttributeType::Mat3:
+    case AttributeType::Mat4: return GL_FLOAT;
     }
-    Core::Assert(false, "unknown element type");
+    Core::Assert(false, "unknown vertex attribute type");
     return 0;
 }
 
@@ -166,7 +166,7 @@ public:
     void defineVertexAttributeData(
         uint32_t index,
         size_t count,
-        ElementType type,
+        AttributeType type,
         bool normalize,
         size_t stride,
         const void* offset) const;

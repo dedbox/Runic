@@ -172,7 +172,7 @@ package Runic <<rectangle>> {
         + bindVertexArray(RendererId): void
         + unbindVertexArray(): void
         + enableVertexAttribute(uint32): void
-        + defineVertexAttributeData(uint32, size_t, ElementType, bool, size_t, const void*): void
+        + defineVertexAttributeData(uint32, size_t, AttributeType, bool, size_t, const void*): void
         + createVertexBuffer(const void*, size_t, BufferUsage): RendererId
         + bindVertexBuffer(RendererId): void
         + unbindVertexBuffer(): void
@@ -206,7 +206,7 @@ package Runic <<rectangle>> {
         Dynamic
       }
 
-      enum ElementType {
+      enum AttributeType {
         None
         Bool
         Int Int2 Int3 Int4
@@ -239,7 +239,7 @@ package Runic <<rectangle>> {
       }
 
       GraphicsContext --> BufferUsage
-      GraphicsContext --> ElementType
+      GraphicsContext --> AttributeType
       GraphicsContext --> IndexType
       GraphicsContext --> IndexMode
       GraphicsContext --> ShaderType
@@ -260,18 +260,18 @@ package Runic <<rectangle>> {
       + operator=(VertexArray&&): VertexArray&
       + bind(): void
       + unbind(): void
-      + addVertexBuffer(unique_ptr<VertexBuffer>, vector<LayoutElement>): void
+      + addVertexBuffer(unique_ptr<VertexBuffer>, vector<VertexAttribute>): void
       + setIndexBuffer(unique_ptr<IndexBuffer>): void
       + draw(): void
     }
 
-    struct LayoutElement {
-      + type: ElementType
+    struct VertexAttribute {
+      + type: AttributeType
       + normalize: bool
     }
 
     Renderer -> VertexArray : constructs
-    LayoutElement . (Renderer, VertexArray)
+    VertexAttribute . (Renderer, VertexArray)
 
     package Buffer as BufferPkg <<Frame>> {
       class VertexBuffer {
@@ -317,7 +317,7 @@ package Runic <<rectangle>> {
       - renderer: Renderer*
       - vertexArray: unique_ptr<VertexArray>
       + Mesh(Renderer*)
-      + addVertices(const vector<float>, const vector<LayoutElement>, BufferUsage): void
+      + addVertices(const vector<float>, const vector<VertexAttribute>, BufferUsage): void
       + setIndices(const vector<uint32>, IndexMode, BufferUsage): void
       + draw(const ShaderProgram&): void
     }

@@ -55,8 +55,8 @@ public:
         };
         // clang-format on
 
-        const std::vector<Runic::LayoutElement> layout = {
-            {.type = Runic::ElementType::Float3, .normalize = false}};
+        const std::vector<Runic::VertexAttribute> layout = {
+            {.type = Runic::AttributeType::Float3, .normalize = false}};
 
         const std::vector<uint32_t> indices = {0, 1, 2};
 

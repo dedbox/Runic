@@ -14,7 +14,7 @@ public:
 
     void addVertices(
         const std::vector<float>& vertices,
-        const std::vector<LayoutElement>& layout,
+        const std::vector<VertexAttribute>& layout,
         BufferUsage usage);
 
     void setIndices(const std::vector<uint32_t>& indices, IndexMode mode, BufferUsage usage);

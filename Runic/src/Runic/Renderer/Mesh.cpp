@@ -10,7 +10,9 @@ Mesh::Mesh(Renderer* renderer)
 }
 
 void Mesh::addVertices(
-    const std::vector<float>& vertices, const std::vector<LayoutElement>& layout, BufferUsage usage)
+    const std::vector<float>& vertices,
+    const std::vector<VertexAttribute>& layout,
+    BufferUsage usage)
 {
     auto vertexBuffer =
         _renderer->createVertexBuffer(vertices.data(), vertices.size() * sizeof(float), usage);

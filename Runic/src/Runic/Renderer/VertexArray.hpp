@@ -8,9 +8,9 @@ namespace Runic
 
 // Buffer Layout ---------------------------------------------------------------
 
-struct LayoutElement
+struct VertexAttribute
 {
-    ElementType type;
+    AttributeType type;
     bool normalize;
 };
 
@@ -35,7 +35,7 @@ public:
     void unbind() const;
 
     void addVertexBuffer(
-        std::unique_ptr<VertexBuffer> vertexBuffer, const std::vector<LayoutElement>& layout);
+        std::unique_ptr<VertexBuffer> vertexBuffer, const std::vector<VertexAttribute>& layout);
 
     void setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer);
 

@@ -6,51 +6,51 @@ namespace Runic
 namespace
 {
 
-uint32_t ElementTypeComponentCount(ElementType type)
+uint32_t AttributeTypeComponentCount(AttributeType type)
 {
     switch (type)
     {
-    case ElementType::None: return 0;
-    case ElementType::Bool:
-    case ElementType::Int:
-    case ElementType::Float: return 1;
-    case ElementType::Int2:
-    case ElementType::Float2: return 2;
-    case ElementType::Int3:
-    case ElementType::Float3: return 3;
-    case ElementType::Int4:
-    case ElementType::Float4: return 4;
-    case ElementType::Mat3: return 3 * 3;
-    case ElementType::Mat4: return 4 * 4;
+    case AttributeType::None: return 0;
+    case AttributeType::Bool:
+    case AttributeType::Int:
+    case AttributeType::Float: return 1;
+    case AttributeType::Int2:
+    case AttributeType::Float2: return 2;
+    case AttributeType::Int3:
+    case AttributeType::Float3: return 3;
+    case AttributeType::Int4:
+    case AttributeType::Float4: return 4;
+    case AttributeType::Mat3: return 3 * 3;
+    case AttributeType::Mat4: return 4 * 4;
     }
-    Core::Assert(false, "unknown element type");
+    Core::Assert(false, "unknown vertex attribute type");
     return 0;
 }
 
-static uint32_t ElementTypeComponentSize(ElementType type)
+static uint32_t AttributeTypeComponentSize(AttributeType type)
 {
     switch (type)
     {
-    case ElementType::None: return 0;
-    case ElementType::Bool: return sizeof(bool);
-    case ElementType::Int:
-    case ElementType::Int2:
-    case ElementType::Int3:
-    case ElementType::Int4: return sizeof(int);
-    case ElementType::Float:
-    case ElementType::Float2:
-    case ElementType::Float3:
-    case ElementType::Float4:
-    case ElementType::Mat3:
-    case ElementType::Mat4: return sizeof(float);
+    case AttributeType::None: return 0;
+    case AttributeType::Bool: return sizeof(bool);
+    case AttributeType::Int:
+    case AttributeType::Int2:
+    case AttributeType::Int3:
+    case AttributeType::Int4: return sizeof(int);
+    case AttributeType::Float:
+    case AttributeType::Float2:
+    case AttributeType::Float3:
+    case AttributeType::Float4:
+    case AttributeType::Mat3:
+    case AttributeType::Mat4: return sizeof(float);
     }
-    Core::Assert(false, "unknown element type");
+    Core::Assert(false, "unknown vertex attribute type");
     return 0;
 }
 
-static uint32_t ElementTypeSize(ElementType type)
+static uint32_t AttributeTypeSize(AttributeType type)
 {
-    return ElementTypeComponentCount(type) * ElementTypeComponentSize(type);
+    return AttributeTypeComponentCount(type) * AttributeTypeComponentSize(type);
 }
 
 } // namespace
@@ -99,20 +99,21 @@ void VertexArray::unbind() const
 }
 
 void VertexArray::addVertexBuffer(
-    std::unique_ptr<VertexBuffer> vertexBuffer, const std::vector<LayoutElement>& layout)
+    std::unique_ptr<VertexBuffer> vertexBuffer, const std::vector<VertexAttribute>& layout)
 {
     uint32_t stride = 0;
-    for (const auto& element : layout)
-        stride += ElementTypeSize(element.type);
+    for (const auto& attribute : layout)
+        stride += AttributeTypeSize(attribute.type);
 
     uint32_t offset = 0;
-    for (const auto&& [index, element] : layout | std::ranges::views::enumerate)
+    for (const auto&& [index, attribute] : layout | std::ranges::views::enumerate)
     {
         _gc->enableVertexAttribute(index);
         _gc->defineVertexAttributeData(
-            index, ElementTypeComponentCount(element.type), element.type, element.normalize, stride,
+            index, AttributeTypeComponentCount(attribute.type), attribute.type, attribute.normalize,
+            stride,
             reinterpret_cast<const void*>(offset)); // NOLINT
-        offset += ElementTypeSize(element.type);
+        offset += AttributeTypeSize(attribute.type);
     }
 
     _vertexBuffers.push_back(std::move(vertexBuffer));
