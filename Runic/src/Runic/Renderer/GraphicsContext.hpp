@@ -26,8 +26,7 @@ enum class BufferUsage : uint16_t
     Dynamic   = GL_DYNAMIC_DRAW,
 };
 
-// TODO shorten helper names w/overloading (toGLenum)
-static GLenum BufferUsageToGLenum(BufferUsage usage)
+static GLenum to_GLenum(BufferUsage usage)
 {
     return static_cast<GLenum>(usage);
 }
@@ -45,7 +44,7 @@ enum class AttributeType : uint8_t
     // clang-format on
 };
 
-static GLenum AttributeTypeToGLenum(AttributeType type)
+static GLenum to_GLenum(AttributeType type)
 {
     switch (type)
     {
@@ -75,7 +74,7 @@ enum class IndexType : uint16_t
     Int   = GL_UNSIGNED_INT,
 };
 
-static GLenum IndexTypeToGLenum(IndexType type)
+static GLenum to_GLenum(IndexType type)
 {
     return static_cast<GLenum>(type);
 }
@@ -98,7 +97,7 @@ enum class IndexMode : uint8_t
     Patches                = GL_PATCHES,
 };
 
-inline GLenum IndexModeToGLenum(IndexMode mode)
+inline GLenum to_GLenum(IndexMode mode)
 {
     return static_cast<GLenum>(mode);
 }
@@ -111,7 +110,7 @@ enum class ShaderType : uint16_t
     Fragment = GL_FRAGMENT_SHADER,
 };
 
-inline GLenum ShaderTypeToGLenum(ShaderType type)
+inline GLenum to_GLenum(ShaderType type)
 {
     return static_cast<GLenum>(type);
 }
@@ -136,7 +135,7 @@ enum class PolygonMode : uint16_t
     Fill  = GL_FILL,
 };
 
-inline GLenum PolygonModeToGLenum(PolygonMode mode)
+inline GLenum to_GLenum(PolygonMode mode)
 {
     return static_cast<GLenum>(mode);
 }

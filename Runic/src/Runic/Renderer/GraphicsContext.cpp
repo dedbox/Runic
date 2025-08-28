@@ -140,8 +140,8 @@ void GraphicsContext::defineVertexAttributeData(
     const void* offset) const
 {
     glVertexAttribPointer(
-        index, static_cast<GLint>(count), AttributeTypeToGLenum(type),
-        normalize ? GL_TRUE : GL_FALSE, static_cast<GLsizei>(stride), offset);
+        index, static_cast<GLint>(count), to_GLenum(type), normalize ? GL_TRUE : GL_FALSE,
+        static_cast<GLsizei>(stride), offset);
 }
 
 // Vertex Buffer ---------------------------------------------------------------
@@ -152,7 +152,7 @@ GraphicsContext::createVertexBuffer(const void* data, size_t size, BufferUsage u
     RendererId id{};
     glGenBuffers(1, &id);
     glBindBuffer(GL_ARRAY_BUFFER, id);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), data, BufferUsageToGLenum(usage));
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), data, to_GLenum(usage));
     return id;
 }
 
@@ -176,8 +176,8 @@ RendererId GraphicsContext::createIndexBuffer(
     glGenBuffers(1, &id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(IndexTypeToGLenum(type))),
-        data, BufferUsageToGLenum(usage));
+        GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(to_GLenum(type))), data,
+        to_GLenum(usage));
     return id;
 }
 
@@ -204,7 +204,7 @@ void GraphicsContext::deleteBuffer(RendererId id) const
 
 RendererId GraphicsContext::createShader(ShaderType type) const
 {
-    return glCreateShader(ShaderTypeToGLenum(type));
+    return glCreateShader(to_GLenum(type));
 }
 
 void GraphicsContext::deleteShader(RendererId id) const
@@ -353,14 +353,13 @@ RendererId GraphicsContext::getUniformLocation(RendererId id, const std::string&
 
 void GraphicsContext::setPolygonMode(PolygonMode mode) const
 {
-    glPolygonMode(GL_FRONT_AND_BACK, PolygonModeToGLenum(mode));
+    glPolygonMode(GL_FRONT_AND_BACK, to_GLenum(mode));
 }
 
 void GraphicsContext::drawElements(
     IndexMode mode, size_t count, IndexType type, const void* offset) const
 {
-    glDrawElements(
-        IndexModeToGLenum(mode), static_cast<GLsizei>(count), IndexTypeToGLenum(type), offset);
+    glDrawElements(to_GLenum(mode), static_cast<GLsizei>(count), to_GLenum(type), offset);
 }
 
 } // namespace Runic
