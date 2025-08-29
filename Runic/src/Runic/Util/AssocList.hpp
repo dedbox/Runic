@@ -27,6 +27,21 @@ public:
             _data.insert(it, std::move(new_pair));
     }
 
+    template <typename... Args>
+    void emplace(const Key& key, Args&&... args)
+    {
+        auto it = std::lower_bound(
+            _data.begin(), _data.end(), key,
+            [](const Pair& p, const Key& k) { return p.first < k; });
+
+        if (it != _data.end() && it->first == key)
+            it->second = Value(std::forward<Args>(args)...);
+        else
+            _data.emplace(
+                it, std::piecewise_construct, std::forward_as_tuple(key),
+                std::forward_as_tuple(std::forward<Args>(args)...));
+    }
+
     void remove(const Key& key)
     {
         auto it = std::lower_bound(

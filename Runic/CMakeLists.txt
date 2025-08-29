@@ -95,6 +95,7 @@ target_precompile_headers(
   <ranges>
   <stdexcept>
   <string>
+  <tuple>
   <typeindex>
   <utility>
   <vector>

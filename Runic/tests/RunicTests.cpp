@@ -157,35 +157,60 @@ TEST_CASE("AssocList")
 {
     Runic::AssocList<uint32_t, std::string> alist;
 
-    alist.add(6, "A");
-    alist.add(3, "B");
-    alist.add(1, "C");
-    alist.add(2, "D");
-    alist.add(5, "E");
-    alist.add(4, "F");
+    SUBCASE("add")
+    {
+        alist.add(6, "A");
+        alist.add(3, "B");
+        alist.add(1, "C");
+        alist.add(2, "D");
+        alist.add(5, "E");
+        alist.add(4, "F");
+        CHECK(flatten_alist(alist) == "1:C 2:D 3:B 4:F 5:E 6:A");
 
-    CHECK(flatten_alist(alist) == "1:C 2:D 3:B 4:F 5:E 6:A");
+        SUBCASE("remove")
+        {
+            alist.remove(5);
+            CHECK(flatten_alist(alist) == "1:C 2:D 3:B 4:F 6:A");
 
-    alist.remove(5);
-    CHECK(flatten_alist(alist) == "1:C 2:D 3:B 4:F 6:A");
+            alist.remove(2);
+            CHECK(flatten_alist(alist) == "1:C 3:B 4:F 6:A");
 
-    alist.remove(2);
-    CHECK(flatten_alist(alist) == "1:C 3:B 4:F 6:A");
+            alist.remove(6);
+            CHECK(flatten_alist(alist) == "1:C 3:B 4:F");
 
-    alist.remove(6);
-    CHECK(flatten_alist(alist) == "1:C 3:B 4:F");
+            alist.remove(1);
+            CHECK(flatten_alist(alist) == "3:B 4:F");
 
-    alist.remove(1);
-    CHECK(flatten_alist(alist) == "3:B 4:F");
+            alist.remove(3);
+            alist.remove(4);
+            CHECK(alist.empty());
+        }
+    }
 
-    alist.remove(3);
-    alist.remove(4);
-    CHECK(alist.empty());
+    SUBCASE("move")
+    {
+        std::string msg = "hello";
+        alist.add(1, std::move(msg));
+        CHECK(msg == "");
+        CHECK(alist.find(1).value().get() == "hello");
+    }
 
-    std::string msg = "hello";
-    alist.add(1, std::move(msg));
-    CHECK(msg == "");
-    CHECK(alist.find(1).value().get() == "hello");
+    SUBCASE("emplace")
+    {
+        struct TestStruct
+        {
+            int a, b, c;
+        };
+
+        Runic::AssocList<uint32_t, TestStruct> alist2;
+
+        alist2.emplace(3, 9, 8, 7);
+        auto value = alist2.find(3).value().get();
+
+        CHECK(value.a == 9);
+        CHECK(value.b == 8);
+        CHECK(value.c == 7);
+    }
 }
 
 // NOLINTEND(misc-use-anonymous-namespace, cppcoreguidelines-avoid-do-while)
