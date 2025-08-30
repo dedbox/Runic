@@ -13,6 +13,12 @@ public:
     static std::shared_ptr<spdlog::logger>& Core() { return CoreLogger; }
     static std::shared_ptr<spdlog::logger>& Client() { return ClientLogger; }
 
+    static void SetLevel(spdlog::level::level_enum level)
+    {
+        CoreLogger->set_level(level);
+        ClientLogger->set_level(level);
+    }
+
 private:
     static std::shared_ptr<spdlog::logger> CoreLogger;
     static std::shared_ptr<spdlog::logger> ClientLogger;
