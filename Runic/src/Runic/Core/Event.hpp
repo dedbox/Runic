@@ -69,6 +69,17 @@ class EventDispatcher
 public:
     using TypeErasedHandler = std::function<bool(const void*)>;
 
+    EventDispatcher()  = default;
+    ~EventDispatcher() = default;
+
+    // allow moving
+    EventDispatcher(EventDispatcher&&) noexcept            = default;
+    EventDispatcher& operator=(EventDispatcher&&) noexcept = default;
+
+    // prevent copying
+    EventDispatcher(const EventDispatcher&)            = delete;
+    EventDispatcher& operator=(const EventDispatcher&) = delete;
+
     template <typename EventType>
     void addHandler(std::function<bool(const EventType&)> handler)
     {

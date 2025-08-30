@@ -8,13 +8,15 @@ namespace Runic
 class LayerManager
 {
 public:
-    LayerManager() = default;
-
+    LayerManager()  = default;
     ~LayerManager() = default;
 
-    LayerManager(LayerManager&&)                = delete;
+    // allow moving
+    LayerManager(LayerManager&&)            = default;
+    LayerManager& operator=(LayerManager&&) = default;
+
+    // prevent copying
     LayerManager(const LayerManager&)           = delete;
-    LayerManager operator=(LayerManager&&)      = delete;
     LayerManager operator=(const LayerManager&) = delete;
 
     void push_front(std::unique_ptr<Layer> layer);

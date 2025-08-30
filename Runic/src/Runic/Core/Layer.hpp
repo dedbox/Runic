@@ -15,10 +15,13 @@ public:
 
     virtual ~Layer() = default;
 
+    // allow moving
+    Layer(Layer&&)            = default;
+    Layer& operator=(Layer&&) = default;
+
+    // prevent copying
     Layer(const Layer&)            = delete;
-    Layer(Layer&&)                 = delete;
     Layer& operator=(const Layer&) = delete;
-    Layer& operator=(Layer&&)      = delete;
 
     virtual void onAttach() {}
     virtual void onDetach() {}
