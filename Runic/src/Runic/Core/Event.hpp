@@ -83,18 +83,19 @@ public:
     template <typename EventType>
     void addHandler(std::function<bool(const EventType&)> handler)
     {
-        _handlers[typeid(EventType)].push_back(
-            [handler](const void* event)
-            { return handler(*static_cast<const EventType*>(event)); });
+        _handlers[typeid(EventType)].push_back([handler](const void* event) {
+            return handler(*static_cast<const EventType*>(event));
+        });
     }
 
     template <typename EventType>
     bool dispatch(const EventType& event)
     {
-        auto it{_handlers.find(typeid(EventType))};
+        auto it = _handlers.find(typeid(EventType));
         if (it != _handlers.end())
-            for (const auto& handler : it->second)
-                if (handler(&event)) return true;
+            for (auto& handler : it->second)
+                if (handler(&event))
+                    return true;
         return false;
     }
 

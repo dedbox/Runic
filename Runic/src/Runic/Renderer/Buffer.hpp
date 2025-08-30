@@ -25,8 +25,7 @@ protected:
     GraphicsContext* _gc;
     RendererId _id;
 
-    // restrict construction to derived classes
-    explicit Buffer(GraphicsContext* gc, RendererId id);
+    Buffer(GraphicsContext* gc, RendererId id);
 };
 
 // Vertex Buffer ---------------------------------------------------------------

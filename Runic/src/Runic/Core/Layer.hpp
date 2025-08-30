@@ -23,10 +23,10 @@ public:
     Layer(const Layer&)            = delete;
     Layer& operator=(const Layer&) = delete;
 
-    virtual void onAttach() {}
-    virtual void onDetach() {}
-    virtual void onUpdate() {}
-    virtual void onGuiRender() {}
+    virtual void attach() {}
+    virtual void detach() {}
+    virtual void update() {}
+    virtual void render() {}
 
     [[nodiscard]] const std::string& getName() const { return _name; }
 

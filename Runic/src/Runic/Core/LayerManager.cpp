@@ -5,7 +5,7 @@ namespace Runic
 
 void LayerManager::push_front(std::unique_ptr<Layer> layer)
 {
-    layer->onAttach();
+    layer->attach();
 
     _layers.push_front(std::move(layer));
 
@@ -17,7 +17,7 @@ void LayerManager::push_front(std::unique_ptr<Layer> layer)
 
 void LayerManager::pushGui_front(std::unique_ptr<Layer> layer)
 {
-    layer->onAttach();
+    layer->attach();
 
     if (_sep)
         _layers.insert(std::next(*_sep), std::move(layer));
@@ -27,7 +27,7 @@ void LayerManager::pushGui_front(std::unique_ptr<Layer> layer)
 
 void LayerManager::push_back(std::unique_ptr<Layer> layer)
 {
-    layer->onAttach();
+    layer->attach();
 
     if (_sep)
     {
@@ -43,18 +43,19 @@ void LayerManager::push_back(std::unique_ptr<Layer> layer)
 
 void LayerManager::pushGui_back(std::unique_ptr<Layer> layer)
 {
-    layer->onAttach();
+    layer->attach();
 
     _layers.push_back(std::move(layer));
 }
 
 std::unique_ptr<Layer> LayerManager::pop_front()
 {
-    if (!_sep) throw std::runtime_error("Attempted to pop an empty list head");
+    if (!_sep)
+        throw std::runtime_error("Attempted to pop an empty list head");
 
     auto layer = std::move(_layers.front());
 
-    layer->onDetach();
+    layer->detach();
 
     if (*_sep == _layers.begin())
     {
@@ -85,14 +86,15 @@ std::unique_ptr<Layer> LayerManager::popGui_front()
         _layers.pop_front();
     }
 
-    layer->onDetach();
+    layer->detach();
 
     return layer;
 }
 
 std::unique_ptr<Layer> LayerManager::pop_back()
 {
-    if (!_sep) throw std::runtime_error("Attempted to pop an empty list head");
+    if (!_sep)
+        throw std::runtime_error("Attempted to pop an empty list head");
 
     std::unique_ptr<Layer> layer;
 
@@ -105,12 +107,12 @@ std::unique_ptr<Layer> LayerManager::pop_back()
     else
     {
         auto temp = std::prev(*_sep);
-        layer     = std::move(**_sep);
+        layer = std::move(**_sep);
         _layers.erase(*_sep);
         _sep.emplace(temp);
     }
 
-    layer->onDetach();
+    layer->detach();
 
     return layer;
 }
@@ -123,7 +125,7 @@ std::unique_ptr<Layer> LayerManager::popGui_back()
     auto layer = std::move(_layers.back());
     _layers.pop_back();
 
-    layer->onDetach();
+    layer->detach();
 
     return layer;
 }

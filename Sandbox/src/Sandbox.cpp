@@ -35,7 +35,7 @@ public:
         _shaderProgram->use();
     }
 
-    void onUpdate() override
+    void update() override
     {
         _renderer.setClearColor(Taupe);
         _renderer.clear();
@@ -59,7 +59,9 @@ public:
         Runic::ShaderManager::LoadShader(
             _renderer, "Position-FlatUniform", "shaders/Position.vert", "shaders/FlatUniform.frag");
         Runic::ShaderManager::LoadShader(
-            _renderer, "PositionColor3-FlatInterpolate", "shaders/PositionColor3.vert",
+            _renderer,
+            "PositionColor3-FlatInterpolate",
+            "shaders/PositionColor3.vert",
             "shaders/FlatInterpolate.frag");
         getLayerManager().push_back(std::make_unique<TriangleLayer>(getRenderer()));
     }
