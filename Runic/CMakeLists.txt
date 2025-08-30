@@ -79,6 +79,7 @@ target_link_libraries(Runic PRIVATE SDL3::SDL3 spdlog::spdlog)
 target_precompile_headers(
   Runic
   PUBLIC
+  <algorithm>
   <csignal>
   <cstddef>
   <cstdint>
@@ -98,15 +99,15 @@ target_precompile_headers(
   <tuple>
   <typeindex>
   <utility>
+  <unordered_set>
   <vector>
   src/Runic/Core/Log.hpp
   src/Runic/Core/SDLException.hpp)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
                                         ${glm_INCLUDE_DIR})
-target_include_directories(
-  Runic PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${OPENGL_INCLUDE_DIR}
-                ${glad_INCLUDE_DIR})
+target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR}
+                                         ${glad_INCLUDE_DIR})
 
 install(TARGETS Runic DESTINATION lib)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/Runic.hpp DESTINATION include)

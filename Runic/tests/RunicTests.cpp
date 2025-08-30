@@ -144,10 +144,9 @@ namespace
 
 std::string flatten_alist(const Runic::AssocList<uint32_t, std::string>& alist)
 {
-    return alist.data() |
-           std::ranges::views::transform(
-               [](const auto& pair)
-               { return std::format("{}:{}", std::to_string(pair.first), pair.second); }) |
+    return alist.data() | std::ranges::views::transform([](const auto& pair) {
+               return std::format("{}:{}", std::to_string(pair.first), *pair.second);
+           }) |
            std::ranges::views::join_with(' ') | std::ranges::to<std::string>();
 }
 
@@ -157,14 +156,14 @@ TEST_CASE("AssocList")
 {
     Runic::AssocList<uint32_t, std::string> alist;
 
-    SUBCASE("add")
+    SUBCASE("emplace")
     {
-        alist.add(6, "A");
-        alist.add(3, "B");
-        alist.add(1, "C");
-        alist.add(2, "D");
-        alist.add(5, "E");
-        alist.add(4, "F");
+        alist.emplace(6, "A");
+        alist.emplace(3, "B");
+        alist.emplace(1, "C");
+        alist.emplace(2, "D");
+        alist.emplace(5, "E");
+        alist.emplace(4, "F");
         CHECK(flatten_alist(alist) == "1:C 2:D 3:B 4:F 5:E 6:A");
 
         SUBCASE("remove")
@@ -185,31 +184,30 @@ TEST_CASE("AssocList")
             alist.remove(4);
             CHECK(alist.empty());
         }
-    }
 
-    SUBCASE("move")
-    {
-        std::string msg = "hello";
-        alist.add(1, std::move(msg));
-        CHECK(msg == "");
-        CHECK(alist.find(1).value().get() == "hello");
-    }
-
-    SUBCASE("emplace")
-    {
-        struct TestStruct
+        SUBCASE("emplace struct")
         {
-            int a, b, c;
-        };
+            struct TestStruct
+            {
+                int a, b, c;
+            };
 
-        Runic::AssocList<uint32_t, TestStruct> alist2;
+            Runic::AssocList<uint32_t, TestStruct> alist2;
 
-        alist2.emplace(3, 9, 8, 7);
-        auto value = alist2.find(3).value().get();
+            alist2.emplace(3, 9, 8, 7);
+            auto value = alist2.find(3).value().get();
 
-        CHECK(value.a == 9);
-        CHECK(value.b == 8);
-        CHECK(value.c == 7);
+            CHECK(value.a == 9);
+            CHECK(value.b == 8);
+            CHECK(value.c == 7);
+        }
+    }
+
+    SUBCASE("add")
+    {
+        auto msg = std::make_unique<std::string>("hello");
+        alist.add(1, std::move(msg));
+        CHECK(alist.find(1).value().get() == "hello");
     }
 }
 
