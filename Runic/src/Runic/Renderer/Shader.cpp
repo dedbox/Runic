@@ -1,7 +1,15 @@
 #include "Shader.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
 
 namespace Runic
 {
+
+std::unique_ptr<Shader> Shader::Create(
+    GraphicsContext* context, const std::string& source, ShaderType type)
+{
+    RendererId id = context->createShader(type);
+    return std::unique_ptr<Shader>(new Shader(context, id, source));
+}
 
 Shader::Shader(GraphicsContext* context, RendererId id, const std::string& source)
     : _context(context)
@@ -31,6 +39,23 @@ Shader& Shader::operator=(Shader&& other) noexcept
         _id      = std::exchange(other._id, 0);
     }
     return *this;
+}
+
+void Shader::attach(RendererId programId) const
+{
+    _context->attachShader(programId, _id);
+}
+
+void Shader::detach(RendererId programId) const
+{
+    _context->detachShader(programId, _id);
+}
+
+void Shader::destroy()
+{
+    _context->destroyShader(_id);
+    _context = nullptr;
+    _id      = 0;
 }
 
 } // namespace Runic

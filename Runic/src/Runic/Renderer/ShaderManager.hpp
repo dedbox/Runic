@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Runic/Renderer/GraphicsContext.hpp"
-#include "ShaderProgram.hpp"
+#include "Runic/Renderer/ShaderProgram.hpp"
 
 namespace Runic
 {

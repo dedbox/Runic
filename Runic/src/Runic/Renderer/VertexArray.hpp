@@ -19,7 +19,7 @@ struct VertexAttribute
 class VertexArray
 {
 public:
-    VertexArray(GraphicsContext* context, RendererId id);
+    static std::unique_ptr<VertexArray> Create(GraphicsContext* context);
 
     // allow moving
     VertexArray(VertexArray&& other) noexcept;
@@ -46,6 +46,9 @@ private:
     RendererId _id;
     std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffers;
     std::unique_ptr<IndexBuffer> _indexBuffer;
+
+    // hide constructor
+    VertexArray(GraphicsContext* context, RendererId id);
 };
 
 } // namespace Runic

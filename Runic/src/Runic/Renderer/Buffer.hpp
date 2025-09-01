@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GraphicsContext.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
 
 namespace Runic
 {
@@ -25,6 +25,7 @@ protected:
     GraphicsContext* _context;
     RendererId _id;
 
+    // hide constructor
     Buffer(GraphicsContext* context, RendererId id);
 };
 
@@ -33,13 +34,17 @@ protected:
 class VertexBuffer : public Buffer
 {
 public:
-    VertexBuffer(GraphicsContext* context, RendererId id, size_t size);
+    static std::unique_ptr<VertexBuffer> Create(
+        GraphicsContext* context, const void* data, size_t size, BufferUsage usage);
 
     void bind() const override;
     void unbind() const override;
 
 private:
     size_t _size;
+
+    // hide constructor
+    VertexBuffer(GraphicsContext* context, RendererId id, size_t size);
 };
 
 // Index Buffer ----------------------------------------------------------------
@@ -47,8 +52,13 @@ private:
 class IndexBuffer : public Buffer
 {
 public:
-    IndexBuffer(
-        GraphicsContext* context, RendererId id, size_t count, IndexType type, IndexMode mode);
+    static std::unique_ptr<IndexBuffer> Create(
+        GraphicsContext* context,
+        const void* data,
+        size_t count,
+        IndexMode mode,
+        IndexType type,
+        BufferUsage usage);
 
     size_t getCount() const { return _count; }
     IndexType getType() const { return _type; }
@@ -61,6 +71,9 @@ private:
     size_t _count;
     IndexType _type;
     IndexMode _mode;
+
+    IndexBuffer(
+        GraphicsContext* context, RendererId id, size_t count, IndexType type, IndexMode mode);
 };
 
 } // namespace Runic

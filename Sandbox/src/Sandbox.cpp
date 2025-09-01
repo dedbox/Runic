@@ -1,6 +1,4 @@
-#include "Runic/Renderer/GraphicsContext.hpp"
 #include <Runic.hpp>
-#include <spdlog/common.h>
 
 static constexpr auto Taupe  = Runic::Color::hex(0x463F3AFF);
 static constexpr auto Gray   = Runic::Color::hex(0x8A817CFF);
@@ -29,7 +27,7 @@ public:
 
         const std::vector<uint32_t> indices = {0, 1, 2};
 
-        _mesh = std::make_unique<Runic::Mesh>(_context);
+        _mesh = Runic::Mesh::Create(_context);
         _mesh->addVertices(vertices, layout, Runic::BufferUsage::Static);
         _mesh->setIndices(
             indices,
@@ -44,7 +42,6 @@ public:
     {
         _context->setClearColor(Taupe);
         _context->clear();
-
         _mesh->draw(*_shaderProgram);
     }
 
@@ -60,17 +57,16 @@ public:
     Sandbox()
         : Application({.name = "Sandbox"})
     {
+        auto context = getGraphicsContext();
+
         Runic::ShaderManager::LoadShader(
-            getGraphicsContext(),
-            "Position-FlatUniform",
-            "shaders/Position.vert",
-            "shaders/FlatUniform.frag");
+            context, "Position-FlatUniform", "shaders/Position.vert", "shaders/FlatUniform.frag");
         Runic::ShaderManager::LoadShader(
-            getGraphicsContext(),
+            context,
             "PositionColor3-FlatInterpolate",
             "shaders/PositionColor3.vert",
             "shaders/FlatInterpolate.frag");
-        getLayerManager().push_back(std::make_unique<TriangleLayer>(getGraphicsContext()));
+        getLayerManager().push_back(std::make_unique<TriangleLayer>(context));
     }
 };
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GraphicsContext.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
 #include "Runic/Renderer/ShaderProgram.hpp"
-#include "VertexArray.hpp"
+#include "Runic/Renderer/VertexArray.hpp"
 
 namespace Runic
 {
@@ -10,7 +10,7 @@ namespace Runic
 class Mesh
 {
 public:
-    explicit Mesh(GraphicsContext* context);
+    static std::unique_ptr<Mesh> Create(GraphicsContext* context);
 
     void addVertices(
         const std::vector<float>& vertices,
@@ -25,6 +25,9 @@ public:
 private:
     GraphicsContext* _context;
     std::unique_ptr<VertexArray> _vertexArray;
+
+    // hide constructor
+    explicit Mesh(GraphicsContext* context);
 };
 
 } // namespace Runic

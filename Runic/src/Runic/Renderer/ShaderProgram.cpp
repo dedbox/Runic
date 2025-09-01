@@ -1,30 +1,34 @@
-#include "ShaderProgram.hpp"
+#include "Runic/Renderer/ShaderProgram.hpp"
 
 namespace Runic
 {
+std::shared_ptr<ShaderProgram> ShaderProgram::Create(
+    GraphicsContext* context, Shader& vertexShader, Shader& fragmentShader)
+{
+    RendererId id = context->createShaderProgram();
 
-ShaderProgram::ShaderProgram(
-    GraphicsContext* context,
-    RendererId id,
-    const Shader& vertexShader,
-    const Shader& fragmentShader)
+    vertexShader.attach(id);
+    fragmentShader.attach(id);
+
+    if (!context->linkShaderProgram(id))
+    {
+        Core::Error(context->getShaderProgramInfoLog(id));
+        Core::Assert(false, "shader program linking failed");
+        context->destroyShaderProgram(id);
+        fragmentShader.destroy();
+        vertexShader.destroy();
+    }
+
+    vertexShader.detach(id);
+    fragmentShader.detach(id);
+
+    return std::unique_ptr<ShaderProgram>(new ShaderProgram(context, id));
+}
+
+ShaderProgram::ShaderProgram(GraphicsContext* context, RendererId id)
     : _context(context)
     , _id(id)
 {
-    _context->attachShader(_id, vertexShader.getId());
-    _context->attachShader(_id, fragmentShader.getId());
-
-    if (!_context->linkShaderProgram(_id))
-    {
-        Core::Error(_context->getShaderProgramInfoLog(_id));
-        _context->destroyShaderProgram(_id);
-        _context->destroyShader(fragmentShader.getId());
-        _context->destroyShader(vertexShader.getId());
-        Core::Assert(false, "shader program linking failed");
-    }
-
-    _context->detachShader(_id, vertexShader.getId());
-    _context->detachShader(_id, fragmentShader.getId());
 }
 
 ShaderProgram::~ShaderProgram()

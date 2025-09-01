@@ -1,16 +1,17 @@
-#include "Mesh.hpp"
-#include "Runic/Renderer/Buffer.hpp"
-#include "Runic/Renderer/GraphicsContext.hpp"
-#include "Runic/Renderer/VertexArray.hpp"
+#include "Runic/Renderer/Mesh.hpp"
 
 namespace Runic
 {
 
+std::unique_ptr<Mesh> Mesh::Create(GraphicsContext* context)
+{
+    return std::unique_ptr<Mesh>(new Mesh(context));
+}
+
 Mesh::Mesh(GraphicsContext* context)
     : _context(context)
 {
-    RendererId id = _context->createVertexArray();
-    _vertexArray  = std::make_unique<VertexArray>(_context, id);
+    _vertexArray = VertexArray::Create(_context);
 }
 
 void Mesh::addVertices(
@@ -18,9 +19,9 @@ void Mesh::addVertices(
     const std::vector<VertexAttribute>& layout,
     BufferUsage usage)
 {
-    size_t size   = vertices.size() * sizeof(float);
-    RendererId id = _context->createVertexBuffer(vertices.data(), size, usage);
-    _vertexArray->addVertexBuffer(std::make_unique<VertexBuffer>(_context, id, size), layout);
+    size_t size = vertices.size() * sizeof(float);
+    _vertexArray->addVertexBuffer(
+        VertexBuffer::Create(_context, vertices.data(), size, usage), layout);
 }
 
 void Mesh::setIndices(
@@ -28,7 +29,7 @@ void Mesh::setIndices(
 {
     RendererId id = _context->createIndexBuffer(indices.data(), indices.size(), type, usage);
     _vertexArray->setIndexBuffer(
-        std::make_unique<IndexBuffer>(_context, id, indices.size(), type, mode));
+        IndexBuffer::Create(_context, indices.data(), indices.size(), mode, type, usage));
 }
 
 void Mesh::draw(const ShaderProgram& shaderProgram) const

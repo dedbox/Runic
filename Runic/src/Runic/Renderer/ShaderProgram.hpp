@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GraphicsContext.hpp"
-#include "Shader.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
+#include "Runic/Renderer/Shader.hpp"
 
 namespace Runic
 {
@@ -9,11 +9,8 @@ namespace Runic
 class ShaderProgram
 {
 public:
-    ShaderProgram(
-        GraphicsContext* context,
-        RendererId id,
-        const Shader& vertexShader,
-        const Shader& fragmentShader);
+    static std::shared_ptr<ShaderProgram> Create(
+        GraphicsContext* context, Shader& vertexShader, Shader& fragmentShader);
 
     ~ShaderProgram();
 
@@ -44,6 +41,9 @@ private:
     GraphicsContext* _context;
     RendererId _id;
     mutable std::unordered_map<std::string, RendererId> _uniformLocations;
+
+    // hide constructor
+    ShaderProgram(GraphicsContext* context, RendererId id);
 
     RendererId getUniformLocation(const std::string& name) const;
 };

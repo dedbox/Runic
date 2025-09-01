@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GraphicsContext.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
 
 namespace Runic
 {
@@ -8,7 +8,8 @@ namespace Runic
 class Shader
 {
 public:
-    Shader(GraphicsContext* context, RendererId id, const std::string& source);
+    static std::unique_ptr<Shader> Create(
+        GraphicsContext* context, const std::string& source, ShaderType type);
 
     ~Shader();
 
@@ -20,11 +21,17 @@ public:
     Shader(const Shader&)            = delete;
     Shader& operator=(const Shader&) = delete;
 
-    RendererId getId() const { return _id; }
+    void attach(RendererId programId) const;
+    void detach(RendererId programId) const;
+
+    void destroy();
 
 private:
     GraphicsContext* _context;
     RendererId _id;
+
+    // hide constructor
+    Shader(GraphicsContext* context, RendererId id, const std::string& source);
 };
 
 } // namespace Runic

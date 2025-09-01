@@ -1,5 +1,4 @@
-#include "ShaderManager.hpp"
-#include "Runic/Renderer/GraphicsContext.hpp"
+#include "Runic/Renderer/ShaderManager.hpp"
 
 namespace Runic
 {
@@ -48,15 +47,10 @@ void ShaderManager::LoadShader(
     std::string vertexSource   = LoadFile(vertexPath);
     std::string fragmentSource = LoadFile(fragmentPath);
 
-    RendererId vertexId     = context->createShader(Runic::ShaderType::Vertex);
-    const auto vertexShader = std::make_unique<Shader>(context, vertexId, vertexSource);
+    const auto vertexShader   = Shader::Create(context, vertexSource, ShaderType::Vertex);
+    const auto fragmentShader = Shader::Create(context, fragmentSource, ShaderType::Fragment);
 
-    RendererId fragmentId     = context->createShader(Runic::ShaderType::Fragment);
-    const auto fragmentShader = std::make_unique<Shader>(context, fragmentId, fragmentSource);
-
-    RendererId shaderId = context->createShaderProgram();
-    ShaderManager::_shaders[name] =
-        std::make_shared<ShaderProgram>(context, shaderId, *vertexShader, *fragmentShader);
+    ShaderManager::_shaders[name] = ShaderProgram::Create(context, *vertexShader, *fragmentShader);
 }
 
 std::shared_ptr<ShaderProgram> ShaderManager::getShader(const std::string& name)

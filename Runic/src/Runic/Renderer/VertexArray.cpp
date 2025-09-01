@@ -66,6 +66,12 @@ static uint32_t AttributeTypeSize(AttributeType type)
 
 } // namespace
 
+std::unique_ptr<VertexArray> VertexArray::Create(GraphicsContext* context)
+{
+    RendererId id = context->createVertexArray();
+    return std::unique_ptr<VertexArray>(new VertexArray(context, id));
+}
+
 VertexArray::VertexArray(GraphicsContext* context, RendererId id)
     : _context(context)
     , _id(id)
