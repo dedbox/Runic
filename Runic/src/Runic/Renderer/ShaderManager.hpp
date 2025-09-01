@@ -6,26 +6,32 @@
 namespace Runic
 {
 
+using Strings = std::pair<std::string, std::string>;
+
 class ShaderManager
 {
 public:
     /** Loads and caches ShaderProgram objects from GLSL source files.
      *
      * Finds shader source files in the "shaders/" directory with the appropriate ".vert" or ".frag"
-     * file extension. The corresponding ShaderProgram object is stored in memory under the name
-     * "vertexName-FragmentName".
+     * file extension.
      *
      * For example, if vertexName is "Position" and fragmentName is "FlatUniform", the files
      * "shaders/Position.vert" and "shaders/FlatUniform.frag" are compiled and linked into a
-     * ShaderProgram object stored in memory under the name "Position-FlatUniform".
+     * ShaderProgram object.
      */
-    static void LoadShader(
+    static void Load(
         GraphicsContext* context, const std::string& vertexName, const std::string& fragmentName);
 
-    static std::shared_ptr<ShaderProgram> getShader(const std::string& name);
+    /** Retrieves ShaderProgram objects from the shader cache.
+     *
+     * This method will Load the ShaderProgram object if it hasn't already been loaded.
+     */
+    static std::shared_ptr<ShaderProgram> Find(
+        GraphicsContext* context, const std::string& vertexName, const std::string& fragmentName);
 
 private:
-    static std::unordered_map<std::string, std::shared_ptr<ShaderProgram>> _shaders;
+    static std::map<Strings, std::shared_ptr<ShaderProgram>> _shaders;
 };
 
 } // namespace Runic

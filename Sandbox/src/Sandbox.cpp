@@ -35,7 +35,8 @@ public:
             Runic::IndexType::Int,
             Runic::BufferUsage::Static);
 
-        _shaderProgram = Runic::ShaderManager::getShader("PositionColor3-FlatInterpolate");
+        _shaderProgram =
+            Runic::ShaderManager::Find(_context, "PositionColor3TexCoord", "FlatInterpolate");
     }
 
     void update() override
@@ -57,10 +58,9 @@ public:
     Sandbox()
         : Application({.name = "Sandbox"})
     {
-        auto context = getGraphicsContext();
+        Runic::Log::SetLevel(spdlog::level::info);
 
-        Runic::ShaderManager::LoadShader(context, "Position", "FlatUniform");
-        Runic::ShaderManager::LoadShader(context, "PositionColor3", "FlatInterpolate");
+        auto context = getGraphicsContext();
 
         getLayerManager().push_back(std::make_unique<TriangleLayer>(context));
     }

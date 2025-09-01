@@ -30,17 +30,16 @@ static std::string LoadFile(const std::string& path)
 
 } // namespace
 
-std::unordered_map<std::string, std::shared_ptr<ShaderProgram>> ShaderManager::_shaders;
+std::map<Strings, std::shared_ptr<ShaderProgram>> ShaderManager::_shaders;
 
-void ShaderManager::LoadShader(
+void ShaderManager::Load(
     GraphicsContext* context, const std::string& vertexName, const std::string& fragmentName)
 {
+    const Strings key(vertexName, fragmentName);
 
-    const std::string shaderName = vertexName + "-" + fragmentName;
-
-    if (ShaderManager::_shaders.count(shaderName))
+    if (ShaderManager::_shaders.count(key))
     {
-        Core::Warn("Multiple attempts to load shader `{}'", shaderName);
+        Core::Warn("Multiple attempts to load shader `{{{}, {}}}'", vertexName, fragmentName);
         return;
     }
 
@@ -50,16 +49,18 @@ void ShaderManager::LoadShader(
     const auto vertexShader   = Shader::Create(context, vertexSource, ShaderType::Vertex);
     const auto fragmentShader = Shader::Create(context, fragmentSource, ShaderType::Fragment);
 
-    ShaderManager::_shaders[shaderName] =
-        ShaderProgram::Create(context, *vertexShader, *fragmentShader);
+    ShaderManager::_shaders[key] = ShaderProgram::Create(context, *vertexShader, *fragmentShader);
 }
 
-std::shared_ptr<ShaderProgram> ShaderManager::getShader(const std::string& name)
+std::shared_ptr<ShaderProgram> ShaderManager::Find(
+    GraphicsContext* context, const std::string& vertexName, const std::string& fragmentName)
 {
-    Core::Assert(
-        ShaderManager::_shaders.count(name), "Attempted to get unloaded shader `{}'", name);
+    const Strings key(vertexName, fragmentName);
 
-    return ShaderManager::_shaders[name];
+    if (!_shaders.contains(key))
+        Load(context, vertexName, fragmentName);
+
+    return _shaders[key];
 }
 
 } // namespace Runic
