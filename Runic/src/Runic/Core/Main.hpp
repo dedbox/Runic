@@ -11,7 +11,7 @@
 
 inline SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*arg*/)
 {
-    std::unique_ptr<Runic::Application> app{Runic::CreateApplication()};
+    std::unique_ptr<Runic::Application> app = Runic::CreateApplication();
 
     *appstate = app.release();
 
@@ -20,9 +20,10 @@ inline SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*arg*/)
 
 inline SDL_AppResult SDL_AppIterate(void* appstate)
 {
-    Runic::Application* app{static_cast<Runic::Application*>(appstate)};
+    auto app = static_cast<Runic::Application*>(appstate);
 
-    if (app->isDone()) return SDL_APP_SUCCESS;
+    if (app->isDone())
+        return SDL_APP_SUCCESS;
 
     app->onUpdate();
 
@@ -31,19 +32,22 @@ inline SDL_AppResult SDL_AppIterate(void* appstate)
 
 inline SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 {
-    Runic::Application* app{static_cast<Runic::Application*>(appstate)};
+    auto app = static_cast<Runic::Application*>(appstate);
 
     switch (event->type)
     {
-        // Window Events -------------------------------------------------------
+        // Window Events ---------------------------------------------------------------------------
 
     case SDL_EVENT_QUIT:
-    case SDL_EVENT_WINDOW_CLOSE_REQUESTED: app->dispatchEvent(Runic::WindowCloseEvent()); break;
+    case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+        app->dispatchEvent(Runic::WindowCloseEvent());
+        break;
 
-    case SDL_EVENT_WINDOW_FOCUS_GAINED: app->dispatchEvent(Runic::WindowFocusEvent()); break;
+    case SDL_EVENT_WINDOW_FOCUS_GAINED:
+        app->dispatchEvent(Runic::WindowFocusEvent());
+        break;
 
-    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
-    {
+    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: {
         int x{}, y{};
         SDL_GetWindowSizeInPixels(app->getWindow().getNative(), &x, &y);
         app->dispatchEvent(Runic::WindowResizeEvent(x, y));
@@ -54,10 +58,9 @@ inline SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
         app->dispatchEvent(Runic::WindowUnfocusEvent());
         break;
 
-        // Key Events ----------------------------------------------------------
+        // Key Events ------------------------------------------------------------------------------
 
-    case SDL_EVENT_KEY_DOWN:
-    {
+    case SDL_EVENT_KEY_DOWN: {
         Runic::Key key{static_cast<Runic::Key>(event->key.key)};
         app->dispatchEvent(Runic::KeyPressEvent(key, event->key.repeat));
         break;
@@ -67,19 +70,21 @@ inline SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
         app->dispatchEvent(Runic::KeyReleaseEvent(static_cast<Runic::Key>(event->key.key)));
         break;
 
-        // Mouse Events --------------------------------------------------------
+        // Mouse Events ----------------------------------------------------------------------------
 
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
         app->dispatchEvent(
             Runic::MouseButtonPressEvent(
-                static_cast<Runic::MouseButton>(event->button.button), event->button.x,
+                static_cast<Runic::MouseButton>(event->button.button),
+                event->button.x,
                 event->button.y));
         break;
 
     case SDL_EVENT_MOUSE_BUTTON_UP:
         app->dispatchEvent(
             Runic::MouseButtonReleaseEvent(
-                static_cast<Runic::MouseButton>(event->button.button), event->button.x,
+                static_cast<Runic::MouseButton>(event->button.button),
+                event->button.x,
                 event->button.y));
         break;
 
@@ -91,7 +96,8 @@ inline SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
         app->dispatchEvent(Runic::MouseScrollEvent(event->wheel.x, event->wheel.y));
         break;
 
-    default: break;
+    default:
+        break;
     }
 
     return SDL_APP_CONTINUE;
