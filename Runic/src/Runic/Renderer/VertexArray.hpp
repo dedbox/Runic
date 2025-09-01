@@ -19,7 +19,7 @@ struct VertexAttribute
 class VertexArray
 {
 public:
-    VertexArray(GraphicsContext* gc, RendererId id);
+    VertexArray(GraphicsContext* context, RendererId id);
 
     // allow moving
     VertexArray(VertexArray&& other) noexcept;
@@ -42,7 +42,7 @@ public:
     void draw() const;
 
 private:
-    GraphicsContext* _gc;
+    GraphicsContext* _context;
     RendererId _id;
     std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffers;
     std::unique_ptr<IndexBuffer> _indexBuffer;

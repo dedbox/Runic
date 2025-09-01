@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Renderer.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
 #include "ShaderProgram.hpp"
 
 namespace Runic
@@ -10,7 +10,7 @@ class ShaderManager
 {
 public:
     static void LoadShader(
-        const Renderer& renderer,
+        GraphicsContext* context,
         const std::string& name,
         const std::string& vertexPath,
         const std::string& fragmentPath);

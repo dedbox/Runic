@@ -11,7 +11,7 @@ public:
 
     const std::vector<Pair>& data() const { return _data; }
 
-    [[nodiscard]] bool empty() const { return _data.empty(); }
+    bool empty() const { return _data.empty(); }
 
     void add(const Key& key, std::unique_ptr<Value> value)
     {

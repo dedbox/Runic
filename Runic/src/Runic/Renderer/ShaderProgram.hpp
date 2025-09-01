@@ -1,14 +1,5 @@
 #pragma once
 
-#include "glm/ext/matrix_float3x3.hpp"
-#include "glm/ext/matrix_float4x4.hpp"
-#include "glm/ext/vector_float2.hpp"
-#include "glm/ext/vector_float3.hpp"
-#include "glm/ext/vector_float4.hpp"
-#include "glm/ext/vector_int2.hpp"
-#include "glm/ext/vector_int3.hpp"
-#include "glm/ext/vector_int4.hpp"
-
 #include "GraphicsContext.hpp"
 #include "Shader.hpp"
 
@@ -19,7 +10,7 @@ class ShaderProgram
 {
 public:
     ShaderProgram(
-        GraphicsContext* gc,
+        GraphicsContext* context,
         RendererId id,
         const Shader& vertexShader,
         const Shader& fragmentShader);
@@ -34,7 +25,8 @@ public:
     ShaderProgram(const ShaderProgram&)            = delete;
     ShaderProgram& operator=(const ShaderProgram&) = delete;
 
-    void use() const;
+    void bind() const;
+    void unbind() const;
 
     void setUniform(const std::string& name, bool value) const;
     void setUniform(const std::string& name, int value) const;
@@ -49,7 +41,7 @@ public:
     void setUniform(const std::string& name, const glm::mat4& value) const;
 
 private:
-    GraphicsContext* _gc;
+    GraphicsContext* _context;
     RendererId _id;
     mutable std::unordered_map<std::string, RendererId> _uniformLocations;
 

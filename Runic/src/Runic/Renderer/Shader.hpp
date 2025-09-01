@@ -8,7 +8,7 @@ namespace Runic
 class Shader
 {
 public:
-    Shader(GraphicsContext* gc, RendererId id, const std::string& source);
+    Shader(GraphicsContext* context, RendererId id, const std::string& source);
 
     ~Shader();
 
@@ -20,10 +20,10 @@ public:
     Shader(const Shader&)            = delete;
     Shader& operator=(const Shader&) = delete;
 
-    [[nodiscard]] RendererId getId() const { return _id; }
+    RendererId getId() const { return _id; }
 
 private:
-    GraphicsContext* _gc;
+    GraphicsContext* _context;
     RendererId _id;
 };
 

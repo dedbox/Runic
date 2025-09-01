@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GraphicsContext.hpp"
-#include "Renderer.hpp"
+#include "Runic/Renderer/ShaderProgram.hpp"
 #include "VertexArray.hpp"
 
 namespace Runic
@@ -10,19 +10,20 @@ namespace Runic
 class Mesh
 {
 public:
-    explicit Mesh(Renderer* renderer);
+    explicit Mesh(GraphicsContext* context);
 
     void addVertices(
         const std::vector<float>& vertices,
         const std::vector<VertexAttribute>& layout,
         BufferUsage usage);
 
-    void setIndices(const std::vector<uint32_t>& indices, IndexMode mode, BufferUsage usage);
+    void setIndices(
+        const std::vector<uint32_t>& indices, IndexMode mode, IndexType type, BufferUsage usage);
 
     void draw(const ShaderProgram& shaderProgram) const;
 
 private:
-    Renderer* _renderer;
+    GraphicsContext* _context;
     std::unique_ptr<VertexArray> _vertexArray;
 };
 

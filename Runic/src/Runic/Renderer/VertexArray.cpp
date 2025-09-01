@@ -66,8 +66,8 @@ static uint32_t AttributeTypeSize(AttributeType type)
 
 } // namespace
 
-VertexArray::VertexArray(GraphicsContext* gc, RendererId id)
-    : _gc(gc)
+VertexArray::VertexArray(GraphicsContext* context, RendererId id)
+    : _context(context)
     , _id(id)
 {
     bind();
@@ -77,13 +77,13 @@ VertexArray::~VertexArray()
 {
     if (_id != 0)
     {
-        _gc->destroyVertexArray(_id);
+        _context->destroyVertexArray(_id);
         _id = 0;
     }
 }
 
 VertexArray::VertexArray(VertexArray&& other) noexcept
-    : _gc(std::exchange(other._gc, nullptr))
+    : _context(std::exchange(other._context, nullptr))
     , _id(std::exchange(other._id, 0))
 {
 }
@@ -92,21 +92,21 @@ VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
 {
     if (this != &other)
     {
-        _gc->destroyVertexArray(_id);
-        _gc = std::exchange(other._gc, nullptr);
-        _id = std::exchange(other._id, 0);
+        _context->destroyVertexArray(_id);
+        _context = std::exchange(other._context, nullptr);
+        _id      = std::exchange(other._id, 0);
     }
     return *this;
 }
 
 void VertexArray::bind() const
 {
-    _gc->bindVertexArray(_id);
+    _context->bindVertexArray(_id);
 }
 
 void VertexArray::unbind() const
 {
-    _gc->unbindVertexArray();
+    _context->unbindVertexArray();
 }
 
 void VertexArray::addVertexBuffer(
@@ -119,8 +119,8 @@ void VertexArray::addVertexBuffer(
     uint32_t offset = 0;
     for (const auto&& [index, attribute] : layout | std::ranges::views::enumerate)
     {
-        _gc->enableVertexAttribute(index);
-        _gc->defineVertexAttributeData(
+        _context->enableVertexAttribute(index);
+        _context->defineVertexAttributeData(
             index,
             AttributeTypeComponentCount(attribute.type),
             attribute.type,
@@ -140,7 +140,7 @@ void VertexArray::setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
 
 void VertexArray::draw() const
 {
-    _gc->drawIndexed(
+    _context->drawIndexed(
         _indexBuffer->getMode(), _indexBuffer->getCount(), _indexBuffer->getType(), nullptr);
 }
 

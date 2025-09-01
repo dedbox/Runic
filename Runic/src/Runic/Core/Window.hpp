@@ -10,9 +10,9 @@ constexpr uint32_t DEFAULT_HEIGHT{720};
 
 struct WindowData
 {
-    std::string title{"Runic Engine"};
-    uint32_t width{DEFAULT_WIDTH};
-    uint32_t height{DEFAULT_HEIGHT};
+    std::string title = "Runic Engine";
+    uint32_t width    = DEFAULT_WIDTH;
+    uint32_t height   = DEFAULT_HEIGHT;
 };
 
 class Window
@@ -20,13 +20,13 @@ class Window
 public:
     explicit Window(const WindowData& data);
 
-    [[nodiscard]] SDL_Window* getNative() const { return _native; }
+    SDL_Window* getNative() const { return _native; }
 
     void show() const;
     void hide() const;
 
 private:
-    SDL_Window* _native{nullptr};
+    SDL_Window* _native = nullptr;
 };
 
 } // namespace Runic

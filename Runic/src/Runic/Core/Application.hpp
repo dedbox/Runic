@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Event.hpp"
-#include "LayerManager.hpp"
+#include "Runic/Core/Event.hpp"
+#include "Runic/Core/LayerManager.hpp"
+#include "Runic/Core/Window.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
 #include "Runic/Renderer/Renderer.hpp"
 
 namespace Runic
@@ -26,9 +28,9 @@ public:
     Application& operator=(const Application& other)     = delete;
     Application& operator=(Application&& other) noexcept = delete;
 
-    Renderer& getRenderer() { return *_renderer; }
-    GraphicsContext& getGraphicsContext() { return _renderer->getGraphicsContext(); }
-    Window& getWindow() { return _renderer->getGraphicsContext().getWindow(); }
+    Window* getWindow() { return _window.get(); }
+    Renderer* getRenderer() { return _renderer.get(); }
+    GraphicsContext* getGraphicsContext() { return _context.get(); }
     LayerManager& getLayerManager() { return _layers; }
 
     virtual void onUpdate();
@@ -37,11 +39,12 @@ public:
     void dispatchEvent(const EventType& event)
     {
         for (auto& _layer : std::ranges::reverse_view(_layers))
-            if (_layer->handleEvent(event)) return;
+            if (_layer->handleEvent(event))
+                return;
         handleSystemEvent(event);
     }
 
-    [[nodiscard]] bool isDone() const { return _done; }
+    bool isDone() const { return _done; }
 
 protected:
     template <typename EventType>
@@ -57,10 +60,13 @@ protected:
     }
 
 private:
+    std::unique_ptr<Window> _window;
     std::unique_ptr<Renderer> _renderer;
-    EventDispatcher _systemDispatcher;
+    std::unique_ptr<GraphicsContext> _context;
     LayerManager _layers;
-    bool _done{false};
+
+    EventDispatcher _systemDispatcher;
+    bool _done = false;
 };
 
 extern std::unique_ptr<Application> CreateApplication();

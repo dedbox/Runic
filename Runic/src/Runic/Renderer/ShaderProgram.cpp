@@ -4,33 +4,36 @@ namespace Runic
 {
 
 ShaderProgram::ShaderProgram(
-    GraphicsContext* gc, RendererId id, const Shader& vertexShader, const Shader& fragmentShader)
-    : _gc(gc)
+    GraphicsContext* context,
+    RendererId id,
+    const Shader& vertexShader,
+    const Shader& fragmentShader)
+    : _context(context)
     , _id(id)
 {
-    _gc->attachShader(_id, vertexShader.getId());
-    _gc->attachShader(_id, fragmentShader.getId());
+    _context->attachShader(_id, vertexShader.getId());
+    _context->attachShader(_id, fragmentShader.getId());
 
-    if (!_gc->linkShaderProgram(_id))
+    if (!_context->linkShaderProgram(_id))
     {
-        Core::Error(_gc->getShaderProgramInfoLog(_id));
-        _gc->destroyShaderProgram(_id);
-        _gc->destroyShader(fragmentShader.getId());
-        _gc->destroyShader(vertexShader.getId());
+        Core::Error(_context->getShaderProgramInfoLog(_id));
+        _context->destroyShaderProgram(_id);
+        _context->destroyShader(fragmentShader.getId());
+        _context->destroyShader(vertexShader.getId());
         Core::Assert(false, "shader program linking failed");
     }
 
-    _gc->detachShader(_id, vertexShader.getId());
-    _gc->detachShader(_id, fragmentShader.getId());
+    _context->detachShader(_id, vertexShader.getId());
+    _context->detachShader(_id, fragmentShader.getId());
 }
 
 ShaderProgram::~ShaderProgram()
 {
-    _gc->destroyShaderProgram(_id);
+    _context->destroyShaderProgram(_id);
 }
 
 ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
-    : _gc(std::exchange(other._gc, nullptr))
+    : _context(std::exchange(other._context, nullptr))
     , _id(std::exchange(other._id, 0))
 {
 }
@@ -40,71 +43,76 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept
 {
     if (this != &other)
     {
-        _gc->destroyShaderProgram(_id);
-        _gc = std::exchange(other._gc, nullptr);
-        _id = std::exchange(other._id, 0);
+        _context->destroyShaderProgram(_id);
+        _context = std::exchange(other._context, nullptr);
+        _id      = std::exchange(other._id, 0);
     }
     return *this;
 }
 
-void ShaderProgram::use() const
+void ShaderProgram::bind() const
 {
-    _gc->useShaderProgram(_id);
+    _context->useShaderProgram(_id);
+}
+
+void ShaderProgram::unbind() const
+{
+    _context->useShaderProgram(0);
 }
 
 void ShaderProgram::setUniform(const std::string& name, bool value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, int value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, const glm::ivec2& value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, const glm::ivec3& value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, const glm::ivec4& value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, float value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, const glm::vec2& value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, const glm::vec3& value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, const glm::vec4& value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, const glm::mat3& value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 void ShaderProgram::setUniform(const std::string& name, const glm::mat4& value) const
 {
-    _gc->setUniform(getUniformLocation(name), value);
+    _context->setUniform(getUniformLocation(name), value);
 }
 
 RendererId ShaderProgram::getUniformLocation(const std::string& name) const
@@ -112,7 +120,7 @@ RendererId ShaderProgram::getUniformLocation(const std::string& name) const
     if (_uniformLocations.count(name))
         return _uniformLocations[name];
 
-    RendererId location     = _gc->getUniformLocation(_id, name);
+    RendererId location     = _context->getUniformLocation(_id, name);
     _uniformLocations[name] = location;
     return location;
 }

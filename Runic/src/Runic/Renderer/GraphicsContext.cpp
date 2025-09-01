@@ -1,6 +1,5 @@
 #include "GraphicsContext.hpp"
 
-#include "glad/gl.h"
 #include "glm/gtc/type_ptr.hpp"
 
 namespace Runic
@@ -99,14 +98,14 @@ void GLAPIENTRY GLDebugMessageCallback(
 
 // Graphics Context --------------------------------------------------------------------------------
 
-GraphicsContext::GraphicsContext(const Window& window)
+GraphicsContext::GraphicsContext(SDL_Window* window)
     : _window(window)
 {
 }
 
 void GraphicsContext::init()
 {
-    _native = SDL_GL_CreateContext(_window.getNative());
+    _native = SDL_GL_CreateContext(_window);
 
     if (!_native)
         throw SDLException("Could not create OpenGL context");
@@ -139,11 +138,29 @@ void GraphicsContext::init()
     }
 }
 
+void GraphicsContext::setViewport(const glm::ivec2& size, const glm::ivec2& offset) const
+{
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+    glViewport(offset.x, offset.y, size.x, size.y);
+}
+
+void GraphicsContext::setClearColor(const glm::vec4& color) const
+{
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+    glClearColor(color.r, color.g, color.b, color.a);
+}
+
+void GraphicsContext::clear() const
+{
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
 // Vertex Array ------------------------------------------------------------------------------------
 
 RendererId GraphicsContext::createVertexArray() const
 {
-    RendererId id{};
+    RendererId id = 0;
     glGenVertexArrays(1, &id);
     return id;
 }
@@ -202,7 +219,7 @@ void GraphicsContext::destroyBuffer(RendererId id) const
 RendererId GraphicsContext::createVertexBuffer(
     const void* data, size_t size, BufferUsage usage) const
 {
-    RendererId id{};
+    RendererId id = 0;
     glGenBuffers(1, &id);
     glBindBuffer(GL_ARRAY_BUFFER, id);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), data, to_GLenum(usage));

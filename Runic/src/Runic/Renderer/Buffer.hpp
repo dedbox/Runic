@@ -22,10 +22,10 @@ public:
     virtual void unbind() const = 0;
 
 protected:
-    GraphicsContext* _gc;
+    GraphicsContext* _context;
     RendererId _id;
 
-    Buffer(GraphicsContext* gc, RendererId id);
+    Buffer(GraphicsContext* context, RendererId id);
 };
 
 // Vertex Buffer ---------------------------------------------------------------
@@ -33,7 +33,7 @@ protected:
 class VertexBuffer : public Buffer
 {
 public:
-    VertexBuffer(GraphicsContext* gc, RendererId id, size_t size);
+    VertexBuffer(GraphicsContext* context, RendererId id, size_t size);
 
     void bind() const override;
     void unbind() const override;
@@ -47,11 +47,12 @@ private:
 class IndexBuffer : public Buffer
 {
 public:
-    IndexBuffer(GraphicsContext* gc, RendererId id, size_t count, IndexType type, IndexMode mode);
+    IndexBuffer(
+        GraphicsContext* context, RendererId id, size_t count, IndexType type, IndexMode mode);
 
-    [[nodiscard]] size_t getCount() const { return _count; }
-    [[nodiscard]] IndexType getType() const { return _type; }
-    [[nodiscard]] IndexMode getMode() const { return _mode; }
+    size_t getCount() const { return _count; }
+    IndexType getType() const { return _type; }
+    IndexMode getMode() const { return _mode; }
 
     void bind() const override;
     void unbind() const override;

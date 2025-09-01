@@ -28,7 +28,7 @@ public:
     virtual void update() {}
     virtual void render() {}
 
-    [[nodiscard]] const std::string& getName() const { return _name; }
+    const std::string& getName() const { return _name; }
 
     template <typename EventType>
     void addEventHandler(std::function<bool(const EventType&)> handler)

@@ -1,4 +1,5 @@
 #include "ShaderManager.hpp"
+#include "Runic/Renderer/GraphicsContext.hpp"
 
 namespace Runic
 {
@@ -33,7 +34,7 @@ static std::string LoadFile(const std::string& path)
 std::unordered_map<std::string, std::shared_ptr<ShaderProgram>> ShaderManager::_shaders;
 
 void ShaderManager::LoadShader(
-    const Renderer& renderer,
+    GraphicsContext* context,
     const std::string& name,
     const std::string& vertexPath,
     const std::string& fragmentPath)
@@ -47,10 +48,15 @@ void ShaderManager::LoadShader(
     std::string vertexSource   = LoadFile(vertexPath);
     std::string fragmentSource = LoadFile(fragmentPath);
 
-    const auto vertexShader   = renderer.createShader(vertexSource, Runic::ShaderType::Vertex);
-    const auto fragmentShader = renderer.createShader(fragmentSource, Runic::ShaderType::Fragment);
+    RendererId vertexId     = context->createShader(Runic::ShaderType::Vertex);
+    const auto vertexShader = std::make_unique<Shader>(context, vertexId, vertexSource);
 
-    ShaderManager::_shaders[name] = renderer.createShaderProgram(*vertexShader, *fragmentShader);
+    RendererId fragmentId     = context->createShader(Runic::ShaderType::Fragment);
+    const auto fragmentShader = std::make_unique<Shader>(context, fragmentId, fragmentSource);
+
+    RendererId shaderId = context->createShaderProgram();
+    ShaderManager::_shaders[name] =
+        std::make_shared<ShaderProgram>(context, shaderId, *vertexShader, *fragmentShader);
 }
 
 std::shared_ptr<ShaderProgram> ShaderManager::getShader(const std::string& name)

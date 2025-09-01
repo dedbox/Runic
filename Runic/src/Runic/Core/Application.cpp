@@ -19,12 +19,14 @@ Application::Application(const AppData& appData, const WindowData& windowData)
             appData.name.c_str(), appData.version.c_str(), appData.identifier.c_str()))
         throw SDLException("Could not set app metadata");
 
-    Window window(windowData);
-    std::unique_ptr<GraphicsContext> gc = std::make_unique<GraphicsContext>(window);
-    gc->init();
+    _window = std::make_unique<Window>(windowData);
 
-    _renderer = std::make_unique<Renderer>(std::move(gc));
-    _renderer->setViewport({windowData.width, windowData.height});
+    std::unique_ptr<GraphicsContext> context =
+        std::make_unique<GraphicsContext>(_window->getNative());
+    context->init();
+
+    _renderer = std::make_unique<Renderer>(_window->getNative());
+    _context->setViewport({windowData.width, windowData.height});
 
     addSystemEventHandler<WindowCloseEvent>([&](const auto& /*event*/) {
         _done = true;
@@ -32,11 +34,11 @@ Application::Application(const AppData& appData, const WindowData& windowData)
     });
 
     addSystemEventHandler<WindowResizeEvent>([&](const WindowResizeEvent& event) {
-        _renderer->setViewport({event.width, event.height});
+        _context->setViewport({event.width, event.height});
         return true;
     });
 
-    window.show();
+    _window->show();
 }
 
 void Application::onUpdate()

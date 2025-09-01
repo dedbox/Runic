@@ -9,8 +9,7 @@
 #include "glm/ext/vector_int2.hpp"
 #include "glm/ext/vector_int3.hpp"
 #include "glm/ext/vector_int4.hpp"
-
-#include "Runic/Core/Window.hpp"
+#include <SDL3/SDL_video.h>
 
 namespace Runic
 {
@@ -151,12 +150,18 @@ inline GLenum to_GLenum(PolygonMode mode)
 class GraphicsContext
 {
 public:
-    explicit GraphicsContext(const Window& window);
+    explicit GraphicsContext(SDL_Window* window);
 
     void init();
 
-    Window& getWindow() { return _window; }
+private:
+    SDL_Window* _window;
+    SDL_GLContext _native = nullptr;
 
+public:
+    void setViewport(const glm::ivec2& size, const glm::ivec2& offset = {0, 0}) const;
+    void setClearColor(const glm::vec4& color) const;
+    void clear() const;
     // Vertex Array
 
     RendererId createVertexArray() const;
@@ -237,10 +242,6 @@ public:
     void setPolygonMode(PolygonMode mode) const;
 
     void drawIndexed(IndexMode mode, size_t count, IndexType type, const void* offset) const;
-
-private:
-    Window _window;
-    SDL_GLContext _native{nullptr};
 };
 
 } // namespace Runic
