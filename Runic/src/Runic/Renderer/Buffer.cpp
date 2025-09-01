@@ -12,7 +12,7 @@ Buffer::~Buffer()
 {
     if (_id != 0)
     {
-        _gc->deleteBuffer(_id);
+        _gc->destroyBuffer(_id);
         _id = 0;
     }
 }
@@ -27,7 +27,7 @@ Buffer& Buffer::operator=(Buffer&& other) noexcept
 {
     if (this != &other)
     {
-        _gc->deleteBuffer(_id);
+        _gc->destroyBuffer(_id);
         _gc = std::exchange(other._gc, nullptr);
         _id = std::exchange(other._id, 0);
     }

@@ -24,42 +24,80 @@ void GLAPIENTRY GLDebugMessageCallback(
 
     switch (source)
     {
-    case GL_DEBUG_SOURCE_API: sourceStr = "API"; break;
-    case GL_DEBUG_SOURCE_WINDOW_SYSTEM: sourceStr = "WINDOW SYSTEM"; break;
-    case GL_DEBUG_SOURCE_SHADER_COMPILER: sourceStr = "SHADER COMPILER"; break;
-    case GL_DEBUG_SOURCE_THIRD_PARTY: sourceStr = "THIRD PARTY"; break;
-    case GL_DEBUG_SOURCE_APPLICATION: sourceStr = "APPLICATION"; break;
-    case GL_DEBUG_SOURCE_OTHER: sourceStr = "OTHER"; break;
-    default: sourceStr = "UNKNOWN"; break;
+    case GL_DEBUG_SOURCE_API:
+        sourceStr = "API";
+        break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+        sourceStr = "WINDOW SYSTEM";
+        break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER:
+        sourceStr = "SHADER COMPILER";
+        break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY:
+        sourceStr = "THIRD PARTY";
+        break;
+    case GL_DEBUG_SOURCE_APPLICATION:
+        sourceStr = "APPLICATION";
+        break;
+    case GL_DEBUG_SOURCE_OTHER:
+        sourceStr = "OTHER";
+        break;
+    default:
+        sourceStr = "UNKNOWN";
+        break;
     }
 
     switch (type)
     {
-    case GL_DEBUG_TYPE_ERROR: typeStr = "ERROR"; break;
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: typeStr = "DEPRECATED BEHAVIOR"; break;
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: typeStr = "UDEFINED BEHAVIOR"; break;
-    case GL_DEBUG_TYPE_PORTABILITY: typeStr = "PORTABILITY"; break;
-    case GL_DEBUG_TYPE_PERFORMANCE: typeStr = "PERFORMANCE"; break;
-    case GL_DEBUG_TYPE_OTHER: typeStr = "OTHER"; break;
-    case GL_DEBUG_TYPE_MARKER: typeStr = "MARKER"; break;
-    default: typeStr = "UNKNOWN"; break;
+    case GL_DEBUG_TYPE_ERROR:
+        typeStr = "ERROR";
+        break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+        typeStr = "DEPRECATED BEHAVIOR";
+        break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+        typeStr = "UDEFINED BEHAVIOR";
+        break;
+    case GL_DEBUG_TYPE_PORTABILITY:
+        typeStr = "PORTABILITY";
+        break;
+    case GL_DEBUG_TYPE_PERFORMANCE:
+        typeStr = "PERFORMANCE";
+        break;
+    case GL_DEBUG_TYPE_OTHER:
+        typeStr = "OTHER";
+        break;
+    case GL_DEBUG_TYPE_MARKER:
+        typeStr = "MARKER";
+        break;
+    default:
+        typeStr = "UNKNOWN";
+        break;
     }
 
     std::string fmt = "GLDEBUG({}) [{} {}]: {}";
 
     switch (severity)
     {
-    case GL_DEBUG_SEVERITY_HIGH: Core::Error(fmt, id, sourceStr, typeStr, msg); break;
-    case GL_DEBUG_SEVERITY_MEDIUM: Core::Warn(fmt, id, sourceStr, typeStr, msg); break;
-    case GL_DEBUG_SEVERITY_LOW: Core::Info(fmt, id, sourceStr, typeStr, msg); break;
+    case GL_DEBUG_SEVERITY_HIGH:
+        Core::Error(fmt, id, sourceStr, typeStr, msg);
+        break;
+    case GL_DEBUG_SEVERITY_MEDIUM:
+        Core::Warn(fmt, id, sourceStr, typeStr, msg);
+        break;
+    case GL_DEBUG_SEVERITY_LOW:
+        Core::Info(fmt, id, sourceStr, typeStr, msg);
+        break;
     case GL_DEBUG_SEVERITY_NOTIFICATION:
-    default: Core::Trace(fmt, id, sourceStr, typeStr, msg); break;
+    default:
+        Core::Trace(fmt, id, sourceStr, typeStr, msg);
+        break;
     }
 }
 
 } // namespace
 
-// Graphics Context ------------------------------------------------------------
+// Graphics Context --------------------------------------------------------------------------------
 
 GraphicsContext::GraphicsContext(const Window& window)
     : _window(window)
@@ -70,10 +108,12 @@ void GraphicsContext::init()
 {
     _native = SDL_GL_CreateContext(_window.getNative());
 
-    if (!_native) throw SDLException("Could not create OpenGL context");
+    if (!_native)
+        throw SDLException("Could not create OpenGL context");
 
     const int version = gladLoadGL(SDL_GL_GetProcAddress);
-    if (!version) throw std::runtime_error("Could not initialize OpenGL loader!");
+    if (!version)
+        throw std::runtime_error("Could not initialize OpenGL loader!");
 
     // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
     Core::Info(
@@ -99,7 +139,7 @@ void GraphicsContext::init()
     }
 }
 
-// Vertex Array ----------------------------------------------------------------
+// Vertex Array ------------------------------------------------------------------------------------
 
 RendererId GraphicsContext::createVertexArray() const
 {
@@ -108,7 +148,7 @@ RendererId GraphicsContext::createVertexArray() const
     return id;
 }
 
-void GraphicsContext::deleteVertexArray(RendererId id) const
+void GraphicsContext::destroyVertexArray(RendererId id) const
 {
     Core::Assert(id != 0, "attempt to delete zero array id");
     glDeleteVertexArrays(1, &id);
@@ -125,7 +165,7 @@ void GraphicsContext::unbindVertexArray() const
     glBindVertexArray(0);
 }
 
-// Vertex Attribute ------------------------------------------------------------
+// Vertex Attribute --------------------------------------------------------------------------------
 
 void GraphicsContext::enableVertexAttribute(uint32_t index) const
 {
@@ -141,14 +181,26 @@ void GraphicsContext::defineVertexAttributeData(
     const void* offset) const
 {
     glVertexAttribPointer(
-        index, static_cast<GLint>(count), to_GLenum(type), normalize ? GL_TRUE : GL_FALSE,
-        static_cast<GLsizei>(stride), offset);
+        index,
+        static_cast<GLint>(count),
+        to_GLenum(type),
+        normalize ? GL_TRUE : GL_FALSE,
+        static_cast<GLsizei>(stride),
+        offset);
 }
 
-// Vertex Buffer ---------------------------------------------------------------
+// Buffer ------------------------------------------------------------------------------------------
 
-RendererId
-GraphicsContext::createVertexBuffer(const void* data, size_t size, BufferUsage usage) const
+void GraphicsContext::destroyBuffer(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to delete non-zero buffer id");
+    glDeleteBuffers(1, &id);
+}
+
+// Vertex Buffer -----------------------------------------------------------------------------------
+
+RendererId GraphicsContext::createVertexBuffer(
+    const void* data, size_t size, BufferUsage usage) const
 {
     RendererId id{};
     glGenBuffers(1, &id);
@@ -168,7 +220,7 @@ void GraphicsContext::unbindVertexBuffer() const
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-// Index Buffer ----------------------------------------------------------------
+// Index Buffer ------------------------------------------------------------------------------------
 
 RendererId GraphicsContext::createIndexBuffer(
     const void* data, size_t count, IndexType type, BufferUsage usage) const
@@ -177,7 +229,9 @@ RendererId GraphicsContext::createIndexBuffer(
     glGenBuffers(1, &id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(to_GLenum(type))), data,
+        GL_ELEMENT_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(count * sizeof(to_GLenum(type))),
+        data,
         to_GLenum(usage));
     return id;
 }
@@ -193,22 +247,14 @@ void GraphicsContext::unbindIndexBuffer() const
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-// Buffer (both) ---------------------------------------------------------------
-
-void GraphicsContext::deleteBuffer(RendererId id) const
-{
-    Core::Assert(id != 0, "attempt to delete non-zero buffer id");
-    glDeleteBuffers(1, &id);
-}
-
-// Shader ----------------------------------------------------------------------
+// Shader ------------------------------------------------------------------------------------------
 
 RendererId GraphicsContext::createShader(ShaderType type) const
 {
     return glCreateShader(to_GLenum(type));
 }
 
-void GraphicsContext::deleteShader(RendererId id) const
+void GraphicsContext::destroyShader(RendererId id) const
 {
     glDeleteShader(id);
 }
@@ -235,14 +281,14 @@ std::string GraphicsContext::getShaderInfoLog(RendererId id) const
     return log.data();
 }
 
-// Shader Program --------------------------------------------------------------
+// Shader Program ----------------------------------------------------------------------------------
 
 RendererId GraphicsContext::createShaderProgram() const
 {
     return glCreateProgram();
 }
 
-void GraphicsContext::deleteShaderProgram(RendererId id) const
+void GraphicsContext::destroyShaderProgram(RendererId id) const
 {
     glDeleteProgram(id);
 }
@@ -282,7 +328,7 @@ void GraphicsContext::useShaderProgram(RendererId id) const
     glUseProgram(id);
 }
 
-// Shader Uniform --------------------------------------------------------------
+// Shader Uniform ----------------------------------------------------------------------------------
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
@@ -346,18 +392,19 @@ void GraphicsContext::setUniform(RendererId id, glm::mat4 value) const
 RendererId GraphicsContext::getUniformLocation(RendererId id, const std::string& name) const
 {
     int location = glGetUniformLocation(id, name.c_str());
-    if (location == -1) Core::Error("Could not find uniform `{}'!", name);
+    if (location == -1)
+        Core::Error("Could not find uniform `{}'!", name);
     return location;
 }
 
-// Drawing ---------------------------------------------------------------------
+// Drawing -----------------------------------------------------------------------------------------
 
 void GraphicsContext::setPolygonMode(PolygonMode mode) const
 {
     glPolygonMode(GL_FRONT_AND_BACK, to_GLenum(mode));
 }
 
-void GraphicsContext::drawElements(
+void GraphicsContext::drawIndexed(
     IndexMode mode, size_t count, IndexType type, const void* offset) const
 {
     glDrawElements(to_GLenum(mode), static_cast<GLsizei>(count), to_GLenum(type), offset);

@@ -48,18 +48,22 @@ static GLenum to_GLenum(AttributeType type)
 {
     switch (type)
     {
-    case AttributeType::None: return GL_NONE;
-    case AttributeType::Bool: return GL_BOOL;
+    case AttributeType::None:
+        return GL_NONE;
+    case AttributeType::Bool:
+        return GL_BOOL;
     case AttributeType::Int:
     case AttributeType::Int2:
     case AttributeType::Int3:
-    case AttributeType::Int4: return GL_INT;
+    case AttributeType::Int4:
+        return GL_INT;
     case AttributeType::Float:
     case AttributeType::Float2:
     case AttributeType::Float3:
     case AttributeType::Float4:
     case AttributeType::Mat3:
-    case AttributeType::Mat4: return GL_FLOAT;
+    case AttributeType::Mat4:
+        return GL_FLOAT;
     }
     Core::Assert(false, "unknown vertex attribute type");
     return 0;
@@ -119,8 +123,10 @@ inline std::string format_as(const ShaderType& type)
 {
     switch (type)
     {
-    case ShaderType::Vertex: return "Vertex";
-    case ShaderType::Fragment: return "Fragment";
+    case ShaderType::Vertex:
+        return "Vertex";
+    case ShaderType::Fragment:
+        return "Fragment";
     }
     Core::Assert(false, "unknown shader type");
     return "unknown";
@@ -153,8 +159,8 @@ public:
 
     // Vertex Array
 
-    [[nodiscard]] RendererId createVertexArray() const;
-    void deleteVertexArray(RendererId id) const;
+    RendererId createVertexArray() const;
+    void destroyVertexArray(RendererId id) const;
 
     void bindVertexArray(RendererId id) const;
     void unbindVertexArray() const;
@@ -170,6 +176,10 @@ public:
         size_t stride,
         const void* offset) const;
 
+    // Buffer
+
+    void destroyBuffer(RendererId id) const;
+
     // Vertex Buffer
 
     RendererId createVertexBuffer(const void* data, size_t size, BufferUsage usage) const;
@@ -179,34 +189,30 @@ public:
 
     // Index Buffer
 
-    RendererId
-    createIndexBuffer(const void* data, size_t count, IndexType type, BufferUsage usage) const;
+    RendererId createIndexBuffer(
+        const void* data, size_t count, IndexType type, BufferUsage usage) const;
 
     void bindIndexBuffer(RendererId id) const;
     void unbindIndexBuffer() const;
 
-    // (both)
-
-    void deleteBuffer(RendererId id) const;
-
     // Shader
 
-    [[nodiscard]] RendererId createShader(ShaderType type) const;
-    void deleteShader(RendererId id) const;
+    RendererId createShader(ShaderType type) const;
+    void destroyShader(RendererId id) const;
 
-    [[nodiscard]] bool compileShader(RendererId id, const std::string& source) const;
-    [[nodiscard]] std::string getShaderInfoLog(RendererId id) const;
+    bool compileShader(RendererId id, const std::string& source) const;
+    std::string getShaderInfoLog(RendererId id) const;
 
     // Shader Program
 
-    [[nodiscard]] RendererId createShaderProgram() const;
-    void deleteShaderProgram(RendererId id) const;
+    RendererId createShaderProgram() const;
+    void destroyShaderProgram(RendererId id) const;
 
     void attachShader(RendererId programId, RendererId id) const;
     void detachShader(RendererId programId, RendererId id) const;
 
-    [[nodiscard]] bool linkShaderProgram(RendererId id) const;
-    [[nodiscard]] std::string getShaderProgramInfoLog(RendererId id) const;
+    bool linkShaderProgram(RendererId id) const;
+    std::string getShaderProgramInfoLog(RendererId id) const;
 
     void useShaderProgram(RendererId id) const;
 
@@ -224,13 +230,13 @@ public:
     void setUniform(RendererId id, glm::mat3 value) const;
     void setUniform(RendererId id, glm::mat4 value) const;
 
-    [[nodiscard]] RendererId getUniformLocation(RendererId id, const std::string& name) const;
+    RendererId getUniformLocation(RendererId id, const std::string& name) const;
 
     // Drawing
 
     void setPolygonMode(PolygonMode mode) const;
 
-    void drawElements(IndexMode mode, size_t count, IndexType type, const void* offset) const;
+    void drawIndexed(IndexMode mode, size_t count, IndexType type, const void* offset) const;
 
 private:
     Window _window;

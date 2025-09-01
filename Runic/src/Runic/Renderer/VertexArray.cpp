@@ -10,18 +10,25 @@ uint32_t AttributeTypeComponentCount(AttributeType type)
 {
     switch (type)
     {
-    case AttributeType::None: return 0;
+    case AttributeType::None:
+        return 0;
     case AttributeType::Bool:
     case AttributeType::Int:
-    case AttributeType::Float: return 1;
+    case AttributeType::Float:
+        return 1;
     case AttributeType::Int2:
-    case AttributeType::Float2: return 2;
+    case AttributeType::Float2:
+        return 2;
     case AttributeType::Int3:
-    case AttributeType::Float3: return 3;
+    case AttributeType::Float3:
+        return 3;
     case AttributeType::Int4:
-    case AttributeType::Float4: return 4;
-    case AttributeType::Mat3: return 3 * 3;
-    case AttributeType::Mat4: return 4 * 4;
+    case AttributeType::Float4:
+        return 4;
+    case AttributeType::Mat3:
+        return 3 * 3;
+    case AttributeType::Mat4:
+        return 4 * 4;
     }
     Core::Assert(false, "unknown vertex attribute type");
     return 0;
@@ -31,18 +38,22 @@ static uint32_t AttributeTypeComponentSize(AttributeType type)
 {
     switch (type)
     {
-    case AttributeType::None: return 0;
-    case AttributeType::Bool: return sizeof(bool);
+    case AttributeType::None:
+        return 0;
+    case AttributeType::Bool:
+        return sizeof(bool);
     case AttributeType::Int:
     case AttributeType::Int2:
     case AttributeType::Int3:
-    case AttributeType::Int4: return sizeof(int);
+    case AttributeType::Int4:
+        return sizeof(int);
     case AttributeType::Float:
     case AttributeType::Float2:
     case AttributeType::Float3:
     case AttributeType::Float4:
     case AttributeType::Mat3:
-    case AttributeType::Mat4: return sizeof(float);
+    case AttributeType::Mat4:
+        return sizeof(float);
     }
     Core::Assert(false, "unknown vertex attribute type");
     return 0;
@@ -66,7 +77,7 @@ VertexArray::~VertexArray()
 {
     if (_id != 0)
     {
-        _gc->deleteVertexArray(_id);
+        _gc->destroyVertexArray(_id);
         _id = 0;
     }
 }
@@ -81,7 +92,7 @@ VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
 {
     if (this != &other)
     {
-        _gc->deleteVertexArray(_id);
+        _gc->destroyVertexArray(_id);
         _gc = std::exchange(other._gc, nullptr);
         _id = std::exchange(other._id, 0);
     }
@@ -110,7 +121,10 @@ void VertexArray::addVertexBuffer(
     {
         _gc->enableVertexAttribute(index);
         _gc->defineVertexAttributeData(
-            index, AttributeTypeComponentCount(attribute.type), attribute.type, attribute.normalize,
+            index,
+            AttributeTypeComponentCount(attribute.type),
+            attribute.type,
+            attribute.normalize,
             stride,
             reinterpret_cast<const void*>(offset)); // NOLINT
         offset += AttributeTypeSize(attribute.type);
@@ -126,7 +140,7 @@ void VertexArray::setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
 
 void VertexArray::draw() const
 {
-    _gc->drawElements(
+    _gc->drawIndexed(
         _indexBuffer->getMode(), _indexBuffer->getCount(), _indexBuffer->getType(), nullptr);
 }
 
