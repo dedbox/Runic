@@ -33,24 +33,25 @@ static std::string LoadFile(const std::string& path)
 std::unordered_map<std::string, std::shared_ptr<ShaderProgram>> ShaderManager::_shaders;
 
 void ShaderManager::LoadShader(
-    GraphicsContext* context,
-    const std::string& name,
-    const std::string& vertexPath,
-    const std::string& fragmentPath)
+    GraphicsContext* context, const std::string& vertexName, const std::string& fragmentName)
 {
-    if (ShaderManager::_shaders.count(name))
+
+    const std::string shaderName = vertexName + "-" + fragmentName;
+
+    if (ShaderManager::_shaders.count(shaderName))
     {
-        Core::Warn("Multiple attempts to load shader `{}'", name);
+        Core::Warn("Multiple attempts to load shader `{}'", shaderName);
         return;
     }
 
-    std::string vertexSource   = LoadFile(vertexPath);
-    std::string fragmentSource = LoadFile(fragmentPath);
+    const std::string vertexSource   = LoadFile(std::format("shaders/{}.vert", vertexName));
+    const std::string fragmentSource = LoadFile(std::format("shaders/{}.frag", fragmentName));
 
     const auto vertexShader   = Shader::Create(context, vertexSource, ShaderType::Vertex);
     const auto fragmentShader = Shader::Create(context, fragmentSource, ShaderType::Fragment);
 
-    ShaderManager::_shaders[name] = ShaderProgram::Create(context, *vertexShader, *fragmentShader);
+    ShaderManager::_shaders[shaderName] =
+        ShaderProgram::Create(context, *vertexShader, *fragmentShader);
 }
 
 std::shared_ptr<ShaderProgram> ShaderManager::getShader(const std::string& name)

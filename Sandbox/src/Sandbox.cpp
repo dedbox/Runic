@@ -59,13 +59,9 @@ public:
     {
         auto context = getGraphicsContext();
 
-        Runic::ShaderManager::LoadShader(
-            context, "Position-FlatUniform", "shaders/Position.vert", "shaders/FlatUniform.frag");
-        Runic::ShaderManager::LoadShader(
-            context,
-            "PositionColor3-FlatInterpolate",
-            "shaders/PositionColor3.vert",
-            "shaders/FlatInterpolate.frag");
+        Runic::ShaderManager::LoadShader(context, "Position", "FlatUniform");
+        Runic::ShaderManager::LoadShader(context, "PositionColor3", "FlatInterpolate");
+
         getLayerManager().push_back(std::make_unique<TriangleLayer>(context));
     }
 };
