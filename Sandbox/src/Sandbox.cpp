@@ -45,13 +45,21 @@ public:
             Runic::IndexType::Int,
             Runic::BufferUsage::Static);
 
+        _mesh->addTexture(Runic::TextureManager::Find(_context, "container.jpg"));
         _mesh->addTexture(
-            Runic::TextureManager::Find(_context, "container.jpg", {.mipmap = false}));
+            Runic::TextureManager::Find(
+                _context,
+                "awesomeface.png",
+                {.wrapS     = Runic::TextureWrap::ClampEdge,
+                 .wrapT     = Runic::TextureWrap::ClampEdge,
+                 .magFilter = Runic::TextureMagFilter::Nearest,
+                 .mipmap    = false}));
 
         _shaderProgram =
-            Runic::ShaderManager::Find(_context, "PositionColor3TexCoord", "FlatInterpolateTex");
+            Runic::ShaderManager::Find(_context, "PositionColor3TexCoord", "FlatInterpolateTex2");
         _shaderProgram->bind();
-        _shaderProgram->setUniform("u_Texture0", static_cast<int>(0));
+        _shaderProgram->setUniform("u_Texture0", static_cast<int>(0)); // container
+        _shaderProgram->setUniform("u_Texture1", static_cast<int>(1)); // face
         _shaderProgram->unbind();
     }
 

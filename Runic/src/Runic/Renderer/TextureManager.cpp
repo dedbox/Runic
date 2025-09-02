@@ -13,21 +13,25 @@ void TextureManager::Load(
     GraphicsContext* context, const std::string& path, const TextureSampling& sampling)
 {
     SDL_Surface* raw = IMG_Load(std::format("textures/{}", path).c_str());
+    if (!raw)
+        throw SDLException(std::format("Could not load image `texures/{}'", path));
 
-    const std::string format = SDL_GetPixelFormatName(raw->format);
+    Core::Info("Image `{}' loaded", path);
+    Core::Info("    format: {}", SDL_GetPixelFormatName(raw->format));
 
-    Core::Info("Image loaded:");
-    Core::Info("    format: {}", format);
+    if (!SDL_FlipSurface(raw, SDL_FLIP_VERTICAL))
+        throw SDLException(std::format("Could not flip image `texures/{}'", path));
 
-    // SDL_Surface* converted = SDL_ConvertSurface(raw, SDL_PIXELFORMAT_RGBA8888);
-    // if (!converted)
-    //     throw SDLException("Could not convert surface format");
+    SDL_Surface* converted = SDL_ConvertSurface(raw, SDL_PIXELFORMAT_RGBA32);
+    if (!converted)
+        throw SDLException(
+            std::format("Could not convert image `texures/{}' format to RGBA32", path));
 
     TexKey key(path, sampling);
 
-    _textures[key] = Texture::Create(context, raw, sampling);
+    _textures[key] = Texture::Create(context, converted, sampling);
 
-    // SDL_DestroySurface(converted);
+    SDL_DestroySurface(converted);
     SDL_DestroySurface(raw);
 }
 

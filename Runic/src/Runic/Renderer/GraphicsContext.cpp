@@ -424,11 +424,11 @@ RendererId GraphicsContext::createTexture(SDL_Surface* surface) const
     glTexImage2D(
         GL_TEXTURE_2D,
         0,
-        GL_RGB,
+        GL_RGBA,
         surface->w,
         surface->h,
         0,
-        GL_RGB,
+        GL_RGBA,
         GL_UNSIGNED_BYTE,
         surface->pixels);
     return id;

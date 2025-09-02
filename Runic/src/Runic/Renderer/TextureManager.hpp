@@ -12,10 +12,10 @@ class TextureManager
 {
 public:
     static void Load(
-        GraphicsContext* context, const std::string& path, const TextureSampling& sampling);
+        GraphicsContext* context, const std::string& path, const TextureSampling& sampling = {});
 
     static std::shared_ptr<Texture> Find(
-        GraphicsContext* context, const std::string& path, const TextureSampling& sampling);
+        GraphicsContext* context, const std::string& path, const TextureSampling& sampling = {});
 
 private:
     static std::map<TexKey, std::shared_ptr<Texture>> _textures;
