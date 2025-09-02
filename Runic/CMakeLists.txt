@@ -3,6 +3,8 @@ project(Runic)
 
 set(CMAKE_CXX_STANDARD 23)
 
+set(BUILD_SHARED_LIBS OFF)
+
 include(FetchContent)
 
 # SDL3 -------------------------------------------------------------------------
@@ -17,6 +19,16 @@ set(SDL_SHARED NO)
 set(SDL_STATIC YES)
 
 FetchContent_MakeAvailable(SDL)
+
+# SDL_image --------------------------------------------------------------------
+
+FetchContent_Declare(
+  SDL_image
+  GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+  GIT_TAG release-3.2.4
+  GIT_SHALLOW YES)
+
+FetchContent_MakeAvailable(SDL_image)
 
 # spdlog -----------------------------------------------------------------------
 
@@ -71,10 +83,13 @@ add_library(
   src/Runic/Renderer/Shader.cpp
   src/Runic/Renderer/ShaderManager.cpp
   src/Runic/Renderer/ShaderProgram.cpp
+  src/Runic/Renderer/Texture.cpp
+  src/Runic/Renderer/TextureManager.cpp
   src/Runic/Renderer/VertexArray.cpp)
 
 target_link_libraries(Runic PUBLIC ${OPENGL_LIBRARIES} glad_gl_core_46 glm::glm)
-target_link_libraries(Runic PRIVATE SDL3::SDL3 spdlog::spdlog)
+target_link_libraries(Runic PRIVATE SDL3::SDL3 SDL3_image::SDL3_image
+                                    spdlog::spdlog)
 
 target_precompile_headers(
   Runic
@@ -97,8 +112,10 @@ target_precompile_headers(
   <stdexcept>
   <string>
   <tuple>
+  <type_traits>
   <typeindex>
   <utility>
+  <unordered_map>
   <unordered_set>
   <vector>
   src/Runic/Core/Log.hpp

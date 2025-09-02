@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Runic/Renderer/Color.hpp"
+#include "SDL3/SDL_video.h"
 #include "glad/gl.h"
 #include "glm/ext/matrix_float3x3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
@@ -9,7 +11,6 @@
 #include "glm/ext/vector_int2.hpp"
 #include "glm/ext/vector_int3.hpp"
 #include "glm/ext/vector_int4.hpp"
-#include <SDL3/SDL_video.h>
 
 namespace Runic
 {
@@ -131,6 +132,87 @@ inline std::string format_as(const ShaderType& type)
     return "unknown";
 }
 
+// Texure Wrap -----------------------------------------------------------------
+
+enum class TextureWrap : uint8_t
+{
+    Repeat,
+    MirrorRepeat,
+    ClampEdge,
+    ClampBorder,
+};
+
+static GLenum to_GLenum(TextureWrap wrap)
+{
+    switch (wrap)
+    {
+    case TextureWrap::Repeat:
+        return GL_REPEAT;
+    case TextureWrap::MirrorRepeat:
+        return GL_MIRRORED_REPEAT;
+    case TextureWrap::ClampEdge:
+        return GL_CLAMP_TO_EDGE;
+    case TextureWrap::ClampBorder:
+        return GL_CLAMP_TO_BORDER;
+    }
+    Core::Assert(false, "unknown texture wrap");
+    return 0;
+}
+
+// Texture Min Filter ----------------------------------------------------------
+
+enum class TextureMinFilter : uint8_t
+{
+    Nearest,
+    Linear,
+    NearestMipmapNearest,
+    LinearMipmapNearest,
+    NearestMipmapLinear,
+    LinearMipmapLinear,
+};
+
+static GLenum to_GLenum(TextureMinFilter filter)
+{
+    switch (filter)
+    {
+    case TextureMinFilter::Nearest:
+        return GL_NEAREST;
+    case TextureMinFilter::Linear:
+        return GL_LINEAR;
+    case TextureMinFilter::NearestMipmapNearest:
+        return GL_NEAREST_MIPMAP_NEAREST;
+    case TextureMinFilter::LinearMipmapNearest:
+        return GL_LINEAR_MIPMAP_NEAREST;
+    case TextureMinFilter::NearestMipmapLinear:
+        return GL_NEAREST_MIPMAP_LINEAR;
+    case TextureMinFilter::LinearMipmapLinear:
+        return GL_LINEAR_MIPMAP_LINEAR;
+    }
+    Core::Assert(false, "unknown texture min filter");
+    return 0;
+}
+
+// Texture Mag Filter ----------------------------------------------------------
+
+enum class TextureMagFilter : uint8_t
+{
+    Nearest,
+    Linear,
+};
+
+static GLenum to_GLenum(TextureMagFilter filter)
+{
+    switch (filter)
+    {
+    case TextureMagFilter::Nearest:
+        return GL_NEAREST;
+    case TextureMagFilter::Linear:
+        return GL_LINEAR;
+    }
+    Core::Assert(false, "unknown texture mag filter");
+    return 0;
+}
+
 // Polygon Mode ----------------------------------------------------------------
 
 enum class PolygonMode : uint16_t
@@ -236,6 +318,26 @@ public:
     void setUniform(RendererId id, glm::mat4 value) const;
 
     RendererId getUniformLocation(RendererId id, const std::string& name) const;
+
+    // Texture
+
+    RendererId createTexture(SDL_Surface* surface) const;
+    void destroyTexture(RendererId id) const;
+
+    void generateMipmap() const;
+
+    void setTextureWrapS(TextureWrap wrap) const;
+    void setTextureWrapT(TextureWrap wrap) const;
+
+    void setTextureBorderColor(color color) const;
+
+    void setTextureMinFilter(TextureMinFilter filter) const;
+    void setTextureMagFilter(TextureMagFilter filter) const;
+
+    void activateTextureUnit(uint8_t index) const;
+
+    void bindTexture(RendererId id) const;
+    void unbindTexture() const;
 
     // Drawing
 

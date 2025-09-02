@@ -1,5 +1,7 @@
 #include <Runic.hpp>
 
+static constexpr auto Bg = Runic::color(0.2F, 0.3F, 0.3F, 1.0F);
+
 static constexpr auto Taupe  = Runic::Color::hex(0x463F3AFF);
 static constexpr auto Gray   = Runic::Color::hex(0x8A817CFF);
 static constexpr auto Silver = Runic::Color::hex(0xBCB8B1FF);
@@ -14,18 +16,26 @@ public:
     {
         // clang-format off
         const std::vector<float> vertices = {
-            //    positon      |     color
-            -0.5F, -0.5F, 0.0F, 1.0F, 0.0F, 0.0F,
-             0.5F, -0.5F, 0.0F, 0.0F, 1.0F, 0.0F,
-             0.0F,  0.5F, 0.0F, 0.0F, 0.0F, 1.0F,
+            // positon         | color            | texture
+             0.5F,  0.5F, 0.0F , 1.0F, 0.0F, 0.0F , 1.0F, 1.0F, // top right
+             0.5F, -0.5F, 0.0F , 0.0F, 1.0F, 0.0F , 1.0F, 0.0F, // bottom right
+            -0.5F, -0.5F, 0.0F , 0.0F, 0.0F, 1.0F , 0.0F, 0.0F, // bottom left
+            -0.5F,  0.5F, 0.0F , 1.0F, 1.0F, 0.0F , 0.0F, 1.0F, // top left
         };
         // clang-format on
 
         const std::vector<Runic::VertexAttribute> layout = {
-            {.type = Runic::AttributeType::Float3, .normalize = false},
-            {.type = Runic::AttributeType::Float3, .normalize = false}};
+            {.type = Runic::AttributeType::Float3, .normalize = false}, // a_Position
+            {.type = Runic::AttributeType::Float3, .normalize = false}, // a_Color
+            {.type = Runic::AttributeType::Float2, .normalize = false}, // a_TexCoord
+        };
 
-        const std::vector<uint32_t> indices = {0, 1, 2};
+        // clang-format off
+        const std::vector<uint32_t> indices = {
+            0, 1, 3,
+            1, 2, 3,
+        };
+        // clang-format on
 
         _mesh = Runic::Mesh::Create(_context);
         _mesh->addVertices(vertices, layout, Runic::BufferUsage::Static);
@@ -35,19 +45,26 @@ public:
             Runic::IndexType::Int,
             Runic::BufferUsage::Static);
 
+        _mesh->addTexture(
+            Runic::TextureManager::Find(_context, "container.jpg", {.mipmap = false}));
+
         _shaderProgram =
-            Runic::ShaderManager::Find(_context, "PositionColor3TexCoord", "FlatInterpolate");
+            Runic::ShaderManager::Find(_context, "PositionColor3TexCoord", "FlatInterpolateTex");
+        _shaderProgram->bind();
+        _shaderProgram->setUniform("u_Texture0", static_cast<int>(0));
+        _shaderProgram->unbind();
     }
 
     void update() override
     {
-        _context->setClearColor(Taupe);
+        _context->setClearColor(Bg);
         _context->clear();
         _mesh->draw(*_shaderProgram);
     }
 
 private:
     Runic::GraphicsContext* _context;
+    std::shared_ptr<Runic::Texture> _texture;
     std::unique_ptr<Runic::Mesh> _mesh;
     std::shared_ptr<Runic::ShaderProgram> _shaderProgram;
 };

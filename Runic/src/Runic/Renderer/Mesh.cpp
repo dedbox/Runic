@@ -32,11 +32,27 @@ void Mesh::setIndices(
         IndexBuffer::Create(_context, indices.data(), indices.size(), mode, type, usage));
 }
 
+void Mesh::addTexture(std::shared_ptr<Texture> texture)
+{
+    if (texture)
+        _textures.push_back(std::move(texture));
+}
+
 void Mesh::draw(const ShaderProgram& shaderProgram) const
 {
     shaderProgram.bind();
+
+    for (const auto&& [index, texture] : _textures | std::ranges::views::enumerate)
+    {
+        _context->activateTextureUnit(index);
+        texture->bind();
+    }
+
     _vertexArray->bind();
+
     _vertexArray->draw();
+
+    _vertexArray->unbind();
     shaderProgram.unbind();
 }
 

@@ -2,6 +2,7 @@
 
 #include "Runic/Renderer/GraphicsContext.hpp"
 #include "Runic/Renderer/ShaderProgram.hpp"
+#include "Runic/Renderer/Texture.hpp"
 #include "Runic/Renderer/VertexArray.hpp"
 
 namespace Runic
@@ -20,11 +21,14 @@ public:
     void setIndices(
         const std::vector<uint32_t>& indices, IndexMode mode, IndexType type, BufferUsage usage);
 
+    void addTexture(std::shared_ptr<Texture> texture);
+
     void draw(const ShaderProgram& shaderProgram) const;
 
 private:
     GraphicsContext* _context;
     std::unique_ptr<VertexArray> _vertexArray;
+    std::vector<std::shared_ptr<Texture>> _textures;
 
     // hide constructor
     explicit Mesh(GraphicsContext* context);

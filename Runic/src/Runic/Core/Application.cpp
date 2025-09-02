@@ -12,9 +12,6 @@ Application::Application(const AppData& appData, const WindowData& windowData)
     const std::string cwd = std::filesystem::current_path();
     Core::Info("Current working directory is {}", cwd);
 
-    if (!SDL_Init(SDL_INIT_VIDEO))
-        throw SDLException("Could not initialize SDL");
-
     if (!SDL_SetAppMetadata(
             appData.name.c_str(), appData.version.c_str(), appData.identifier.c_str()))
         throw SDLException("Could not set app metadata");

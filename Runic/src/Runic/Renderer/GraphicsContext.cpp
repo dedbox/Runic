@@ -414,6 +414,76 @@ RendererId GraphicsContext::getUniformLocation(RendererId id, const std::string&
     return location;
 }
 
+// Texture -----------------------------------------------------------------------------------------
+
+RendererId GraphicsContext::createTexture(SDL_Surface* surface) const
+{
+    RendererId id = 0;
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RGB,
+        surface->w,
+        surface->h,
+        0,
+        GL_RGB,
+        GL_UNSIGNED_BYTE,
+        surface->pixels);
+    return id;
+}
+
+void GraphicsContext::destroyTexture(RendererId id) const
+{
+    glDeleteTextures(1, &id);
+}
+
+void GraphicsContext::generateMipmap() const
+{
+    glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+void GraphicsContext::setTextureWrapS(TextureWrap wrap) const
+{
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(to_GLenum(wrap)));
+}
+
+void GraphicsContext::setTextureWrapT(TextureWrap wrap) const
+{
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(to_GLenum(wrap)));
+}
+
+void GraphicsContext::setTextureBorderColor(color color) const
+{
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(color));
+}
+
+void GraphicsContext::setTextureMinFilter(TextureMinFilter filter) const
+{
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(to_GLenum(filter)));
+}
+
+void GraphicsContext::setTextureMagFilter(TextureMagFilter filter) const
+{
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(to_GLenum(filter)));
+}
+
+void GraphicsContext::activateTextureUnit(uint8_t index) const
+{
+    glActiveTexture(GL_TEXTURE0 + index);
+}
+
+void GraphicsContext::bindTexture(RendererId id) const
+{
+    glBindTexture(GL_TEXTURE_2D, id);
+}
+
+void GraphicsContext::unbindTexture() const
+{
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 // Drawing -----------------------------------------------------------------------------------------
 
 void GraphicsContext::setPolygonMode(PolygonMode mode) const

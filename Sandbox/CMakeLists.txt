@@ -14,4 +14,11 @@ add_custom_command(
     ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
     "$<TARGET_FILE_DIR:Sandbox>/shaders")
 
+add_custom_command(
+  TARGET Sandbox
+  POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/textures"
+    "$<TARGET_FILE_DIR:Sandbox>/textures")
+
 install(TARGETS Sandbox DESTINATION bin)
