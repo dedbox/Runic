@@ -3,6 +3,8 @@ project(Sandbox)
 
 set(CMAKE_CXX_STANDARD 23)
 
+set(BUILD_SHARED_LIBS OFF)
+
 add_custom_target(
   copy_shaders
   COMMAND

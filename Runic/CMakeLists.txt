@@ -67,6 +67,43 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glm)
 
+# ImGUI ------------------------------------------------------------------------
+
+FetchContent_Declare(
+  imgui
+  GIT_REPOSITORY https://github.com/ocornut/imgui.git
+  GIT_TAG docking
+  GIT_SHALLOW YES)
+
+FetchContent_MakeAvailable(imgui)
+
+add_library(
+  ImGUI STATIC
+  ${imgui_SOURCE_DIR}/imconfig.h
+  ${imgui_SOURCE_DIR}/imgui.cpp
+  ${imgui_SOURCE_DIR}/imgui.h
+  ${imgui_SOURCE_DIR}/imgui_demo.cpp
+  ${imgui_SOURCE_DIR}/imgui_draw.cpp
+  ${imgui_SOURCE_DIR}/imgui_internal.h
+  ${imgui_SOURCE_DIR}/imgui_tables.cpp
+  ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+  ${imgui_SOURCE_DIR}/imstb_rectpack.h
+  ${imgui_SOURCE_DIR}/imstb_textedit.h
+  ${imgui_SOURCE_DIR}/imstb_truetype.h)
+
+# target_compile_definitions(ImGUI PRIVATE IMGUI_IMPL_OPENGL_LOADER_GLAD="")
+
+target_include_directories(ImGUI PUBLIC ${imgui_SOURCE_DIR})
+
+target_sources(
+  ImGUI
+  PRIVATE ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+          ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
+          ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+          ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.h)
+
+target_link_libraries(ImGUI PRIVATE SDL3::SDL3)
+
 # Runic ------------------------------------------------------------------------
 
 add_library(
@@ -78,6 +115,7 @@ add_library(
   src/Runic/Core/Window.cpp
   src/Runic/Renderer/Buffer.cpp
   src/Runic/Renderer/GraphicsContext.cpp
+  src/Runic/Renderer/GuiLayer.cpp
   src/Runic/Renderer/Mesh.cpp
   src/Runic/Renderer/Renderer.cpp
   src/Runic/Renderer/Shader.cpp
@@ -87,7 +125,8 @@ add_library(
   src/Runic/Renderer/TextureManager.cpp
   src/Runic/Renderer/VertexArray.cpp)
 
-target_link_libraries(Runic PUBLIC ${OPENGL_LIBRARIES} glad_gl_core_46 glm::glm)
+target_link_libraries(Runic PUBLIC ${OPENGL_LIBRARIES} glad_gl_core_46 glm::glm
+                                   ImGUI)
 target_link_libraries(Runic PRIVATE SDL3::SDL3 SDL3_image::SDL3_image
                                     spdlog::spdlog)
 

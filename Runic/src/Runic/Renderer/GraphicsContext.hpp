@@ -234,6 +234,8 @@ class GraphicsContext
 public:
     explicit GraphicsContext(SDL_Window* window);
 
+    SDL_GLContext getNative() { return _native; }
+
     void init();
 
 private:

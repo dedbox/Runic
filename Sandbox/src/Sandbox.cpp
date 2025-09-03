@@ -8,6 +8,8 @@ static constexpr auto Silver = Runic::Color::hex(0xBCB8B1FF);
 static constexpr auto Ivory  = Runic::Color::hex(0xF4F3EEFF);
 static constexpr auto Melon  = Runic::Color::hex(0xE0AFA0FF);
 
+// TriangleLayer -----------------------------------------------------------------------------------
+
 class TriangleLayer : public Runic::Layer
 {
 public:
@@ -77,6 +79,18 @@ private:
     std::shared_ptr<Runic::ShaderProgram> _shaderProgram;
 };
 
+//  DemoGuiLayer -----------------------------------------------------------------------------------
+
+class DemoGuiLayer : public Runic::GuiLayer
+{
+public:
+    using Runic::GuiLayer::GuiLayer;
+
+    void renderGui() override { ImGui::ShowDemoWindow(); }
+};
+
+// Sandbox -----------------------------------------------------------------------------------------
+
 class Sandbox : public Runic::Application
 {
 public:
@@ -85,11 +99,16 @@ public:
     {
         Runic::Log::SetLevel(spdlog::level::info);
 
+        auto window  = getWindow();
         auto context = getGraphicsContext();
 
-        getLayerManager().push_back(std::make_unique<TriangleLayer>(context));
+        auto& layers = getLayerManager();
+        layers.push_back(std::make_unique<TriangleLayer>(context));
+        layers.pushGui_back(std::make_unique<DemoGuiLayer>(window, context));
     }
 };
+
+// Application -------------------------------------------------------------------------------------
 
 std::unique_ptr<Runic::Application> Runic::CreateApplication()
 {

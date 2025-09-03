@@ -21,9 +21,8 @@ Application::Application(const AppData& appData, const WindowData& windowData)
 
     _window = std::make_unique<Window>(windowData);
 
-    std::unique_ptr<GraphicsContext> context =
-        std::make_unique<GraphicsContext>(_window->getNative());
-    context->init();
+    _context = std::make_unique<GraphicsContext>(_window->getNative());
+    _context->init();
 
     _renderer = std::make_unique<Renderer>(_window->getNative());
     _context->setViewport({windowData.width, windowData.height});
@@ -48,7 +47,10 @@ void Application::onUpdate()
     _renderer->beginFrame();
 
     for (auto& _layer : _layers)
+    {
         _layer->update();
+        _layer->render();
+    }
 
     _renderer->endFrame();
 }

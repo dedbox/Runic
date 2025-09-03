@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SDL3/SDL_video.h"
+#include "glm/ext/vector_int2.hpp"
 
 namespace Runic
 {
@@ -24,6 +25,8 @@ public:
 
     void show() const;
     void hide() const;
+
+    const glm::ivec2 getSize() const;
 
 private:
     SDL_Window* _native = nullptr;
