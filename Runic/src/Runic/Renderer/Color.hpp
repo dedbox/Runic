@@ -9,14 +9,12 @@ using color = glm::vec4;
 
 static auto operator<=>(const color& lhs, const color& rhs)
 {
-    // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
     // clang-format off
     if (auto cmp = lhs.r <=> rhs.r; cmp != 0) return cmp;
     if (auto cmp = lhs.g <=> rhs.g; cmp != 0) return cmp;
     if (auto cmp = lhs.b <=> rhs.b; cmp != 0) return cmp;
     return lhs.a <=> rhs.a;
     // clang-format on
-    // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 }
 
 namespace Color

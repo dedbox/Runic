@@ -140,13 +140,11 @@ void GraphicsContext::init()
 
 void GraphicsContext::setViewport(const glm::ivec2& size, const glm::ivec2& offset) const
 {
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
     glViewport(offset.x, offset.y, size.x, size.y);
 }
 
 void GraphicsContext::setClearColor(const glm::vec4& color) const
 {
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
     glClearColor(color.r, color.g, color.b, color.a);
 }
 
@@ -347,8 +345,6 @@ void GraphicsContext::useShaderProgram(RendererId id) const
 
 // Shader Uniform ----------------------------------------------------------------------------------
 
-// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
-
 void GraphicsContext::setUniform(RendererId id, bool value) const
 {
     glUniform1ui(static_cast<GLint>(id), value);
@@ -403,8 +399,6 @@ void GraphicsContext::setUniform(RendererId id, glm::mat4 value) const
 {
     glUniformMatrix4fv(static_cast<GLint>(id), 1, GL_FALSE, glm::value_ptr(value));
 }
-
-// NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
 RendererId GraphicsContext::getUniformLocation(RendererId id, const std::string& name) const
 {
