@@ -36,15 +36,9 @@ Buffer& Buffer::operator=(Buffer&& other) noexcept
 
 // Vertex Buffer ---------------------------------------------------------------
 
-std::unique_ptr<VertexBuffer> VertexBuffer::Create(
-    GraphicsContext* context, const void* data, size_t size, BufferUsage usage)
-{
-    RendererId id = context->createVertexBuffer(data, size, usage);
-    return std::unique_ptr<VertexBuffer>(new VertexBuffer(context, id, size));
-}
-
-VertexBuffer::VertexBuffer(GraphicsContext* context, RendererId id, size_t size)
+VertexBuffer::VertexBuffer(GraphicsContext* context, RendererId id, size_t count, size_t size)
     : Buffer(context, id)
+    , _count(count)
     , _size(size)
 {
 }
@@ -61,22 +55,16 @@ void VertexBuffer::unbind() const
 
 // Index Buffer ----------------------------------------------------------------
 
-std::unique_ptr<IndexBuffer> IndexBuffer::Create(
-    GraphicsContext* context,
-    const void* data,
-    size_t count,
-    IndexMode mode,
-    IndexType type,
-    BufferUsage usage)
-{
-    RendererId id = context->createIndexBuffer(data, count, type, usage);
-    return std::unique_ptr<IndexBuffer>(new IndexBuffer(context, id, count, type, mode));
-}
-
 IndexBuffer::IndexBuffer(
-    GraphicsContext* context, uint32_t id, size_t count, IndexType type, IndexMode mode)
+    GraphicsContext* context,
+    uint32_t id,
+    size_t count,
+    size_t size,
+    IndexType type,
+    IndexMode mode)
     : Buffer(context, id)
     , _count(count)
+    , _size(size)
     , _type(type)
     , _mode(mode)
 {

@@ -19,17 +19,14 @@ void Mesh::addVertices(
     const std::vector<VertexAttribute>& layout,
     BufferUsage usage)
 {
-    size_t size = vertices.size() * sizeof(float);
-    _vertexArray->addVertexBuffer(
-        VertexBuffer::Create(_context, vertices.data(), size, usage), layout);
+    _vertexArray->addVertexBuffer(VertexBuffer::Create(_context, vertices, usage), layout);
 }
 
 void Mesh::setIndices(
     const std::vector<uint32_t>& indices, IndexMode mode, IndexType type, BufferUsage usage)
 {
     RendererId id = _context->createIndexBuffer(indices.data(), indices.size(), type, usage);
-    _vertexArray->setIndexBuffer(
-        IndexBuffer::Create(_context, indices.data(), indices.size(), mode, type, usage));
+    _vertexArray->setIndexBuffer(IndexBuffer::Create(_context, indices, mode, type, usage));
 }
 
 void Mesh::addTexture(std::shared_ptr<Texture> texture)

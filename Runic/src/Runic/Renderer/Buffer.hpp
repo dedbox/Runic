@@ -34,17 +34,28 @@ protected:
 class VertexBuffer : public Buffer
 {
 public:
+    template <typename T>
     static std::unique_ptr<VertexBuffer> Create(
-        GraphicsContext* context, const void* data, size_t size, BufferUsage usage);
+        GraphicsContext* context, const std::vector<T>& elements, BufferUsage usage)
+    {
+        size_t count  = elements.size();
+        size_t size   = count * sizeof(T);
+        RendererId id = context->createVertexBuffer(elements.data(), size, usage);
+        return std::unique_ptr<VertexBuffer>(new VertexBuffer(context, id, count, size));
+    }
+
+    size_t getCount() const { return _count; }
+    size_t getSize() const { return _size; }
 
     void bind() const override;
     void unbind() const override;
 
 private:
+    size_t _count;
     size_t _size;
 
     // hide constructor
-    VertexBuffer(GraphicsContext* context, RendererId id, size_t size);
+    VertexBuffer(GraphicsContext* context, RendererId id, size_t count, size_t size);
 };
 
 // Index Buffer ----------------------------------------------------------------
@@ -52,15 +63,22 @@ private:
 class IndexBuffer : public Buffer
 {
 public:
+    template <typename T>
     static std::unique_ptr<IndexBuffer> Create(
         GraphicsContext* context,
-        const void* data,
-        size_t count,
+        const std::vector<T>& elements,
         IndexMode mode,
         IndexType type,
-        BufferUsage usage);
+        BufferUsage usage)
+    {
+        size_t count  = elements.size();
+        size_t size   = count * sizeof(T);
+        RendererId id = context->createIndexBuffer(elements.data(), count, type, usage);
+        return std::unique_ptr<IndexBuffer>(new IndexBuffer(context, id, count, size, type, mode));
+    }
 
     size_t getCount() const { return _count; }
+    size_t getSize() const { return _size; }
     IndexType getType() const { return _type; }
     IndexMode getMode() const { return _mode; }
 
@@ -69,11 +87,17 @@ public:
 
 private:
     size_t _count;
+    size_t _size;
     IndexType _type;
     IndexMode _mode;
 
     IndexBuffer(
-        GraphicsContext* context, RendererId id, size_t count, IndexType type, IndexMode mode);
+        GraphicsContext* context,
+        RendererId id,
+        size_t count,
+        size_t size,
+        IndexType type,
+        IndexMode mode);
 };
 
 } // namespace Runic
