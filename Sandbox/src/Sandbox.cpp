@@ -39,10 +39,9 @@ public:
         };
         // clang-format on
 
-        _mesh = Runic::Mesh::Create(_context);
+        _mesh = Runic::Mesh::Create(_context, Runic::DrawMode::Triangles);
         _mesh->addVertices(vertices, layout, Runic::BufferUsage::Static);
-        _mesh->setIndices(
-            indices, Runic::DrawMode::Triangles, Runic::IndexType::Int, Runic::BufferUsage::Static);
+        _mesh->setIndices(indices, Runic::IndexType::Int, Runic::BufferUsage::Static);
 
         _mesh->addTexture(Runic::TextureManager::Find(_context, "container.jpg"));
         _mesh->addTexture(

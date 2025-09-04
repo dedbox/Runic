@@ -56,12 +56,11 @@ void VertexBuffer::unbind() const
 // Index Buffer ----------------------------------------------------------------
 
 IndexBuffer::IndexBuffer(
-    GraphicsContext* context, uint32_t id, size_t count, size_t size, IndexType type, DrawMode mode)
+    GraphicsContext* context, uint32_t id, size_t count, size_t size, IndexType type)
     : Buffer(context, id)
     , _count(count)
     , _size(size)
     , _type(type)
-    , _mode(mode)
 {
 }
 

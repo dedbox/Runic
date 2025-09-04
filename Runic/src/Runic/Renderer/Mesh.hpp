@@ -11,15 +11,14 @@ namespace Runic
 class Mesh
 {
 public:
-    static std::unique_ptr<Mesh> Create(GraphicsContext* context);
+    static std::unique_ptr<Mesh> Create(GraphicsContext* context, DrawMode mode);
 
     void addVertices(
         const std::vector<float>& vertices,
         const std::vector<VertexAttribute>& layout,
         BufferUsage usage);
 
-    void setIndices(
-        const std::vector<uint32_t>& indices, DrawMode mode, IndexType type, BufferUsage usage);
+    void setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage);
 
     void addTexture(std::shared_ptr<Texture> texture);
 
@@ -31,7 +30,7 @@ private:
     std::vector<std::shared_ptr<Texture>> _textures;
 
     // hide constructor
-    explicit Mesh(GraphicsContext* context);
+    explicit Mesh(GraphicsContext* context, DrawMode mode);
 };
 
 } // namespace Runic

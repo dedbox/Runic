@@ -66,15 +66,16 @@ static uint32_t AttributeTypeSize(AttributeType type)
 
 } // namespace
 
-std::unique_ptr<VertexArray> VertexArray::Create(GraphicsContext* context)
+std::unique_ptr<VertexArray> VertexArray::Create(GraphicsContext* context, DrawMode mode)
 {
     RendererId id = context->createVertexArray();
-    return std::unique_ptr<VertexArray>(new VertexArray(context, id));
+    return std::unique_ptr<VertexArray>(new VertexArray(context, id, mode));
 }
 
-VertexArray::VertexArray(GraphicsContext* context, RendererId id)
+VertexArray::VertexArray(GraphicsContext* context, RendererId id, DrawMode mode)
     : _context(context)
     , _id(id)
+    , _mode(mode)
 {
     bind();
 }
@@ -91,6 +92,7 @@ VertexArray::~VertexArray()
 VertexArray::VertexArray(VertexArray&& other) noexcept
     : _context(std::exchange(other._context, nullptr))
     , _id(std::exchange(other._id, 0))
+    , _mode(other._mode)
 {
 }
 
@@ -101,6 +103,7 @@ VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
         _context->destroyVertexArray(_id);
         _context = std::exchange(other._context, nullptr);
         _id      = std::exchange(other._id, 0);
+        _mode    = other._mode;
     }
     return *this;
 }
@@ -146,8 +149,7 @@ void VertexArray::setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
 
 void VertexArray::draw() const
 {
-    _context->drawIndexed(
-        _indexBuffer->getMode(), _indexBuffer->getCount(), _indexBuffer->getType(), nullptr);
+    _context->drawIndexed(_mode, _indexBuffer->getCount(), _indexBuffer->getType(), nullptr);
 }
 
 } // namespace Runic

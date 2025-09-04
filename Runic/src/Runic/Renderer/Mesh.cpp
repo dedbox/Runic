@@ -3,15 +3,15 @@
 namespace Runic
 {
 
-std::unique_ptr<Mesh> Mesh::Create(GraphicsContext* context)
+std::unique_ptr<Mesh> Mesh::Create(GraphicsContext* context, DrawMode mode)
 {
-    return std::unique_ptr<Mesh>(new Mesh(context));
+    return std::unique_ptr<Mesh>(new Mesh(context, mode));
 }
 
-Mesh::Mesh(GraphicsContext* context)
+Mesh::Mesh(GraphicsContext* context, DrawMode mode)
     : _context(context)
+    , _vertexArray(VertexArray::Create(_context, mode))
 {
-    _vertexArray = VertexArray::Create(_context);
 }
 
 void Mesh::addVertices(
@@ -22,11 +22,10 @@ void Mesh::addVertices(
     _vertexArray->addVertexBuffer(VertexBuffer::Create(_context, vertices, usage), layout);
 }
 
-void Mesh::setIndices(
-    const std::vector<uint32_t>& indices, DrawMode mode, IndexType type, BufferUsage usage)
+void Mesh::setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage)
 {
     RendererId id = _context->createIndexBuffer(indices.data(), indices.size(), type, usage);
-    _vertexArray->setIndexBuffer(IndexBuffer::Create(_context, indices, mode, type, usage));
+    _vertexArray->setIndexBuffer(IndexBuffer::Create(_context, indices, type, usage));
 }
 
 void Mesh::addTexture(std::shared_ptr<Texture> texture)

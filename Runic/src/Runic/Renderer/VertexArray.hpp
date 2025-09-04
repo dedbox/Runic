@@ -19,7 +19,7 @@ struct VertexAttribute
 class VertexArray
 {
 public:
-    static std::unique_ptr<VertexArray> Create(GraphicsContext* context);
+    static std::unique_ptr<VertexArray> Create(GraphicsContext* context, DrawMode _mode);
 
     // allow moving
     VertexArray(VertexArray&& other) noexcept;
@@ -30,6 +30,8 @@ public:
     VertexArray& operator=(const VertexArray&) = delete;
 
     ~VertexArray();
+
+    DrawMode getMode() const { return _mode; }
 
     void bind() const;
     void unbind() const;
@@ -44,11 +46,12 @@ public:
 private:
     GraphicsContext* _context;
     RendererId _id;
+    DrawMode _mode;
     std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffers;
     std::unique_ptr<IndexBuffer> _indexBuffer;
 
     // hide constructor
-    VertexArray(GraphicsContext* context, RendererId id);
+    VertexArray(GraphicsContext* context, RendererId id, DrawMode _mode);
 };
 
 } // namespace Runic

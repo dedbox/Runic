@@ -65,22 +65,17 @@ class IndexBuffer : public Buffer
 public:
     template <typename T>
     static std::unique_ptr<IndexBuffer> Create(
-        GraphicsContext* context,
-        const std::vector<T>& elements,
-        DrawMode mode,
-        IndexType type,
-        BufferUsage usage)
+        GraphicsContext* context, const std::vector<T>& elements, IndexType type, BufferUsage usage)
     {
         size_t count  = elements.size();
         size_t size   = count * sizeof(T);
         RendererId id = context->createIndexBuffer(elements.data(), count, type, usage);
-        return std::unique_ptr<IndexBuffer>(new IndexBuffer(context, id, count, size, type, mode));
+        return std::unique_ptr<IndexBuffer>(new IndexBuffer(context, id, count, size, type));
     }
 
     size_t getCount() const { return _count; }
     size_t getSize() const { return _size; }
     IndexType getType() const { return _type; }
-    DrawMode getMode() const { return _mode; }
 
     void bind() const override;
     void unbind() const override;
@@ -89,15 +84,8 @@ private:
     size_t _count;
     size_t _size;
     IndexType _type;
-    DrawMode _mode;
 
-    IndexBuffer(
-        GraphicsContext* context,
-        RendererId id,
-        size_t count,
-        size_t size,
-        IndexType type,
-        DrawMode mode);
+    IndexBuffer(GraphicsContext* context, RendererId id, size_t count, size_t size, IndexType type);
 };
 
 } // namespace Runic
