@@ -6,6 +6,7 @@
 #include <Runic/Core/Event.hpp>
 #include <Runic/Core/Input.hpp>
 #include <Runic/Core/Log.hpp>
+#include <Runic/Core/Time.hpp>
 
 // Application Entry Point
 #include <Runic/Core/Main.hpp>

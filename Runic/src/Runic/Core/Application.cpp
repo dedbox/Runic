@@ -2,12 +2,15 @@
 
 #include "SDL3/SDL_init.h"
 
+#include "Runic/Core/Time.hpp"
+
 namespace Runic
 {
 
 Application::Application(const AppData& appData, const WindowData& windowData)
 {
-    Runic::Log::Init(appData.name);
+    Time::Init();
+    Log::Init(appData.name);
 
     const std::string cwd = std::filesystem::current_path();
     Core::Info("Current working directory is {}", cwd);

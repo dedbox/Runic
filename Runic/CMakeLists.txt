@@ -112,6 +112,7 @@ add_library(
   src/Runic/Core/Input.cpp
   src/Runic/Core/LayerManager.cpp
   src/Runic/Core/Log.cpp
+  src/Runic/Core/Time.cpp
   src/Runic/Core/Window.cpp
   src/Runic/Renderer/Buffer.cpp
   src/Runic/Renderer/GraphicsContext.cpp
