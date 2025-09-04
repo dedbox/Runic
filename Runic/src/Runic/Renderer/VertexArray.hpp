@@ -47,6 +47,7 @@ private:
     GraphicsContext* _context;
     RendererId _id;
     DrawMode _mode;
+    size_t _count = 0;
     std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffers;
     std::unique_ptr<IndexBuffer> _indexBuffer;
 
