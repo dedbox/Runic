@@ -83,9 +83,9 @@ static GLenum to_GLenum(IndexType type)
     return static_cast<GLenum>(type);
 }
 
-// Index Mode ------------------------------------------------------------------
+// Draw Mode ------------------------------------------------------------------
 
-enum class IndexMode : uint8_t
+enum class DrawMode : uint8_t
 {
     Points                 = GL_POINTS,
     Lines                  = GL_LINES,
@@ -101,7 +101,7 @@ enum class IndexMode : uint8_t
     Patches                = GL_PATCHES,
 };
 
-inline GLenum to_GLenum(IndexMode mode)
+inline GLenum to_GLenum(DrawMode mode)
 {
     return static_cast<GLenum>(mode);
 }
@@ -345,7 +345,7 @@ public:
 
     void setPolygonMode(PolygonMode mode) const;
 
-    void drawIndexed(IndexMode mode, size_t count, IndexType type, const void* offset) const;
+    void drawIndexed(DrawMode mode, size_t count, IndexType type, const void* offset) const;
 };
 
 } // namespace Runic

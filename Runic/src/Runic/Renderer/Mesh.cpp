@@ -23,7 +23,7 @@ void Mesh::addVertices(
 }
 
 void Mesh::setIndices(
-    const std::vector<uint32_t>& indices, IndexMode mode, IndexType type, BufferUsage usage)
+    const std::vector<uint32_t>& indices, DrawMode mode, IndexType type, BufferUsage usage)
 {
     RendererId id = _context->createIndexBuffer(indices.data(), indices.size(), type, usage);
     _vertexArray->setIndexBuffer(IndexBuffer::Create(_context, indices, mode, type, usage));

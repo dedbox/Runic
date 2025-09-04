@@ -42,10 +42,7 @@ public:
         _mesh = Runic::Mesh::Create(_context);
         _mesh->addVertices(vertices, layout, Runic::BufferUsage::Static);
         _mesh->setIndices(
-            indices,
-            Runic::IndexMode::Triangles,
-            Runic::IndexType::Int,
-            Runic::BufferUsage::Static);
+            indices, Runic::DrawMode::Triangles, Runic::IndexType::Int, Runic::BufferUsage::Static);
 
         _mesh->addTexture(Runic::TextureManager::Find(_context, "container.jpg"));
         _mesh->addTexture(

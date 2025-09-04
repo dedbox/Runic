@@ -486,7 +486,7 @@ void GraphicsContext::setPolygonMode(PolygonMode mode) const
 }
 
 void GraphicsContext::drawIndexed(
-    IndexMode mode, size_t count, IndexType type, const void* offset) const
+    DrawMode mode, size_t count, IndexType type, const void* offset) const
 {
     glDrawElements(to_GLenum(mode), static_cast<GLsizei>(count), to_GLenum(type), offset);
 }

@@ -19,7 +19,7 @@ public:
         BufferUsage usage);
 
     void setIndices(
-        const std::vector<uint32_t>& indices, IndexMode mode, IndexType type, BufferUsage usage);
+        const std::vector<uint32_t>& indices, DrawMode mode, IndexType type, BufferUsage usage);
 
     void addTexture(std::shared_ptr<Texture> texture);
 

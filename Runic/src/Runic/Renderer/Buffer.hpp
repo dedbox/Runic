@@ -67,7 +67,7 @@ public:
     static std::unique_ptr<IndexBuffer> Create(
         GraphicsContext* context,
         const std::vector<T>& elements,
-        IndexMode mode,
+        DrawMode mode,
         IndexType type,
         BufferUsage usage)
     {
@@ -80,7 +80,7 @@ public:
     size_t getCount() const { return _count; }
     size_t getSize() const { return _size; }
     IndexType getType() const { return _type; }
-    IndexMode getMode() const { return _mode; }
+    DrawMode getMode() const { return _mode; }
 
     void bind() const override;
     void unbind() const override;
@@ -89,7 +89,7 @@ private:
     size_t _count;
     size_t _size;
     IndexType _type;
-    IndexMode _mode;
+    DrawMode _mode;
 
     IndexBuffer(
         GraphicsContext* context,
@@ -97,7 +97,7 @@ private:
         size_t count,
         size_t size,
         IndexType type,
-        IndexMode mode);
+        DrawMode mode);
 };
 
 } // namespace Runic
