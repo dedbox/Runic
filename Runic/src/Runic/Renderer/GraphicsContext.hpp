@@ -345,6 +345,7 @@ public:
 
     void setPolygonMode(PolygonMode mode) const;
 
+    void drawVertices(DrawMode mode, uint32_t first, size_t count);
     void drawIndexed(DrawMode mode, size_t count, IndexType type, const void* offset) const;
 };
 

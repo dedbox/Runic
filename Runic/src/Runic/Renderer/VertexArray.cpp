@@ -149,7 +149,14 @@ void VertexArray::setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
 
 void VertexArray::draw() const
 {
-    _context->drawIndexed(_mode, _indexBuffer->getCount(), _indexBuffer->getType(), nullptr);
+    if (_indexBuffer)
+        _context->drawIndexed(_mode, _indexBuffer->getCount(), _indexBuffer->getType(), nullptr);
+    else
+    {
+        const auto counts = _vertexBuffers | std::ranges::views::transform(&VertexBuffer::getCount);
+        size_t count      = std::ranges::fold_left(counts, size_t{0}, std::plus());
+        _context->drawVertices(_mode, 0, count);
+    }
 }
 
 } // namespace Runic

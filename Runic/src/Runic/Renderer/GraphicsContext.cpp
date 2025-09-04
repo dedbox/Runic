@@ -485,6 +485,11 @@ void GraphicsContext::setPolygonMode(PolygonMode mode) const
     glPolygonMode(GL_FRONT_AND_BACK, to_GLenum(mode));
 }
 
+void GraphicsContext::drawVertices(DrawMode mode, uint32_t first, size_t count)
+{
+    glDrawArrays(to_GLenum(mode), static_cast<GLint>(first), static_cast<GLsizei>(count));
+}
+
 void GraphicsContext::drawIndexed(
     DrawMode mode, size_t count, IndexType type, const void* offset) const
 {
