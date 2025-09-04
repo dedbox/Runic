@@ -26,6 +26,7 @@ Application::Application(const AppData& appData, const WindowData& windowData)
 
     _renderer = std::make_unique<Renderer>(_window->getNative());
     _context->setViewport({windowData.width, windowData.height});
+    _context->enableDepthTesting();
 
     SDL_SetWindowPosition(_window->getNative(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 

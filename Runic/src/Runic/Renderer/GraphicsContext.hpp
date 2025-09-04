@@ -244,8 +244,13 @@ private:
 
 public:
     void setViewport(const glm::ivec2& size, const glm::ivec2& offset = {0, 0}) const;
+
+    void enableDepthTesting() const;
+    void disableDepthTesting() const;
+
     void setClearColor(const glm::vec4& color) const;
     void clear() const;
+
     // Vertex Array
 
     RendererId createVertexArray() const;

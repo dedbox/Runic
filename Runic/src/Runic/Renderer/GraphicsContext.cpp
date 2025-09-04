@@ -143,6 +143,16 @@ void GraphicsContext::setViewport(const glm::ivec2& size, const glm::ivec2& offs
     glViewport(offset.x, offset.y, size.x, size.y);
 }
 
+void GraphicsContext::enableDepthTesting() const
+{
+    glEnable(GL_DEPTH_TEST);
+}
+
+void GraphicsContext::disableDepthTesting() const
+{
+    glDisable(GL_DEPTH_TEST);
+}
+
 void GraphicsContext::setClearColor(const glm::vec4& color) const
 {
     glClearColor(color.r, color.g, color.b, color.a);
