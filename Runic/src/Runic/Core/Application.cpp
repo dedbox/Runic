@@ -41,6 +41,15 @@ Application::Application(const AppData& appData, const WindowData& windowData)
 
     addSystemEventHandler<WindowResizeEvent>([&](const WindowResizeEvent& event) {
         _window->setSize({event.width, event.height});
+
+        std::visit(
+            [&](auto&& policy) {
+                using T = std::decay_t<decltype(policy)>;
+                if constexpr (std::is_same_v<T, AdaptiveResize>)
+                    _context->setViewport({event.width, event.height});
+            },
+            _window->getResizePolicy());
+
         return true;
     });
 
@@ -56,29 +65,36 @@ void Application::onUpdate()
     for (auto& _layer : _layers)
         _layer->update(deltaTime);
 
-    _renderer->beginFrame();
-
     const auto [vpSize, vpOffset] = _window->getViewport();
 
-    const auto aspect = _window->getAspect();
+    _renderer->beginFrame();
 
-    if (aspect)
-    {
-        _context->setViewport(_window->getSize());
-        _context->setClearColor(_window->getFrameColor());
-        _context->clear();
+    std::visit(
+        [&](auto&& policy) {
+            using T = std::decay_t<decltype(policy)>;
+            if constexpr (std::is_same_v<std::decay_t<decltype(policy)>, FixedAspect>)
+            {
+                _context->setViewport(_window->getSize());
+                _context->setClearColor(policy.frameColor);
+                _context->clear();
 
-        _context->enableScissor();
-        _context->setScissor(vpSize, vpOffset);
-    }
-
-    _context->setViewport(vpSize, vpOffset);
+                _context->enableScissor();
+                _context->setScissor(vpSize, vpOffset);
+                _context->setViewport(vpSize, vpOffset);
+            }
+        },
+        _window->getResizePolicy());
 
     for (auto& _layer : _layers)
         _layer->render();
 
-    if (aspect)
-        _context->disableScissor();
+    std::visit(
+        [&](auto&& policy) {
+            using T = std::decay_t<decltype(policy)>;
+            if constexpr (std::is_same_v<std::decay_t<decltype(policy)>, FixedAspect>)
+                _context->disableScissor();
+        },
+        _window->getResizePolicy());
 
     _renderer->endFrame();
 }

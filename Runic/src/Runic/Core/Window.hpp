@@ -12,24 +12,38 @@ namespace Runic
 constexpr uint32_t DEFAULT_WIDTH{1280};
 constexpr uint32_t DEFAULT_HEIGHT{720};
 
+// Resize Policy -----------------------------------------------------------------------------------
+
+struct AdaptiveResize
+{
+};
+
+struct FixedAspect
+{
+    float aspectRatio;
+    color frameColor = Color::Black;
+};
+
+using ResizePolicy = std::variant<AdaptiveResize, FixedAspect>;
+
+// -------------------------------------------------------------------------------------------------
+
 struct WindowData
 {
-    std::string title           = "Runic Engine";
-    uint32_t width              = DEFAULT_WIDTH;
-    uint32_t height             = DEFAULT_HEIGHT;
-    std::optional<float> aspect = std::nullopt;
-    color frameColor            = Color::Black;
+    std::string title         = "Runic Engine";
+    uint32_t width            = DEFAULT_WIDTH;
+    uint32_t height           = DEFAULT_HEIGHT;
+    ResizePolicy resizePolicy = AdaptiveResize();
 };
 
 class Window
 {
 public:
-    Window(const WindowData& data);
+    explicit Window(const WindowData& data);
 
     SDL_Window* getNative() const { return _native; }
 
-    const std::optional<float>& getAspect() const { return _aspect; }
-    const color& getFrameColor() const { return _frameColor; }
+    const ResizePolicy& getResizePolicy() const { return _resizePolicy; }
 
     void show() const;
     void hide() const;
@@ -55,9 +69,7 @@ public:
 private:
     SDL_Window* _native = nullptr;
 
-    std::optional<float> _aspect;
-    color _frameColor;
-    color _bgColor;
+    ResizePolicy _resizePolicy;
     glm::uvec2 _viewportSize;
     glm::uvec2 _viewportOffset;
 };

@@ -1,12 +1,12 @@
 #include "Runic/Core/Window.hpp"
+
 #include <SDL3/SDL_mouse.h>
 
 namespace Runic
 {
 
 Window::Window(const WindowData& data)
-    : _aspect(data.aspect)
-    , _frameColor(data.frameColor)
+    : _resizePolicy(data.resizePolicy)
     , _viewportSize(data.width, data.height)
     , _viewportOffset(0, 0)
 {
@@ -45,23 +45,29 @@ void Window::hide() const
 
 void Window::setSize(const glm::uvec2& size)
 {
-    if (!_aspect)
-    {
-        _viewportSize = size;
-        return;
-    }
+    std::visit(
+        [&](auto&& policy) {
+            using T = std::decay_t<decltype(policy)>;
+            if constexpr (std::is_same_v<T, AdaptiveResize>)
+                _viewportSize = size;
+            else if constexpr (std::is_same_v<T, FixedAspect>)
+            {
+                _viewportSize.x = static_cast<int>(size.x);
+                _viewportSize.y =
+                    static_cast<int>(static_cast<float>(_viewportSize.x) / policy.aspectRatio);
 
-    _viewportSize.x = static_cast<int>(size.x);
-    _viewportSize.y = static_cast<int>(static_cast<float>(_viewportSize.x) / *_aspect);
+                if (_viewportSize.y > size.y)
+                {
+                    _viewportSize.y = static_cast<int>(size.y);
+                    _viewportSize.x =
+                        static_cast<int>(static_cast<float>(_viewportSize.y) * policy.aspectRatio);
+                }
 
-    if (_viewportSize.y > size.y)
-    {
-        _viewportSize.y = static_cast<int>(size.y);
-        _viewportSize.x = static_cast<int>(static_cast<float>(_viewportSize.y) * *_aspect);
-    }
-
-    _viewportOffset.x = (size.x - _viewportSize.x) / 2;
-    _viewportOffset.y = (size.y - _viewportSize.y) / 2;
+                _viewportOffset.x = (size.x - _viewportSize.x) / 2;
+                _viewportOffset.y = (size.y - _viewportSize.y) / 2;
+            }
+        },
+        _resizePolicy);
 }
 
 const glm::ivec2 Window::getSize() const

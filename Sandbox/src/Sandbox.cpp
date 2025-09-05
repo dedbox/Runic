@@ -89,18 +89,54 @@ public:
 
         _shaderProgram = Runic::ShaderManager::Find(_context, "PosTexMVP", "Tex2Mix");
 
-        _projection = glm::perspective(glm::radians(45.0F), 16.0F / 9.0F, 0.1F, 100.0F);
-
         _shaderProgram->bind();
         _shaderProgram->setUniform("u_Texture0", static_cast<int>(0)); // container
         _shaderProgram->setUniform("u_Texture1", static_cast<int>(1)); // face
-        _shaderProgram->setUniform("u_Projection", _projection);
+
+        std::visit(
+            [&](auto&& policy) {
+                using T = std::decay_t<decltype(policy)>;
+                if constexpr (std::is_same_v<T, Runic::FixedAspect>)
+                {
+                    _projection =
+                        glm::perspective(glm::radians(45.0F), policy.aspectRatio, 0.1F, 100.0F);
+                    _shaderProgram->setUniform("u_Projection", _projection);
+                }
+            },
+            _window->getResizePolicy());
+
         _shaderProgram->unbind();
     }
 
     void attach() override
     {
         // _window->captureMouse();
+
+        std::visit(
+            [&](auto&& policy) {
+                using T = std::decay_t<decltype(policy)>;
+                if constexpr (std::is_same_v<T, Runic::AdaptiveResize>)
+                {
+                    const auto size = _window->getSize();
+                    _projection     = glm::perspective(
+                        glm::radians(45.0F),
+                        static_cast<float>(size.x) / static_cast<float>(size.y),
+                        0.1F,
+                        100.0F);
+
+                    addEventHandler<Runic::WindowResizeEvent>(
+                        [&](const Runic::WindowResizeEvent& event) {
+                            _projection = glm::perspective(
+                                glm::radians(45.0F),
+                                static_cast<float>(event.width) / static_cast<float>(event.height),
+                                0.1F,
+                                100.0F);
+
+                            return false;
+                        });
+                }
+            },
+            _window->getResizePolicy());
 
         addEventHandler<Runic::KeyPressEvent>([&](const auto& event) {
             if (event.key == Runic::Key::Escape)
@@ -157,6 +193,15 @@ public:
         glm::mat4 view = glm::lookAt(_cameraPos, _cameraPos + _cameraFront, _cameraUp);
         _shaderProgram->bind();
         _shaderProgram->setUniform("u_View", view);
+
+        std::visit(
+            [&](auto&& policy) {
+                using T = std::decay_t<decltype(policy)>;
+                if constexpr (std::is_same_v<T, Runic::AdaptiveResize>)
+                    _shaderProgram->setUniform("u_Projection", _projection);
+            },
+            _window->getResizePolicy());
+
         _shaderProgram->unbind();
     }
 
@@ -196,7 +241,8 @@ class Sandbox : public Runic::Application
 {
 public:
     Sandbox()
-        : Application({.name = "Sandbox"}, {.aspect = 16.0F / 9.0F})
+        // : Application({.name = "Sandbox"})
+        : Application({.name = "Sandbox"}, {.resizePolicy = Runic::FixedAspect(16.0F / 9.0F)})
     {
         Runic::Log::SetLevel(spdlog::level::info);
 

@@ -157,6 +157,7 @@ target_precompile_headers(
   <utility>
   <unordered_map>
   <unordered_set>
+  <variant>
   <vector>
   src/Runic/Core/Log.hpp
   src/Runic/Core/SDLException.hpp)
