@@ -8,6 +8,7 @@ namespace Runic
 {
 
 Application::Application(const AppData& appData, const WindowData& windowData)
+    : _lastFrameTime(Time::Seconds())
 {
     Time::Init();
     Log::Init(appData.name);
@@ -48,11 +49,13 @@ Application::Application(const AppData& appData, const WindowData& windowData)
 
 void Application::onUpdate()
 {
-    _renderer->beginFrame();
+    const double frameTime = Time::Seconds();
+    const double deltaTime = frameTime - _lastFrameTime;
+    _lastFrameTime         = frameTime;
 
     for (auto& _layer : _layers)
     {
-        _layer->update();
+        _layer->update(deltaTime);
         _layer->render();
     }
 

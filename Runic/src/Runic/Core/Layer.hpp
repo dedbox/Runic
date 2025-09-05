@@ -25,7 +25,7 @@ public:
 
     virtual void attach() {}
     virtual void detach() {}
-    virtual void update() {}
+    virtual void update(double deltaTime) {}
     virtual void render() {}
 
     const std::string& getName() const { return _name; }

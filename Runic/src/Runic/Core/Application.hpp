@@ -60,13 +60,18 @@ protected:
     }
 
 private:
+    // components
     std::unique_ptr<Window> _window;
     std::unique_ptr<Renderer> _renderer;
     std::unique_ptr<GraphicsContext> _context;
     LayerManager _layers;
 
+    // events
     EventDispatcher _systemDispatcher;
     bool _done = false;
+
+    // timing
+    double _lastFrameTime;
 };
 
 extern std::unique_ptr<Application> CreateApplication();
