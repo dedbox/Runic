@@ -1,9 +1,14 @@
 #include "Runic/Core/Window.hpp"
+#include <SDL3/SDL_mouse.h>
 
 namespace Runic
 {
 
 Window::Window(const WindowData& data)
+    : _aspect(data.aspect)
+    , _frameColor(data.frameColor)
+    , _viewportSize(data.width, data.height)
+    , _viewportOffset(0, 0)
 {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
@@ -38,6 +43,27 @@ void Window::hide() const
         throw SDLException("Could not hide window");
 }
 
+void Window::setSize(const glm::uvec2& size)
+{
+    if (!_aspect)
+    {
+        _viewportSize = size;
+        return;
+    }
+
+    _viewportSize.x = static_cast<int>(size.x);
+    _viewportSize.y = static_cast<int>(static_cast<float>(_viewportSize.x) / *_aspect);
+
+    if (_viewportSize.y > size.y)
+    {
+        _viewportSize.y = static_cast<int>(size.y);
+        _viewportSize.x = static_cast<int>(static_cast<float>(_viewportSize.y) * *_aspect);
+    }
+
+    _viewportOffset.x = (size.x - _viewportSize.x) / 2;
+    _viewportOffset.y = (size.y - _viewportSize.y) / 2;
+}
+
 const glm::ivec2 Window::getSize() const
 {
     int width  = 0;
@@ -46,6 +72,21 @@ const glm::ivec2 Window::getSize() const
         throw SDLException("Could not get window size");
 
     return {width, height};
+}
+
+void Window::captureMouse() const
+{
+    SDL_SetWindowRelativeMouseMode(_native, true);
+}
+
+void Window::releaseMouse() const
+{
+    SDL_SetWindowRelativeMouseMode(_native, false);
+}
+
+bool Window::isMouseCaptured() const
+{
+    return SDL_GetWindowRelativeMouseMode(_native);
 }
 
 } // namespace Runic

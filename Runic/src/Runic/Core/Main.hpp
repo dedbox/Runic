@@ -52,9 +52,10 @@ inline SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
         break;
 
     case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: {
+        float scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
         int x = 0, y = 0;
         SDL_GetWindowSizeInPixels(app->getWindow()->getNative(), &x, &y);
-        app->dispatchEvent(Runic::WindowResizeEvent(x, y));
+        app->dispatchEvent(Runic::WindowResizeEvent(x * scale, y * scale));
         break;
     }
 

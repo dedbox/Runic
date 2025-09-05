@@ -36,11 +36,11 @@ Application::Application(const AppData& appData, const WindowData& windowData)
 
     addSystemEventHandler<WindowCloseEvent>([&](const auto& /*event*/) {
         _done = true;
-        return true;
+        return false;
     });
 
     addSystemEventHandler<WindowResizeEvent>([&](const WindowResizeEvent& event) {
-        _context->setViewport({event.width, event.height});
+        _window->setSize({event.width, event.height});
         return true;
     });
 
@@ -54,10 +54,31 @@ void Application::onUpdate()
     _lastFrameTime         = frameTime;
 
     for (auto& _layer : _layers)
-    {
         _layer->update(deltaTime);
-        _layer->render();
+
+    _renderer->beginFrame();
+
+    const auto [vpSize, vpOffset] = _window->getViewport();
+
+    const auto aspect = _window->getAspect();
+
+    if (aspect)
+    {
+        _context->setViewport(_window->getSize());
+        _context->setClearColor(_window->getFrameColor());
+        _context->clear();
+
+        _context->enableScissor();
+        _context->setScissor(vpSize, vpOffset);
     }
+
+    _context->setViewport(vpSize, vpOffset);
+
+    for (auto& _layer : _layers)
+        _layer->render();
+
+    if (aspect)
+        _context->disableScissor();
 
     _renderer->endFrame();
 }

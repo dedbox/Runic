@@ -11,6 +11,7 @@
 #include "glm/ext/vector_int2.hpp"
 #include "glm/ext/vector_int3.hpp"
 #include "glm/ext/vector_int4.hpp"
+#include "glm/ext/vector_uint2.hpp"
 
 namespace Runic
 {
@@ -243,7 +244,13 @@ private:
     SDL_GLContext _native = nullptr;
 
 public:
-    void setViewport(const glm::ivec2& size, const glm::ivec2& offset = {0, 0}) const;
+    void setViewport(const glm::uvec2& size, const glm::uvec2& offset = {0, 0}) const;
+    std::pair<glm::uvec2, glm::uvec2> getViewport() const;
+
+    void enableScissor() const;
+    void disableScissor() const;
+
+    void setScissor(const glm::uvec2& size, const glm::uvec2& offset) const;
 
     void enableDepthTesting() const;
     void disableDepthTesting() const;

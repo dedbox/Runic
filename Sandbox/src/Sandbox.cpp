@@ -18,8 +18,9 @@ static constexpr auto Melon  = Runic::Color::hex(0xE0AFA0FF);
 class TriangleLayer : public Runic::Layer
 {
 public:
-    explicit TriangleLayer(Runic::GraphicsContext* context)
-        : _context(context)
+    explicit TriangleLayer(Runic::Window* window, Runic::GraphicsContext* context)
+        : _window(window)
+        , _context(context)
     {
         // clang-format off
         const std::vector<float> vertices = {
@@ -88,15 +89,49 @@ public:
 
         _shaderProgram = Runic::ShaderManager::Find(_context, "PosTexMVP", "Tex2Mix");
 
-        _view       = glm::translate(glm::mat4(1.0F), glm::vec3(0.0F, 0.0F, -3.0F));
-        _projection = glm::perspective(glm::radians(45.0F), 1280.0F / 720.0F, 0.1F, 100.0F);
+        _projection = glm::perspective(glm::radians(45.0F), 16.0F / 9.0F, 0.1F, 100.0F);
 
         _shaderProgram->bind();
         _shaderProgram->setUniform("u_Texture0", static_cast<int>(0)); // container
         _shaderProgram->setUniform("u_Texture1", static_cast<int>(1)); // face
-        _shaderProgram->setUniform("u_View", _view);
         _shaderProgram->setUniform("u_Projection", _projection);
         _shaderProgram->unbind();
+    }
+
+    void attach() override
+    {
+        // _window->captureMouse();
+
+        addEventHandler<Runic::KeyPressEvent>([&](const auto& event) {
+            if (event.key == Runic::Key::Escape)
+            {
+                if (_window->isMouseCaptured())
+                    _window->releaseMouse();
+                else
+                    _window->captureMouse();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    void detach() override { _window->releaseMouse(); }
+
+    void update(double deltaTime) override
+    {
+        const float cameraSpeed = 2.5F * static_cast<float>(deltaTime);
+
+        if (Runic::Input::IsKeyPressed(Runic::Key::W))
+            _cameraPos += cameraSpeed * _cameraFront;
+
+        if (Runic::Input::IsKeyPressed(Runic::Key::S))
+            _cameraPos -= cameraSpeed * _cameraFront;
+
+        if (Runic::Input::IsKeyPressed(Runic::Key::A))
+            _cameraPos -= glm::normalize(glm::cross(_cameraFront, _cameraUp)) * cameraSpeed;
+
+        if (Runic::Input::IsKeyPressed(Runic::Key::D))
+            _cameraPos += glm::normalize(glm::cross(_cameraFront, _cameraUp)) * cameraSpeed;
     }
 
     void render() override
@@ -106,11 +141,10 @@ public:
 
         for (auto&& [i, pos] : _cubePositions | std::ranges::views::enumerate)
         {
-            auto model  = glm::mat4(1.0F);
-            model       = glm::translate(model, pos);
-            float angle = 20.0F * static_cast<float>(i);
-            model       = glm::rotate(model, glm::radians(angle), glm::vec3(1.0F, 0.3F, 0.5F));
-            model       = glm::rotate(
+            auto model = glm::translate(glm::mat4(1.0F), pos);
+            model      = glm::rotate(
+                model, glm::radians(20.0F * static_cast<float>(i)), glm::vec3(1.0F, 0.3F, 0.5F));
+            model = glm::rotate(
                 model,
                 static_cast<float>(Runic::Time::Seconds()) * glm::radians(50.0F),
                 glm::vec3(0.5F, 1.0F, 0.0F));
@@ -119,14 +153,23 @@ public:
             _shaderProgram->unbind();
             _mesh->draw(*_shaderProgram);
         }
+
+        glm::mat4 view = glm::lookAt(_cameraPos, _cameraPos + _cameraFront, _cameraUp);
+        _shaderProgram->bind();
+        _shaderProgram->setUniform("u_View", view);
+        _shaderProgram->unbind();
     }
 
 private:
+    Runic::Window* _window;
     Runic::GraphicsContext* _context;
+
     std::shared_ptr<Runic::Texture> _texture;
     std::unique_ptr<Runic::Mesh> _mesh;
     std::shared_ptr<Runic::ShaderProgram> _shaderProgram;
-    glm::mat4 _view{1.0F}, _projection{1.0F};
+
+    glm::mat4 _projection{1.0F};
+
     // clang-format off
     std::vector<glm::vec3> _cubePositions = {
         glm::vec3( 0.0F,  0.0F,   0.0F),
@@ -141,6 +184,10 @@ private:
         glm::vec3(-1.3F,  1.0F,  -1.5F),
     };
     // clang-format on
+
+    glm::vec3 _cameraPos{0.0F, 0.0F, 3.0F};
+    glm::vec3 _cameraFront{0.0F, 0.0F, -1.0F};
+    glm::vec3 _cameraUp{0.0F, 1.0F, 0.0F};
 };
 
 // Sandbox -----------------------------------------------------------------------------------------
@@ -149,7 +196,7 @@ class Sandbox : public Runic::Application
 {
 public:
     Sandbox()
-        : Application({.name = "Sandbox"})
+        : Application({.name = "Sandbox"}, {.aspect = 16.0F / 9.0F})
     {
         Runic::Log::SetLevel(spdlog::level::info);
 
@@ -157,7 +204,7 @@ public:
         auto context = getGraphicsContext();
 
         auto& layers = getLayerManager();
-        layers.push_back(std::make_unique<TriangleLayer>(context));
+        layers.push_back(std::make_unique<TriangleLayer>(window, context));
     }
 };
 

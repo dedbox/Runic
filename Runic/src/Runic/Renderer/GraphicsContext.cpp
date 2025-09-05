@@ -138,9 +138,39 @@ void GraphicsContext::init()
     }
 }
 
-void GraphicsContext::setViewport(const glm::ivec2& size, const glm::ivec2& offset) const
+void GraphicsContext::setViewport(const glm::uvec2& size, const glm::uvec2& offset) const
 {
-    glViewport(offset.x, offset.y, size.x, size.y);
+    glViewport(
+        static_cast<GLint>(offset.x),
+        static_cast<GLint>(offset.y),
+        static_cast<GLint>(size.x),
+        static_cast<GLint>(size.y));
+}
+
+std::pair<glm::uvec2, glm::uvec2> GraphicsContext::getViewport() const
+{
+    std::array<int, 4> values{};
+    glGetIntegerv(GL_VIEWPORT, values.data());
+    return {{values[2], values[3]}, {values[0], values[1]}};
+}
+
+void GraphicsContext::enableScissor() const
+{
+    glEnable(GL_SCISSOR_TEST);
+}
+
+void GraphicsContext::disableScissor() const
+{
+    glDisable(GL_SCISSOR_TEST);
+}
+
+void GraphicsContext::setScissor(const glm::uvec2& size, const glm::uvec2& offset) const
+{
+    glScissor(
+        static_cast<GLint>(offset.x),
+        static_cast<GLint>(offset.y),
+        static_cast<GLint>(size.x),
+        static_cast<GLint>(size.y));
 }
 
 void GraphicsContext::enableDepthTesting() const
