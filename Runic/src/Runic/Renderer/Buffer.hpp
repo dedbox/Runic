@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Runic/Renderer/GraphicsContext.hpp"
-#include "Runic/Renderer/VertexVector.hpp"
 
 namespace Runic
 {
@@ -28,38 +27,6 @@ protected:
 
     // hide constructor
     Buffer(GraphicsContext* context, RendererId id);
-};
-
-// Vertex Buffer 2 ---------------------------------------------------------------------------------
-
-template <typename Attr, typename... Attrs>
-    requires(valid_layout<Attr, Attrs...>())
-class VertexBuffer2 : public Buffer
-{
-public:
-    static std::unique_ptr<VertexBuffer2> Create(
-        GraphicsContext* context, const VertexVector<Attr, Attrs...>& elements, BufferUsage usage)
-    {
-        const size_t count  = elements.count();
-        const size_t size   = count * sizeof(typename Attr::type);
-        const RendererId id = context->createVertexBuffer(elements.data(), size, usage);
-        return std::unique_ptr<VertexBuffer2>(new VertexBuffer2(context, id, size));
-    }
-
-    const size_t size() const { return _size; }
-
-    void bind() const override { _context->bindIndexBuffer(_id); }
-
-    void unbind() const override { _context->unbindIndexBuffer(); }
-
-private:
-    size_t _size;
-
-    VertexBuffer2(GraphicsContext* context, RendererId id, size_t size)
-        : Buffer(context, id)
-        , _size(size)
-    {
-    }
 };
 
 // Vertex Buffer ---------------------------------------------------------------
