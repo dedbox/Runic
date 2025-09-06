@@ -5,6 +5,8 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/trigonometric.hpp"
 
+#include "Runic/Renderer/VertexVector.hpp"
+
 static constexpr auto Bg = Runic::color(0.2F, 0.3F, 0.3F, 1.0F);
 
 static constexpr auto Taupe  = Runic::Color::hex(0x463F3AFF);
@@ -12,6 +14,11 @@ static constexpr auto Gray   = Runic::Color::hex(0x8A817CFF);
 static constexpr auto Silver = Runic::Color::hex(0xBCB8B1FF);
 static constexpr auto Ivory  = Runic::Color::hex(0xF4F3EEFF);
 static constexpr auto Melon  = Runic::Color::hex(0xE0AFA0FF);
+
+// Experimental ------------------------------------------------------------------------------------
+
+using Pos3 = Runic::VertexAttribute2<float, 3>;
+using Tex2 = Runic::VertexAttribute2<float, 2>;
 
 // TriangleLayer -----------------------------------------------------------------------------------
 
@@ -23,6 +30,51 @@ public:
         , _context(context)
     {
         // clang-format off
+        const Runic::VertexVector<Pos3, Tex2> vertices2 = {
+            // position        |  texcoord
+            -0.5F, -0.5F, -0.5F,  0.0F, 0.0F,
+             0.5F, -0.5F, -0.5F,  1.0F, 0.0F,
+             0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+             0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+            -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
+            -0.5F, -0.5F, -0.5F,  0.0F, 0.0F,
+
+            -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+             0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
+             0.5F,  0.5F,  0.5F,  1.0F, 1.0F,
+             0.5F,  0.5F,  0.5F,  1.0F, 1.0F,
+            -0.5F,  0.5F,  0.5F,  0.0F, 1.0F,
+            -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+
+            -0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+            -0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+            -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+            -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+            -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+            -0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+
+             0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+             0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+             0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+             0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+             0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+             0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+
+            -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+             0.5F, -0.5F, -0.5F,  1.0F, 1.0F,
+             0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
+             0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
+            -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+            -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+
+            -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
+             0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+             0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+             0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+            -0.5F,  0.5F,  0.5F,  0.0F, 0.0F,
+            -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
+        };
+
         const std::vector<float> vertices = {
             // position        |  texcoord
             -0.5F, -0.5F, -0.5F,  0.0F, 0.0F,
@@ -73,6 +125,9 @@ public:
             {.type = Runic::AttributeType::Float3, .normalize = false}, // a_Position
             {.type = Runic::AttributeType::Float2, .normalize = false}, // a_TexCoord
         };
+
+        _vbo = Runic::VertexBuffer2<Pos3, Tex2>::Create(
+            _context, vertices2, Runic::BufferUsage::Static);
 
         _mesh = Runic::Mesh::Create(_context, Runic::DrawMode::Triangles);
         _mesh->addVertices(vertices, layout, Runic::BufferUsage::Static);
@@ -209,6 +264,8 @@ private:
     Runic::Window* _window;
     Runic::GraphicsContext* _context;
 
+    std::unique_ptr<Runic::VertexBuffer2<Pos3, Tex2>> _vbo;
+
     std::shared_ptr<Runic::Texture> _texture;
     std::unique_ptr<Runic::Mesh> _mesh;
     std::shared_ptr<Runic::ShaderProgram> _shaderProgram;
@@ -241,8 +298,7 @@ class Sandbox : public Runic::Application
 {
 public:
     Sandbox()
-        // : Application({.name = "Sandbox"})
-        : Application({.name = "Sandbox"}, {.resizePolicy = Runic::FixedAspect(16.0F / 9.0F)})
+        : Application({.name = "Sandbox"})
     {
         Runic::Log::SetLevel(spdlog::level::info);
 
