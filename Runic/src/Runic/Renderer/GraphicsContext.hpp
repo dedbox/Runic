@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Runic/Renderer/Color.hpp"
 #include "SDL3/SDL_video.h"
 #include "glad/gl.h"
 #include "glm/ext/matrix_float3x3.hpp"
@@ -12,6 +11,8 @@
 #include "glm/ext/vector_int3.hpp"
 #include "glm/ext/vector_int4.hpp"
 #include "glm/ext/vector_uint2.hpp"
+
+#include "Runic/Renderer/Color.hpp"
 
 namespace Runic
 {
