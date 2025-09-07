@@ -22,14 +22,15 @@ static constexpr auto Melon  = Runic::Color::hex(0xE0AFA0FF);
 class TriangleLayer : public Runic::Layer
 {
 public:
-    explicit TriangleLayer(Runic::Window* window, Runic::GraphicsContext* context)
+    using Pos3 = Runic::Attribute<float, 3>;
+    using Tex2 = Runic::Attribute<float, 2>;
+
+    using Pos3Tex2 = Runic::Layout<Pos3, Tex2>;
+
+    TriangleLayer(Runic::Window* window, Runic::GraphicsContext* context)
         : _window(window)
         , _context(context)
     {
-        using Pos3 = Runic::Attribute<float, 3>;
-        using Tex2 = Runic::Attribute<float, 2>;
-
-        using Pos3Tex2 = Runic::Layout<Pos3, Tex2>;
 
         // clang-format off
         const Runic::VertexData<Pos3Tex2> vertices({
@@ -83,7 +84,7 @@ public:
             {.type = Runic::AttributeType::Float2, .normalize = false}, // a_TexCoord
         };
 
-        _mesh = Runic::Mesh::Create(_context, Runic::DrawMode::Triangles);
+        _mesh = Runic::Mesh<Pos3Tex2>::Create(_context, Runic::DrawMode::Triangles);
         _mesh->addVertices(vertices, layout, Runic::BufferUsage::Static);
 
         _mesh->addTexture(Runic::TextureManager::Find(_context, "container.jpg"));
@@ -219,7 +220,7 @@ private:
     Runic::GraphicsContext* _context;
 
     std::shared_ptr<Runic::Texture> _texture;
-    std::unique_ptr<Runic::Mesh> _mesh;
+    std::unique_ptr<Runic::Mesh<Pos3Tex2>> _mesh;
     std::shared_ptr<Runic::ShaderProgram> _shaderProgram;
 
     glm::mat4 _projection{1.0F};

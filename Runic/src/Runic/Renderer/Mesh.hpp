@@ -9,12 +9,24 @@
 namespace Runic
 {
 
+template <typename Layout>
 class Mesh
 {
-public:
-    static std::unique_ptr<Mesh> Create(GraphicsContext* context, DrawMode mode);
+private:
+    GraphicsContext* _context;
 
-    template <typename Layout>
+    Mesh(GraphicsContext* context, DrawMode mode)
+        : _context(context)
+        , _vertexArray(VertexArray::Create(_context, mode))
+    {
+    }
+
+public:
+    static std::unique_ptr<Mesh> Create(GraphicsContext* context, DrawMode mode)
+    {
+        return std::unique_ptr<Mesh>(new Mesh(context, mode));
+    }
+
     void addVertices(
         const VertexData<Layout>& vertices,
         const std::vector<VertexAttribute>& layout,
@@ -23,19 +35,38 @@ public:
         _vertexArray->addVertexBuffer(VertexBuffer::Create(_context, vertices, usage), layout);
     }
 
-    void setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage);
+    void setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage)
+    {
+        RendererId id = _context->createIndexBuffer(indices.data(), indices.size(), type, usage);
+        _vertexArray->setIndexBuffer(IndexBuffer::Create(_context, indices, type, usage));
+    }
 
-    void addTexture(std::shared_ptr<Texture> texture);
+    void addTexture(std::shared_ptr<Texture> texture)
+    {
+        if (texture)
+            _textures.push_back(std::move(texture));
+    }
 
-    void draw(const ShaderProgram& shaderProgram) const;
+    void draw(const ShaderProgram& shaderProgram) const
+    {
+        shaderProgram.bind();
+
+        for (const auto&& [index, texture] : _textures | std::ranges::views::enumerate)
+        {
+            _context->activateTextureUnit(index);
+            texture->bind();
+        }
+
+        _vertexArray->bind();
+        _vertexArray->draw();
+        _vertexArray->unbind();
+
+        shaderProgram.unbind();
+    }
 
 private:
-    GraphicsContext* _context;
     std::unique_ptr<VertexArray> _vertexArray;
     std::vector<std::shared_ptr<Texture>> _textures;
-
-    // hide constructor
-    explicit Mesh(GraphicsContext* context, DrawMode mode);
 };
 
 } // namespace Runic
