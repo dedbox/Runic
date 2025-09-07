@@ -85,7 +85,7 @@ public:
         };
 
         _mesh = Runic::Mesh<Pos3Tex2>::Create(_context, Runic::DrawMode::Triangles);
-        _mesh->addVertices(vertices, layout, Runic::BufferUsage::Static);
+        _mesh->addVertices(vertices, Runic::BufferUsage::Static);
 
         _mesh->addTexture(Runic::TextureManager::Find(_context, "container.jpg"));
         _mesh->addTexture(

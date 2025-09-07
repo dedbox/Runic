@@ -16,43 +16,111 @@ struct VertexAttribute
 
 // Vertex Array ----------------------------------------------------------------
 
+template <typename Layout>
 class VertexArray
 {
+private:
+    GraphicsContext* _context;
+    RendererId _id;
+    DrawMode _mode;
+
+    VertexArray(GraphicsContext* context, RendererId id, DrawMode mode)
+        : _context(context)
+        , _id(id)
+        , _mode(mode)
+    {
+        bind();
+    }
+
 public:
-    static std::unique_ptr<VertexArray> Create(GraphicsContext* context, DrawMode _mode);
+    static std::unique_ptr<VertexArray> Create(GraphicsContext* context, DrawMode mode)
+    {
+        RendererId id = context->createVertexArray();
+        return std::unique_ptr<VertexArray>(new VertexArray(context, id, mode));
+    }
 
     // allow moving
-    VertexArray(VertexArray&& other) noexcept;
-    VertexArray& operator=(VertexArray&& other) noexcept;
+    VertexArray(VertexArray&& other) noexcept
+        : _context(std::exchange(other._context, nullptr))
+        , _id(std::exchange(other._id, 0))
+        , _mode(other._mode)
+    {
+    }
+
+    VertexArray& operator=(VertexArray&& other) noexcept
+    {
+        if (this != &other)
+        {
+            _context->destroyVertexArray(_id);
+            _context = std::exchange(other._context, nullptr);
+            _id      = std::exchange(other._id, 0);
+            _mode    = other._mode;
+        }
+        return *this;
+    }
 
     // prevent copying
     VertexArray(VertexArray&)                  = delete;
     VertexArray& operator=(const VertexArray&) = delete;
 
-    ~VertexArray();
+    ~VertexArray()
+    {
+        if (_id != 0)
+        {
+            _context->destroyVertexArray(_id);
+            _id = 0;
+        }
+    }
 
     DrawMode getMode() const { return _mode; }
 
-    void bind() const;
-    void unbind() const;
+    void bind() const { _context->bindVertexArray(_id); }
+    void unbind() const { _context->unbindVertexArray(); }
 
-    void addVertexBuffer(
-        std::unique_ptr<VertexBuffer> vertexBuffer, const std::vector<VertexAttribute>& layout);
+    void addVertexBuffer(std::unique_ptr<VertexBuffer> vertexBuffer)
+    {
+        _count += vertexBuffer->getSize() / Layout::stride;
 
-    void setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer);
+        for (const auto&& [index, count, type, normalize, offset] : std::ranges::views::zip(
+                 std::ranges::views::iota(0),
+                 Layout::counts,
+                 Layout::attributeTypes,
+                 Layout::normalizes,
+                 Layout::offsets))
+        {
+            _context->enableVertexAttribute(index);
+            _context->defineVertexAttributeData(
+                index,
+                count,
+                type,
+                normalize,
+                Layout::stride,
+                reinterpret_cast<const void*>(offset)); // NOLINT
+        }
 
-    void draw() const;
+        _vertexBuffers.push_back(std::move(vertexBuffer));
+    }
+
+    void setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
+    {
+        _indexBuffer = std::move(indexBuffer);
+    }
+
+    void draw() const
+    {
+        if (_indexBuffer)
+            _context->drawIndexed(
+                _mode, _indexBuffer->getCount(), _indexBuffer->getType(), nullptr);
+        else
+        {
+            _context->drawVertices(_mode, 0, _count);
+        }
+    }
 
 private:
-    GraphicsContext* _context;
-    RendererId _id;
-    DrawMode _mode;
     size_t _count = 0;
     std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffers;
     std::unique_ptr<IndexBuffer> _indexBuffer;
-
-    // hide constructor
-    VertexArray(GraphicsContext* context, RendererId id, DrawMode _mode);
 };
 
 } // namespace Runic

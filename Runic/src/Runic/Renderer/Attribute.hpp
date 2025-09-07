@@ -123,6 +123,8 @@ struct Layout
     static constexpr std::array<AttributeType, attr_count> attributeTypes{
         to_AttributeType<Attr>(), to_AttributeType<Attrs>()...};
 
+    static constexpr std::array<bool, attr_count> normalizes{Attr::normalize, Attrs::normalize...};
+
     /** The byte index of the beginning of each Attribute */
     static constexpr std::array<size_t, attr_count> offsets = []() {
         std::array<size_t, attr_count> result{};

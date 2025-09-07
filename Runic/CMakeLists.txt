@@ -122,8 +122,7 @@ add_library(
   src/Runic/Renderer/ShaderManager.cpp
   src/Runic/Renderer/ShaderProgram.cpp
   src/Runic/Renderer/Texture.cpp
-  src/Runic/Renderer/TextureManager.cpp
-  src/Runic/Renderer/VertexArray.cpp)
+  src/Runic/Renderer/TextureManager.cpp)
 
 target_link_libraries(Runic PUBLIC ${OPENGL_LIBRARIES} glad_gl_core_46 glm::glm
                                    ImGUI)

@@ -17,7 +17,7 @@ private:
 
     Mesh(GraphicsContext* context, DrawMode mode)
         : _context(context)
-        , _vertexArray(VertexArray::Create(_context, mode))
+        , _vertexArray(VertexArray<Layout>::Create(_context, mode))
     {
     }
 
@@ -27,12 +27,9 @@ public:
         return std::unique_ptr<Mesh>(new Mesh(context, mode));
     }
 
-    void addVertices(
-        const VertexData<Layout>& vertices,
-        const std::vector<VertexAttribute>& layout,
-        BufferUsage usage)
+    void addVertices(const VertexData<Layout>& vertices, BufferUsage usage)
     {
-        _vertexArray->addVertexBuffer(VertexBuffer::Create(_context, vertices, usage), layout);
+        _vertexArray->addVertexBuffer(VertexBuffer::Create(_context, vertices, usage));
     }
 
     void setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage)
@@ -65,7 +62,7 @@ public:
     }
 
 private:
-    std::unique_ptr<VertexArray> _vertexArray;
+    std::unique_ptr<VertexArray<Layout>> _vertexArray;
     std::vector<std::shared_ptr<Texture>> _textures;
 };
 
