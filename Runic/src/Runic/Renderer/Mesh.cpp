@@ -14,14 +14,6 @@ Mesh::Mesh(GraphicsContext* context, DrawMode mode)
 {
 }
 
-void Mesh::addVertices(
-    const std::vector<float>& vertices,
-    const std::vector<VertexAttribute>& layout,
-    BufferUsage usage)
-{
-    _vertexArray->addVertexBuffer(VertexBuffer::Create(_context, vertices, usage), layout);
-}
-
 void Mesh::setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage)
 {
     RendererId id = _context->createIndexBuffer(indices.data(), indices.size(), type, usage);

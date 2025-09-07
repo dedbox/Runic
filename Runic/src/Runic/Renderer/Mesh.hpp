@@ -4,6 +4,7 @@
 #include "Runic/Renderer/ShaderProgram.hpp"
 #include "Runic/Renderer/Texture.hpp"
 #include "Runic/Renderer/VertexArray.hpp"
+#include "Runic/Renderer/VertexData.hpp"
 
 namespace Runic
 {
@@ -13,10 +14,14 @@ class Mesh
 public:
     static std::unique_ptr<Mesh> Create(GraphicsContext* context, DrawMode mode);
 
+    template <typename Layout>
     void addVertices(
-        const std::vector<float>& vertices,
+        const VertexData<Layout>& vertices,
         const std::vector<VertexAttribute>& layout,
-        BufferUsage usage);
+        BufferUsage usage)
+    {
+        _vertexArray->addVertexBuffer(VertexBuffer::Create(_context, vertices, usage), layout);
+    }
 
     void setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage);
 

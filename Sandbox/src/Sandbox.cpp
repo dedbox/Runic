@@ -7,6 +7,7 @@
 
 #include "Runic/Renderer/Attribute.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
+#include "Runic/Renderer/VertexData.hpp"
 
 static constexpr auto Bg = Runic::color(0.2F, 0.3F, 0.3F, 1.0F);
 
@@ -25,90 +26,57 @@ public:
         : _window(window)
         , _context(context)
     {
+        using Pos3 = Runic::Attribute<float, 3>;
+        using Tex2 = Runic::Attribute<float, 2>;
+
+        using Pos3Tex2 = Runic::Layout<Pos3, Tex2>;
+
         // clang-format off
-        const std::vector<float> vertices = {
-            // position        |  texcoord
-            -0.5F, -0.5F, -0.5F,  0.0F, 0.0F,
-             0.5F, -0.5F, -0.5F,  1.0F, 0.0F,
-             0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
-             0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
-            -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
-            -0.5F, -0.5F, -0.5F,  0.0F, 0.0F,
+        const Runic::VertexData<Pos3Tex2> vertices({
+                // position        |  texcoord
+                -0.5F, -0.5F, -0.5F,  0.0F, 0.0F,
+                 0.5F, -0.5F, -0.5F,  1.0F, 0.0F,
+                 0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+                 0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+                -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
+                -0.5F, -0.5F, -0.5F,  0.0F, 0.0F,
 
-            -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
-             0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
-             0.5F,  0.5F,  0.5F,  1.0F, 1.0F,
-             0.5F,  0.5F,  0.5F,  1.0F, 1.0F,
-            -0.5F,  0.5F,  0.5F,  0.0F, 1.0F,
-            -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+                -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+                 0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
+                 0.5F,  0.5F,  0.5F,  1.0F, 1.0F,
+                 0.5F,  0.5F,  0.5F,  1.0F, 1.0F,
+                -0.5F,  0.5F,  0.5F,  0.0F, 1.0F,
+                -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
 
-            -0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
-            -0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
-            -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
-            -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
-            -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
-            -0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+                -0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+                -0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+                -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+                -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+                -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+                -0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
 
-             0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
-             0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
-             0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
-             0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
-             0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
-             0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+                 0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+                 0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+                 0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+                 0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+                 0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+                 0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
 
-            -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
-             0.5F, -0.5F, -0.5F,  1.0F, 1.0F,
-             0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
-             0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
-            -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
-            -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+                -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+                 0.5F, -0.5F, -0.5F,  1.0F, 1.0F,
+                 0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
+                 0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
+                -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+                -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
 
-            -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
-             0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
-             0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
-             0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
-            -0.5F,  0.5F,  0.5F,  0.0F, 0.0F,
-            -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
-        };
+                -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
+                 0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+                 0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+                 0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+                -0.5F,  0.5F,  0.5F,  0.0F, 0.0F,
+                -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
+            });
         // clang-format on
-
-        using APos3 = Runic::Attribute<float, 3>;
-        using ACol4 = Runic::Attribute<float, 4>;
-        using ATex2 = Runic::Attribute<float, 2>;
-
-        using LPos3Color4Tex2 = Runic::AttributeLayout<APos3, ACol4, ATex2>;
-
-        std::println(
-            "Pos3 {} {} {} {}", sizeof(APos3), APos3::count, APos3::normalize, APos3::size);
-        std::println(
-            "Col4 {} {} {} {}", sizeof(ACol4), ACol4::count, ACol4::normalize, ACol4::size);
-        std::println(
-            "Tex2 {} {} {} {}", sizeof(ATex2), ATex2::count, ATex2::normalize, ATex2::size);
-        std::println("Pos3Tex2 {} {}", LPos3Color4Tex2::count, LPos3Color4Tex2::stride);
-        std::println(
-            "counts {}",
-            LPos3Color4Tex2::counts | std::ranges::views::transform([](const size_t& count) {
-                return std::to_string(count);
-            }) | std::ranges::views::join_with(' ') |
-                std::ranges::to<std::string>());
-        std::println(
-            "sizes {}",
-            LPos3Color4Tex2::sizes | std::ranges::views::transform([](const size_t& size) {
-                return std::to_string(size);
-            }) | std::ranges::views::join_with(' ') |
-                std::ranges::to<std::string>());
-        std::println(
-            "types {}",
-            LPos3Color4Tex2::attributeTypes |
-                std::ranges::views::transform(
-                    [](const Runic::AttributeType& type) { return to_string(type); }) |
-                std::ranges::views::join_with(' ') | std::ranges::to<std::string>());
-        std::println(
-            "offsets {}",
-            LPos3Color4Tex2::offsets | std::ranges::views::transform([](const size_t& offset) {
-                return std::to_string(offset);
-            }) | std::ranges::views::join_with(' ') |
-                std::ranges::to<std::string>());
 
         const std::vector<Runic::VertexAttribute> layout = {
             {.type = Runic::AttributeType::Float3, .normalize = false}, // a_Position

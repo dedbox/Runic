@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Runic/Renderer/GraphicsContext.hpp"
+#include "Runic/Renderer/VertexData.hpp"
 
 namespace Runic
 {
@@ -34,13 +35,13 @@ protected:
 class VertexBuffer : public Buffer
 {
 public:
-    template <typename T>
+    template <typename Layout>
     static std::unique_ptr<VertexBuffer> Create(
-        GraphicsContext* context, const std::vector<T>& elements, BufferUsage usage)
+        GraphicsContext* context, const VertexData<Layout>& vertices, BufferUsage usage)
     {
-        size_t count  = elements.size();
-        size_t size   = count * sizeof(T);
-        RendererId id = context->createVertexBuffer(elements.data(), size, usage);
+        size_t count  = vertices.count();
+        size_t size   = vertices.size();
+        RendererId id = context->createVertexBuffer(vertices.data(), size, usage);
         return std::unique_ptr<VertexBuffer>(new VertexBuffer(context, id, count, size));
     }
 
