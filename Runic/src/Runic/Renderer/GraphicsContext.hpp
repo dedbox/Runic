@@ -71,6 +71,29 @@ static GLenum to_GLenum(AttributeType type)
     return 0;
 }
 
+static std::string to_string(AttributeType type)
+{
+    // clang-format off
+    switch (type)
+    {
+    case AttributeType::None: return "None";
+    case AttributeType::Bool: return "Bool";
+    case AttributeType::Int: return "Int";
+    case AttributeType::Int2: return "Int2";
+    case AttributeType::Int3: return "Int3";
+    case AttributeType::Int4: return "Int4";
+    case AttributeType::Float: return "Float";
+    case AttributeType::Float2: return "Float2";
+    case AttributeType::Float3: return "Float3";
+    case AttributeType::Float4: return "Float4";
+    case AttributeType::Mat3: return "Mat3";
+    case AttributeType::Mat4: return "Mat4";
+    }
+    // clang-format on
+    Core::Assert(false, "unknown vertex attribute type");
+    return "unknown";
+}
+
 // Index Type ------------------------------------------------------------------
 
 enum class IndexType : uint16_t
