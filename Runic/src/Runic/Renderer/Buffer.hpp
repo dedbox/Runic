@@ -32,10 +32,21 @@ protected:
 
 // Vertex Buffer ---------------------------------------------------------------
 
+template <typename Layout>
 class VertexBuffer : public Buffer
 {
+private:
+    size_t _count;
+    size_t _size;
+
+    VertexBuffer(GraphicsContext* context, RendererId id, size_t count, size_t size)
+        : Buffer(context, id)
+        , _count(count)
+        , _size(size)
+    {
+    }
+
 public:
-    template <typename Layout>
     static std::unique_ptr<VertexBuffer> Create(
         GraphicsContext* context, const VertexData<Layout>& vertices, BufferUsage usage)
     {
@@ -48,15 +59,8 @@ public:
     size_t getCount() const { return _count; }
     size_t getSize() const { return _size; }
 
-    void bind() const override;
-    void unbind() const override;
-
-private:
-    size_t _count;
-    size_t _size;
-
-    // hide constructor
-    VertexBuffer(GraphicsContext* context, RendererId id, size_t count, size_t size);
+    void bind() const override { _context->bindVertexBuffer(_id); }
+    void unbind() const override { _context->unbindVertexBuffer(); }
 };
 
 // Index Buffer ----------------------------------------------------------------

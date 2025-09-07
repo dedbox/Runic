@@ -34,25 +34,6 @@ Buffer& Buffer::operator=(Buffer&& other) noexcept
     return *this;
 }
 
-// Vertex Buffer ---------------------------------------------------------------
-
-VertexBuffer::VertexBuffer(GraphicsContext* context, RendererId id, size_t count, size_t size)
-    : Buffer(context, id)
-    , _count(count)
-    , _size(size)
-{
-}
-
-void VertexBuffer::bind() const
-{
-    _context->bindVertexBuffer(_id);
-}
-
-void VertexBuffer::unbind() const
-{
-    _context->unbindVertexBuffer();
-}
-
 // Index Buffer ----------------------------------------------------------------
 
 IndexBuffer::IndexBuffer(

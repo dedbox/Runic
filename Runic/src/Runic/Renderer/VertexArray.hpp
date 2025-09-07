@@ -77,7 +77,7 @@ public:
     void bind() const { _context->bindVertexArray(_id); }
     void unbind() const { _context->unbindVertexArray(); }
 
-    void addVertexBuffer(std::unique_ptr<VertexBuffer> vertexBuffer)
+    void addVertexBuffer(std::unique_ptr<VertexBuffer<Layout>> vertexBuffer)
     {
         _count += vertexBuffer->getSize() / Layout::stride;
 
@@ -119,7 +119,7 @@ public:
 
 private:
     size_t _count = 0;
-    std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffers;
+    std::vector<std::unique_ptr<VertexBuffer<Layout>>> _vertexBuffers;
     std::unique_ptr<IndexBuffer> _indexBuffer;
 };
 

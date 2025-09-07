@@ -29,7 +29,7 @@ public:
 
     void addVertices(const VertexData<Layout>& vertices, BufferUsage usage)
     {
-        _vertexArray->addVertexBuffer(VertexBuffer::Create(_context, vertices, usage));
+        _vertexArray->addVertexBuffer(VertexBuffer<Layout>::Create(_context, vertices, usage));
     }
 
     void setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage)
