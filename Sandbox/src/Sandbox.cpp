@@ -1,6 +1,5 @@
 #include <Runic.hpp>
 
-#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/trigonometric.hpp"
@@ -108,18 +107,18 @@ public:
             [&](auto&& policy) {
                 using T = std::decay_t<decltype(policy)>;
                 if constexpr (std::is_same_v<T, Runic::FixedAspect>)
-                    _aspect = policy.aspectRatio;
+                    _camera.setAspect(policy.aspectRatio);
 
                 else if constexpr (std::is_same_v<T, Runic::AdaptiveResize>)
                 {
                     const auto size = _window->getSize();
 
-                    _aspect = static_cast<float>(size.x) / static_cast<float>(size.y);
+                    _camera.setAspect(static_cast<float>(size.x) / static_cast<float>(size.y));
 
                     addEventHandler<Runic::WindowResizeEvent>(
                         [&](const Runic::WindowResizeEvent& event) {
-                            _aspect =
-                                static_cast<float>(event.width) / static_cast<float>(event.height);
+                            _camera.setAspect(
+                                static_cast<float>(event.width) / static_cast<float>(event.height));
                             return false;
                         });
                 }
@@ -139,26 +138,20 @@ public:
         });
 
         addEventHandler<Runic::MouseMoveEvent>([&](const auto& event) {
-            const float sensitivity = 0.1F;
+            if (!_window->isMouseCaptured())
+                return false;
 
-            _yaw += event.xOffset * sensitivity;
-            _pitch += event.yOffset * sensitivity;
-
-            if (_pitch > 89.0F)
-                _pitch = 89.0F;
-            if (_pitch < -89.0F)
-                _pitch = -89.0F;
+            _camera.rotateHorizontal(event.xOffset);
+            _camera.rotateVertical(event.yOffset);
 
             return false;
         });
 
         addEventHandler<Runic::MouseScrollEvent>([&](const auto& event) {
-            _fov -= static_cast<float>(event.vert);
+            if (!_window->isMouseCaptured())
+                return false;
 
-            if (_fov < 1.0F)
-                _fov = 1.0F;
-            if (_fov > 45.0F)
-                _fov = 45.0F;
+            _camera.zoom(event.vert);
 
             return false;
         });
@@ -168,27 +161,26 @@ public:
 
     void update(double deltaTime) override
     {
-        const float cameraSpeed = 5.0F * static_cast<float>(deltaTime);
+        const auto amount = static_cast<float>(deltaTime);
 
         if (Runic::Input::IsKeyPressed(Runic::Key::W))
-            _cameraPos += cameraSpeed * _cameraFront;
+            _camera.moveForward(amount);
 
         if (Runic::Input::IsKeyPressed(Runic::Key::S))
-            _cameraPos -= cameraSpeed * _cameraFront;
+            _camera.moveBackward(amount);
 
         if (Runic::Input::IsKeyPressed(Runic::Key::A))
-            _cameraPos -= glm::normalize(glm::cross(_cameraFront, _cameraUp)) * cameraSpeed;
+            _camera.moveLeft(amount);
 
         if (Runic::Input::IsKeyPressed(Runic::Key::D))
-            _cameraPos += glm::normalize(glm::cross(_cameraFront, _cameraUp)) * cameraSpeed;
+            _camera.moveRight(amount);
 
-        glm::vec3 direction;
-        direction.x  = static_cast<float>(cos(glm::radians(_yaw)) * cos(glm::radians(_pitch)));
-        direction.y  = static_cast<float>(sin(glm::radians(_pitch)));
-        direction.z  = static_cast<float>(sin(glm::radians(_yaw)) * cos(glm::radians(_pitch)));
-        _cameraFront = glm::normalize(direction);
+        if (Runic::Input::IsKeyPressed(Runic::Key::Space))
+            _camera.moveUp(amount);
 
-        _projection = glm::perspective(glm::radians(_fov), _aspect, 0.1F, 100.0F);
+        if (Runic::Input::IsKeyPressed(Runic::Key::LeftShift) ||
+            Runic::Input::IsKeyPressed(Runic::Key::RightShift))
+            _camera.moveDown(amount);
     }
 
     void render() override
@@ -211,11 +203,9 @@ public:
             _mesh->draw(*_shaderProgram);
         }
 
-        glm::mat4 view = glm::lookAt(_cameraPos, _cameraPos + _cameraFront, _cameraUp);
-
         _shaderProgram->bind();
-        _shaderProgram->setUniform("u_View", view);
-        _shaderProgram->setUniform("u_Projection", _projection);
+        _shaderProgram->setUniform("u_View", _camera.viewMatrix());
+        _shaderProgram->setUniform("u_Projection", _camera.projectionMatrix());
         _shaderProgram->unbind();
     }
 
@@ -226,8 +216,6 @@ private:
     std::shared_ptr<Runic::Texture> _texture;
     std::unique_ptr<Runic::Mesh<Pos3Tex2>> _mesh;
     std::shared_ptr<Runic::ShaderProgram<Pos3Tex2>> _shaderProgram;
-
-    glm::mat4 _projection{1.0F};
 
     // clang-format off
     std::vector<glm::vec3> _cubePositions = {
@@ -244,15 +232,7 @@ private:
     };
     // clang-format on
 
-    glm::vec3 _cameraPos{0.0F, 0.0F, 3.0F};
-    glm::vec3 _cameraFront{0.0F, 0.0F, -1.0F};
-    glm::vec3 _cameraUp{0.0F, 1.0F, 0.0F};
-
-    float _fov    = 45.0F;
-    float _aspect = 1.0F;
-
-    float _yaw   = -90.0F;
-    float _pitch = 0.0F;
+    Runic::Camera _camera;
 };
 
 // Sandbox -----------------------------------------------------------------------------------------
