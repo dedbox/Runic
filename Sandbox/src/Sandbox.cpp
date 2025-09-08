@@ -96,7 +96,7 @@ public:
                  .magFilter = Runic::TextureMagFilter::Nearest,
                  .mipmap    = false}));
 
-        _shaderProgram = Runic::ShaderManager::Find(_context, "PosTexMVP", "Tex2Mix");
+        _shaderProgram = Runic::ShaderManager::Find<Pos3Tex2>(_context, "PosTexMVP", "Tex2Mix");
 
         _shaderProgram->bind();
         _shaderProgram->setUniform("u_Texture0", static_cast<int>(0)); // container
@@ -220,7 +220,7 @@ private:
 
     std::shared_ptr<Runic::Texture> _texture;
     std::unique_ptr<Runic::Mesh<Pos3Tex2>> _mesh;
-    std::shared_ptr<Runic::ShaderProgram> _shaderProgram;
+    std::shared_ptr<Runic::ShaderProgram<Pos3Tex2>> _shaderProgram;
 
     glm::mat4 _projection{1.0F};
 

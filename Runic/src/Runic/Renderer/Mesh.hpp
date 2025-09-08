@@ -43,7 +43,7 @@ public:
             _textures.push_back(std::move(texture));
     }
 
-    void draw(const ShaderProgram& shaderProgram) const
+    void draw(const ShaderProgram<Layouts...>& shaderProgram) const
     {
         shaderProgram.bind();
 

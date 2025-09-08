@@ -120,7 +120,6 @@ add_library(
   src/Runic/Renderer/Renderer.cpp
   src/Runic/Renderer/Shader.cpp
   src/Runic/Renderer/ShaderManager.cpp
-  src/Runic/Renderer/ShaderProgram.cpp
   src/Runic/Renderer/Texture.cpp
   src/Runic/Renderer/TextureManager.cpp)
 
