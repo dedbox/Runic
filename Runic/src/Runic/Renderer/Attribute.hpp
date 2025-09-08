@@ -112,7 +112,7 @@ struct Layout
     static constexpr size_t attr_count = 1 + sizeof...(Attrs);
 
     /** The size in bytes of all attributes */
-    static constexpr size_t stride = Attr::size + (Attrs::size + ...);
+    static constexpr size_t stride = (Attr::size + ... + Attrs::size);
 
     /** The component count of each Attribute */
     static constexpr std::array<size_t, attr_count> counts{Attr::count, Attrs::count...};

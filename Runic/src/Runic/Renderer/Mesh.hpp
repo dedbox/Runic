@@ -11,7 +11,7 @@ namespace Runic
 template <typename... Layouts>
 class Mesh
 {
-private:
+protected:
     GraphicsContext* _context;
 
     Mesh(GraphicsContext* context, DrawMode mode)
