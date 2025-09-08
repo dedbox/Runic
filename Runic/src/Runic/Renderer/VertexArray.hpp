@@ -16,7 +16,7 @@ struct VertexAttribute
 
 // Vertex Array ----------------------------------------------------------------
 
-template <typename Layout>
+template <typename... Layouts>
 class VertexArray
 {
 private:
@@ -77,7 +77,30 @@ public:
     void bind() const { _context->bindVertexArray(_id); }
     void unbind() const { _context->unbindVertexArray(); }
 
-    void addVertexBuffer(std::unique_ptr<VertexBuffer<Layout>> vertexBuffer)
+    void setVertexBuffers(VertexBufferTuple<Layouts...> vertexBuffers)
+    {
+        if constexpr (std::tuple_size_v<VertexBufferTuple<Layouts...>> == 0)
+            return;
+
+        if (std::get<0>(_vertexBuffers))
+        {
+            Core::Warn("Multiple attempts to set vertex buffers on one vertex array");
+            return;
+        }
+
+        constexpr auto tuple_size = std::tuple_size_v<std::decay_t<VertexBufferTuple<Layouts...>>>;
+        [&]<size_t... Is>(std::index_sequence<Is...>) {
+            (addVertexBuffer(
+                 std::get<Is>(std::forward<const VertexBufferTuple<Layouts...>>(vertexBuffers))),
+             ...);
+        }(std::make_index_sequence<tuple_size>{});
+
+        _vertexBuffers = std::move(vertexBuffers);
+    }
+
+private:
+    template <typename Layout>
+    void addVertexBuffer(const std::unique_ptr<VertexBuffer<Layout>>& vertexBuffer)
     {
         _count += vertexBuffer->getSize() / Layout::stride;
 
@@ -97,10 +120,9 @@ public:
                 Layout::stride,
                 reinterpret_cast<const void*>(offset)); // NOLINT
         }
-
-        _vertexBuffers.push_back(std::move(vertexBuffer));
     }
 
+public:
     void setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
     {
         _indexBuffer = std::move(indexBuffer);
@@ -119,7 +141,7 @@ public:
 
 private:
     size_t _count = 0;
-    std::vector<std::unique_ptr<VertexBuffer<Layout>>> _vertexBuffers;
+    VertexBufferTuple<Layouts...> _vertexBuffers;
     std::unique_ptr<IndexBuffer> _indexBuffer;
 };
 

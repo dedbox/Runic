@@ -63,6 +63,9 @@ public:
     void unbind() const override { _context->unbindVertexBuffer(); }
 };
 
+template <typename... Layouts>
+using VertexBufferTuple = std::tuple<std::unique_ptr<VertexBuffer<Layouts>...>>;
+
 // Index Buffer ----------------------------------------------------------------
 
 class IndexBuffer : public Buffer

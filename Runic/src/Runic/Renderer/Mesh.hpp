@@ -4,12 +4,11 @@
 #include "Runic/Renderer/ShaderProgram.hpp"
 #include "Runic/Renderer/Texture.hpp"
 #include "Runic/Renderer/VertexArray.hpp"
-#include "Runic/Renderer/VertexData.hpp"
 
 namespace Runic
 {
 
-template <typename Layout>
+template <typename... Layouts>
 class Mesh
 {
 private:
@@ -17,7 +16,7 @@ private:
 
     Mesh(GraphicsContext* context, DrawMode mode)
         : _context(context)
-        , _vertexArray(VertexArray<Layout>::Create(_context, mode))
+        , _vertexArray(VertexArray<Layouts...>::Create(_context, mode))
     {
     }
 
@@ -27,9 +26,9 @@ public:
         return std::unique_ptr<Mesh>(new Mesh(context, mode));
     }
 
-    void addVertices(const VertexData<Layout>& vertices, BufferUsage usage)
+    void setVertexBuffers(VertexBufferTuple<Layouts...> vertexBuffers)
     {
-        _vertexArray->addVertexBuffer(VertexBuffer<Layout>::Create(_context, vertices, usage));
+        _vertexArray->setVertexBuffers(std::move(vertexBuffers));
     }
 
     void setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage)
@@ -62,7 +61,7 @@ public:
     }
 
 private:
-    std::unique_ptr<VertexArray<Layout>> _vertexArray;
+    std::unique_ptr<VertexArray<Layouts...>> _vertexArray;
     std::vector<std::shared_ptr<Texture>> _textures;
 };
 

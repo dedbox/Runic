@@ -79,13 +79,12 @@ public:
             });
         // clang-format on
 
-        const std::vector<Runic::VertexAttribute> layout = {
-            {.type = Runic::AttributeType::Float3, .normalize = false}, // a_Position
-            {.type = Runic::AttributeType::Float2, .normalize = false}, // a_TexCoord
-        };
-
         _mesh = Runic::Mesh<Pos3Tex2>::Create(_context, Runic::DrawMode::Triangles);
-        _mesh->addVertices(vertices, Runic::BufferUsage::Static);
+
+        _mesh->setVertexBuffers(
+            std::make_tuple(
+                Runic::VertexBuffer<Pos3Tex2>::Create(
+                    _context, vertices, Runic::BufferUsage::Static)));
 
         _mesh->addTexture(Runic::TextureManager::Find(_context, "container.jpg"));
         _mesh->addTexture(
