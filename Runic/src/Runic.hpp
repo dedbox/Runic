@@ -12,6 +12,7 @@
 #include <Runic/Core/Main.hpp>
 
 // The Graphics API
+#include <Runic/Renderer/Attribute.hpp>
 #include <Runic/Renderer/Color.hpp>
 #include <Runic/Renderer/GraphicsContext.hpp>
 #include <Runic/Renderer/GuiLayer.hpp>
@@ -19,3 +20,4 @@
 #include <Runic/Renderer/ShaderManager.hpp>
 #include <Runic/Renderer/Texture.hpp>
 #include <Runic/Renderer/TextureManager.hpp>
+#include <Runic/Renderer/VertexData.hpp>

@@ -5,10 +5,6 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/trigonometric.hpp"
 
-#include "Runic/Renderer/Attribute.hpp"
-#include "Runic/Renderer/GraphicsContext.hpp"
-#include "Runic/Renderer/VertexData.hpp"
-
 static constexpr auto Bg = Runic::color(0.2F, 0.3F, 0.3F, 1.0F);
 
 static constexpr auto Taupe  = Runic::Color::hex(0x463F3AFF);
@@ -101,46 +97,29 @@ public:
         _shaderProgram->bind();
         _shaderProgram->setUniform("u_Texture0", static_cast<int>(0)); // container
         _shaderProgram->setUniform("u_Texture1", static_cast<int>(1)); // face
-
-        std::visit(
-            [&](auto&& policy) {
-                using T = std::decay_t<decltype(policy)>;
-                if constexpr (std::is_same_v<T, Runic::FixedAspect>)
-                {
-                    _projection =
-                        glm::perspective(glm::radians(45.0F), policy.aspectRatio, 0.1F, 100.0F);
-                    _shaderProgram->setUniform("u_Projection", _projection);
-                }
-            },
-            _window->getResizePolicy());
-
         _shaderProgram->unbind();
     }
 
     void attach() override
     {
-        // _window->captureMouse();
+        _window->captureMouse();
 
         std::visit(
             [&](auto&& policy) {
                 using T = std::decay_t<decltype(policy)>;
-                if constexpr (std::is_same_v<T, Runic::AdaptiveResize>)
+                if constexpr (std::is_same_v<T, Runic::FixedAspect>)
+                    _aspect = policy.aspectRatio;
+
+                else if constexpr (std::is_same_v<T, Runic::AdaptiveResize>)
                 {
                     const auto size = _window->getSize();
-                    _projection     = glm::perspective(
-                        glm::radians(45.0F),
-                        static_cast<float>(size.x) / static_cast<float>(size.y),
-                        0.1F,
-                        100.0F);
+
+                    _aspect = static_cast<float>(size.x) / static_cast<float>(size.y);
 
                     addEventHandler<Runic::WindowResizeEvent>(
                         [&](const Runic::WindowResizeEvent& event) {
-                            _projection = glm::perspective(
-                                glm::radians(45.0F),
-                                static_cast<float>(event.width) / static_cast<float>(event.height),
-                                0.1F,
-                                100.0F);
-
+                            _aspect =
+                                static_cast<float>(event.width) / static_cast<float>(event.height);
                             return false;
                         });
                 }
@@ -158,13 +137,38 @@ public:
             }
             return false;
         });
+
+        addEventHandler<Runic::MouseMoveEvent>([&](const auto& event) {
+            const float sensitivity = 0.1F;
+
+            _yaw += event.xOffset * sensitivity;
+            _pitch += event.yOffset * sensitivity;
+
+            if (_pitch > 89.0F)
+                _pitch = 89.0F;
+            if (_pitch < -89.0F)
+                _pitch = -89.0F;
+
+            return false;
+        });
+
+        addEventHandler<Runic::MouseScrollEvent>([&](const auto& event) {
+            _fov -= static_cast<float>(event.vert);
+
+            if (_fov < 1.0F)
+                _fov = 1.0F;
+            if (_fov > 45.0F)
+                _fov = 45.0F;
+
+            return false;
+        });
     }
 
     void detach() override { _window->releaseMouse(); }
 
     void update(double deltaTime) override
     {
-        const float cameraSpeed = 2.5F * static_cast<float>(deltaTime);
+        const float cameraSpeed = 5.0F * static_cast<float>(deltaTime);
 
         if (Runic::Input::IsKeyPressed(Runic::Key::W))
             _cameraPos += cameraSpeed * _cameraFront;
@@ -177,6 +181,14 @@ public:
 
         if (Runic::Input::IsKeyPressed(Runic::Key::D))
             _cameraPos += glm::normalize(glm::cross(_cameraFront, _cameraUp)) * cameraSpeed;
+
+        glm::vec3 direction;
+        direction.x  = static_cast<float>(cos(glm::radians(_yaw)) * cos(glm::radians(_pitch)));
+        direction.y  = static_cast<float>(sin(glm::radians(_pitch)));
+        direction.z  = static_cast<float>(sin(glm::radians(_yaw)) * cos(glm::radians(_pitch)));
+        _cameraFront = glm::normalize(direction);
+
+        _projection = glm::perspective(glm::radians(_fov), _aspect, 0.1F, 100.0F);
     }
 
     void render() override
@@ -200,17 +212,10 @@ public:
         }
 
         glm::mat4 view = glm::lookAt(_cameraPos, _cameraPos + _cameraFront, _cameraUp);
+
         _shaderProgram->bind();
         _shaderProgram->setUniform("u_View", view);
-
-        std::visit(
-            [&](auto&& policy) {
-                using T = std::decay_t<decltype(policy)>;
-                if constexpr (std::is_same_v<T, Runic::AdaptiveResize>)
-                    _shaderProgram->setUniform("u_Projection", _projection);
-            },
-            _window->getResizePolicy());
-
+        _shaderProgram->setUniform("u_Projection", _projection);
         _shaderProgram->unbind();
     }
 
@@ -242,6 +247,12 @@ private:
     glm::vec3 _cameraPos{0.0F, 0.0F, 3.0F};
     glm::vec3 _cameraFront{0.0F, 0.0F, -1.0F};
     glm::vec3 _cameraUp{0.0F, 1.0F, 0.0F};
+
+    float _fov    = 45.0F;
+    float _aspect = 1.0F;
+
+    float _yaw   = -90.0F;
+    float _pitch = 0.0F;
 };
 
 // Sandbox -----------------------------------------------------------------------------------------
