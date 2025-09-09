@@ -1,88 +1,11 @@
 #include <Runic.hpp>
 
+#include "Cube.hpp"
+
 // Cube --------------------------------------------------------------------------------------------
 
 static constexpr Runic::color AlmostBlack(0.1F, 0.1F, 0.1F, 1.0F);
 static constexpr Runic::color Coral(1.0F, 0.5F, 0.31F, 1.0F);
-
-using APos3 = Runic::Attribute<float, 3>;
-using LPos3 = Runic::Layout<APos3>;
-
-class Cube : public Runic::RenderObject<LPos3>
-{
-private:
-    explicit Cube(Runic::GraphicsContext* context)
-        : Runic::RenderObject<LPos3>(context)
-    {
-    }
-
-public:
-    static std::unique_ptr<Cube> Create(
-        Runic::GraphicsContext* context, std::shared_ptr<Runic::ShaderProgram<LPos3>>&& shader)
-    {
-        auto cube = std::unique_ptr<Cube>(new Cube(context));
-
-        cube->createMesh(Runic::DrawMode::Triangles);
-        cube->mesh->setVertexBuffers(
-            std::make_tuple(
-                Runic::VertexBuffer<LPos3>::Create(
-                    context,
-                    Runic::VertexData<LPos3>(cube->_vertices),
-                    Runic::BufferUsage::Static)));
-
-        cube->shader = std::move(shader);
-
-        return cube;
-    }
-
-private:
-    // clang-format off
-    std::vector<float> _vertices = {
-            // a_Position
-            -0.5F, -0.5F, -0.5F,
-             0.5F, -0.5F, -0.5F,
-             0.5F,  0.5F, -0.5F,
-             0.5F,  0.5F, -0.5F,
-            -0.5F,  0.5F, -0.5F,
-            -0.5F, -0.5F, -0.5F,
-
-            -0.5F, -0.5F,  0.5F,
-             0.5F, -0.5F,  0.5F,
-             0.5F,  0.5F,  0.5F,
-             0.5F,  0.5F,  0.5F,
-            -0.5F,  0.5F,  0.5F,
-            -0.5F, -0.5F,  0.5F,
-
-            -0.5F,  0.5F,  0.5F,
-            -0.5F,  0.5F, -0.5F,
-            -0.5F, -0.5F, -0.5F,
-            -0.5F, -0.5F, -0.5F,
-            -0.5F, -0.5F,  0.5F,
-            -0.5F,  0.5F,  0.5F,
-
-             0.5F,  0.5F,  0.5F,
-             0.5F,  0.5F, -0.5F,
-             0.5F, -0.5F, -0.5F,
-             0.5F, -0.5F, -0.5F,
-             0.5F, -0.5F,  0.5F,
-             0.5F,  0.5F,  0.5F,
-
-            -0.5F, -0.5F, -0.5F,
-             0.5F, -0.5F, -0.5F,
-             0.5F, -0.5F,  0.5F,
-             0.5F, -0.5F,  0.5F,
-            -0.5F, -0.5F,  0.5F,
-            -0.5F, -0.5F, -0.5F,
-
-            -0.5F,  0.5F, -0.5F,
-             0.5F,  0.5F, -0.5F,
-             0.5F,  0.5F,  0.5F,
-             0.5F,  0.5F,  0.5F,
-            -0.5F,  0.5F,  0.5F,
-            -0.5F,  0.5F, -0.5F,
-        };
-    // clang-format on
-};
 
 // CubeLayer --------------------------------------------------------------------------------------
 
@@ -102,7 +25,7 @@ public:
     void attach() override
     {
         _light = Cube::Create(
-            _context, Runic::ShaderManager::Find<LPos3>(_context, "Pos3MVP", "LightSource"));
+            _context, Runic::ShaderManager::Find<CubeLayout>(_context, "Cube", "LightSource"));
 
         _light->shader->bind();
         _light->shader->setUniform("u_LightColor", Runic::Color::White);
@@ -112,11 +35,13 @@ public:
         _light->scale    = glm::vec3(0.2F);
 
         _object = Cube::Create(
-            _context, Runic::ShaderManager::Find<LPos3>(_context, "Pos3MVP", "LitObject"));
+            _context, Runic::ShaderManager::Find<CubeLayout>(_context, "Cube", "CubePhong"));
 
         _object->shader->bind();
         _object->shader->setUniform("u_LightColor", Runic::Color::White);
         _object->shader->setUniform("u_ObjectColor", Coral);
+        _object->shader->setUniform("u_LightPosition", _light->position);
+        _object->shader->setUniform("u_ViewPosition", _camera.position());
         _object->shader->unbind();
 
         std::visit(
@@ -142,15 +67,42 @@ public:
             _window->getResizePolicy());
 
         addEventHandler<Runic::KeyPressEvent>([&](const auto& event) {
-            if (event.key == Runic::Key::Escape)
+            if (!_window->isMouseCaptured())
+                return false;
+
+            switch (event.key)
             {
+            case Runic::Key::Escape:
                 if (_window->isMouseCaptured())
                     _window->releaseMouse();
                 else
                     _window->captureMouse();
                 return true;
+
+            case Runic::Key::LeftShift:
+            case Runic::Key::RightShift:
+                _camera.moveSpeed = 5.0F;
+                return true;
+
+            default:
+                return false;
             }
-            return false;
+        });
+
+        addEventHandler<Runic::KeyReleaseEvent>([&](const auto& event) {
+            if (!_window->isMouseCaptured())
+                return false;
+
+            switch (event.key)
+            {
+            case Runic::Key::LeftShift:
+            case Runic::Key::RightShift:
+                _camera.moveSpeed = 1.0F;
+                return true;
+
+            default:
+                return false;
+            }
         });
 
         addEventHandler<Runic::MouseMoveEvent>([&](const auto& event) {
@@ -204,6 +156,15 @@ public:
 
         if (Runic::Input::IsKeyPressed(Runic::Key::C))
             _camera.moveDown(amount);
+
+        double secs = Runic::Time::Seconds();
+
+        _light->position = 2.0F * glm::vec3(sin(secs), sin(secs) * cos(secs), cos(secs));
+
+        _object->shader->bind();
+        _object->shader->setUniform("u_LightPosition", _light->position);
+        _object->shader->setUniform("u_ViewPosition", _camera.position());
+        _object->shader->unbind();
     }
 
     void render() override

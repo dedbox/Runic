@@ -24,9 +24,13 @@ enum class CameraZoom : uint8_t
 class Camera
 {
 public:
-    explicit Camera(float moveSpeed = 2.5F, float rotateSpeed = 0.5F, float zoomSpeed = 1.0F);
+    float moveSpeed   = 1.0F;
+    float rotateSpeed = 0.25;
+    float zoomSpeed   = 1.0F;
 
     bool invert = true;
+
+    const glm::vec3& position() const { return _position; }
 
     void setAspect(float aspect) { _aspect = aspect; }
 
@@ -46,10 +50,6 @@ public:
     glm::mat4 projectionMatrix() const;
 
 private:
-    float _moveSpeed;
-    float _rotateSpeed;
-    float _zoomSpeed;
-
     // camera body orientation
     glm::vec3 _position = {0.0F, 0.0F, 3.0F};
     glm::vec3 _front    = {0.0F, 0.0F, -1.0F};

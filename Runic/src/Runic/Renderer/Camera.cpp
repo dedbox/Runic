@@ -9,55 +9,48 @@
 namespace Runic
 {
 
-Camera::Camera(float moveSpeed, float rotateSpeed, float zoomSpeed)
-    : _moveSpeed(moveSpeed)
-    , _rotateSpeed(rotateSpeed)
-    , _zoomSpeed(zoomSpeed)
-{
-}
-
 void Camera::moveForward(float amount)
 {
-    _position += _front * amount * _moveSpeed;
+    _position += _front * amount * moveSpeed;
 }
 
 void Camera::moveBackward(float amount)
 {
-    _position -= _front * amount * _moveSpeed;
+    _position -= _front * amount * moveSpeed;
 }
 
 void Camera::moveLeft(float amount)
 {
-    _position -= glm::normalize(glm::cross(_front, _up)) * amount * _moveSpeed;
+    _position -= glm::normalize(glm::cross(_front, _up)) * amount * moveSpeed;
 }
 
 void Camera::moveRight(float amount)
 {
-    _position += glm::normalize(glm::cross(_front, _up)) * amount * _moveSpeed;
+    _position += glm::normalize(glm::cross(_front, _up)) * amount * moveSpeed;
 }
 
 void Camera::rotateHorizontal(float amount)
 {
-    _yaw += amount * _rotateSpeed;
+    _yaw += amount * rotateSpeed;
     updateDirection();
 }
 
 void Camera::rotateVertical(float amount)
 {
-    _pitch = glm::clamp(_pitch - (invert ? -1.0F : 1.0F) * amount * _rotateSpeed, -89.0F, 89.0F);
+    _pitch = glm::clamp(_pitch - (invert ? -1.0F : 1.0F) * amount * rotateSpeed, -89.0F, 89.0F);
     updateDirection();
 }
 
 void Camera::moveUp(float amount)
 {
     glm::vec3 right = glm::normalize(glm::cross(_front, _up));
-    _position -= glm::normalize(glm::cross(_front, right)) * amount * _moveSpeed;
+    _position -= glm::normalize(glm::cross(_front, right)) * amount * moveSpeed;
 }
 
 void Camera::moveDown(float amount)
 {
     glm::vec3 right = glm::normalize(glm::cross(_front, _up));
-    _position += glm::normalize(glm::cross(_front, right)) * amount * _moveSpeed;
+    _position += glm::normalize(glm::cross(_front, right)) * amount * moveSpeed;
 }
 
 void Camera::updateDirection()
@@ -71,7 +64,7 @@ void Camera::updateDirection()
 
 void Camera::zoom(float amount)
 {
-    _fov = glm::clamp(_fov - amount * _zoomSpeed, 1.0F, 45.0F);
+    _fov = glm::clamp(_fov - amount * zoomSpeed, 1.0F, 45.0F);
 }
 
 glm::mat4 Camera::viewMatrix() const
