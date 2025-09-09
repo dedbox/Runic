@@ -2,13 +2,14 @@
 
 #define SDL_MAIN_USE_CALLBACKS 1
 
-#include "Application.hpp"
-#include "Event.hpp"
-
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_main.h"
 #include "backends/imgui_impl_sdl3.h"
+
+#include "Runic/Core/Application.hpp"
+#include "Runic/Core/Event.hpp"
+#include "Runic/Core/EventBus.hpp"
 
 inline SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*arg*/)
 {
@@ -44,41 +45,45 @@ inline SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 
     case SDL_EVENT_QUIT:
     case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-        app->dispatchEvent(Runic::WindowCloseEvent());
+        Runic::EventBus::Publish(Runic::WindowCloseEvent());
         break;
 
     case SDL_EVENT_WINDOW_FOCUS_GAINED:
-        app->dispatchEvent(Runic::WindowFocusEvent());
+        Runic::EventBus::Publish(Runic::WindowFocusEvent());
         break;
 
     case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: {
         float scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
         int x = 0, y = 0;
         SDL_GetWindowSizeInPixels(app->getWindow()->getNative(), &x, &y);
-        app->dispatchEvent(Runic::WindowResizeEvent(x * scale, y * scale));
+
+        Runic::EventBus::Publish(
+            Runic::WindowResizeEvent(
+                static_cast<uint32_t>(static_cast<float>(x) * scale),
+                static_cast<uint32_t>(static_cast<float>(y) * scale)));
         break;
     }
 
     case SDL_EVENT_WINDOW_FOCUS_LOST:
-        app->dispatchEvent(Runic::WindowUnfocusEvent());
+        Runic::EventBus::Publish(Runic::WindowUnfocusEvent());
         break;
 
-        // Key Events ------------------------------------------------------------------------------
+        // Keyboard Events -------------------------------------------------------------------------
 
     case SDL_EVENT_KEY_DOWN: {
         Runic::Key key{static_cast<Runic::Key>(event->key.key)};
-        app->dispatchEvent(Runic::KeyPressEvent(key, event->key.repeat));
+        Runic::EventBus::Publish(Runic::KeyPressEvent(key, event->key.repeat));
         break;
     }
 
     case SDL_EVENT_KEY_UP:
-        app->dispatchEvent(Runic::KeyReleaseEvent(static_cast<Runic::Key>(event->key.key)));
+        Runic::EventBus::Publish(Runic::KeyReleaseEvent(static_cast<Runic::Key>(event->key.key)));
         break;
 
         // Mouse Events ----------------------------------------------------------------------------
 
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        app->dispatchEvent(
+        Runic::EventBus::Publish(
             Runic::MouseButtonPressEvent(
                 static_cast<Runic::MouseButton>(event->button.button),
                 event->button.x,
@@ -86,7 +91,7 @@ inline SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
         break;
 
     case SDL_EVENT_MOUSE_BUTTON_UP:
-        app->dispatchEvent(
+        Runic::EventBus::Publish(
             Runic::MouseButtonReleaseEvent(
                 static_cast<Runic::MouseButton>(event->button.button),
                 event->button.x,
@@ -94,11 +99,11 @@ inline SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
         break;
 
     case SDL_EVENT_MOUSE_MOTION:
-        app->dispatchEvent(Runic::MouseMoveEvent(event->motion.xrel, event->motion.yrel));
+        Runic::EventBus::Publish(Runic::MouseMoveEvent(event->motion.xrel, event->motion.yrel));
         break;
 
     case SDL_EVENT_MOUSE_WHEEL:
-        app->dispatchEvent(Runic::MouseScrollEvent(event->wheel.x, event->wheel.y));
+        Runic::EventBus::Publish(Runic::MouseScrollEvent(event->wheel.x, event->wheel.y));
         break;
 
     default:

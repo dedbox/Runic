@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Runic/Core/Event.hpp"
 #include "Runic/Core/LayerManager.hpp"
 #include "Runic/Core/Window.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
@@ -35,29 +34,7 @@ public:
 
     virtual void onUpdate();
 
-    template <typename EventType>
-    void dispatchEvent(const EventType& event)
-    {
-        for (auto& _layer : std::ranges::reverse_view(_layers))
-            if (_layer->handleEvent(event))
-                return;
-        handleSystemEvent(event);
-    }
-
     bool isDone() const { return _done; }
-
-protected:
-    template <typename EventType>
-    void addSystemEventHandler(std::function<bool(const EventType&)> handler)
-    {
-        _systemDispatcher.addHandler<EventType>(handler);
-    }
-
-    template <typename EventType>
-    bool handleSystemEvent(const EventType& event)
-    {
-        return _systemDispatcher.dispatch(event);
-    }
 
 private:
     // components
@@ -67,7 +44,6 @@ private:
     LayerManager _layers;
 
     // events
-    EventDispatcher _systemDispatcher;
     bool _done = false;
 
     // timing

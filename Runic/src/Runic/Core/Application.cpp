@@ -2,6 +2,8 @@
 
 #include "SDL3/SDL_init.h"
 
+#include "Runic/Core/Event.hpp"
+#include "Runic/Core/EventBus.hpp"
 #include "Runic/Core/Time.hpp"
 
 namespace Runic
@@ -34,12 +36,9 @@ Application::Application(const AppData& appData, const WindowData& windowData)
 
     SDL_SetWindowPosition(_window->getNative(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
-    addSystemEventHandler<WindowCloseEvent>([&](const auto& /*event*/) {
-        _done = true;
-        return false;
-    });
+    EventBus::Subscribe<WindowCloseEvent>([&](const auto& /*event*/) { _done = true; });
 
-    addSystemEventHandler<WindowResizeEvent>([&](const WindowResizeEvent& event) {
+    EventBus::Subscribe<WindowResizeEvent>([&](const WindowResizeEvent& event) {
         _window->setSize({event.width, event.height});
 
         std::visit(
@@ -49,8 +48,6 @@ Application::Application(const AppData& appData, const WindowData& windowData)
                     _context->setViewport({event.width, event.height});
             },
             _window->getResizePolicy());
-
-        return true;
     });
 
     _window->show();

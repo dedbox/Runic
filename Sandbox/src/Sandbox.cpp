@@ -56,73 +56,72 @@ public:
 
                     _camera.setAspect(static_cast<float>(size.x) / static_cast<float>(size.y));
 
-                    addEventHandler<Runic::WindowResizeEvent>(
+                    Runic::EventBus::Subscribe<Runic::WindowResizeEvent>(
                         [&](const Runic::WindowResizeEvent& event) {
                             _camera.setAspect(
                                 static_cast<float>(event.width) / static_cast<float>(event.height));
-                            return false;
                         });
                 }
             },
             _window->getResizePolicy());
 
-        addEventHandler<Runic::KeyPressEvent>([&](const auto& event) {
+        Runic::EventBus::Subscribe<Runic::KeyPressEvent>([&](const Runic::KeyPressEvent& event) {
             if (!_window->isMouseCaptured())
-                return false;
+            {
+                if (event.key == Runic::Key::Escape)
+                    _window->captureMouse();
+                return;
+            }
 
             switch (event.key)
             {
             case Runic::Key::Escape:
-                if (_window->isMouseCaptured())
-                    _window->releaseMouse();
-                else
-                    _window->captureMouse();
-                return true;
+                _window->releaseMouse();
+                _camera.moveSpeed = 1.0F;
+                break;
 
             case Runic::Key::LeftShift:
             case Runic::Key::RightShift:
                 _camera.moveSpeed = 5.0F;
-                return true;
+                break;
 
             default:
-                return false;
+                break;
             }
         });
 
-        addEventHandler<Runic::KeyReleaseEvent>([&](const auto& event) {
+        Runic::EventBus::Subscribe<Runic::KeyReleaseEvent>(
+            [&](const Runic::KeyReleaseEvent& event) {
+                if (!_window->isMouseCaptured())
+                    return;
+
+                switch (event.key)
+                {
+                case Runic::Key::LeftShift:
+                case Runic::Key::RightShift:
+                    _camera.moveSpeed = 1.0F;
+                    break;
+
+                default:
+                    break;
+                }
+            });
+
+        Runic::EventBus::Subscribe<Runic::MouseMoveEvent>([&](const Runic::MouseMoveEvent& event) {
             if (!_window->isMouseCaptured())
-                return false;
-
-            switch (event.key)
-            {
-            case Runic::Key::LeftShift:
-            case Runic::Key::RightShift:
-                _camera.moveSpeed = 1.0F;
-                return true;
-
-            default:
-                return false;
-            }
-        });
-
-        addEventHandler<Runic::MouseMoveEvent>([&](const auto& event) {
-            if (!_window->isMouseCaptured())
-                return false;
+                return;
 
             _camera.rotateHorizontal(event.xOffset);
             _camera.rotateVertical(event.yOffset);
-
-            return false;
         });
 
-        addEventHandler<Runic::MouseScrollEvent>([&](const auto& event) {
-            if (!_window->isMouseCaptured())
-                return false;
+        Runic::EventBus::Subscribe<Runic::MouseScrollEvent>(
+            [&](const Runic::MouseScrollEvent& event) {
+                if (!_window->isMouseCaptured())
+                    return;
 
-            _camera.zoom(event.vert);
-
-            return false;
-        });
+                _camera.zoom(event.vert);
+            });
 
         _window->captureMouse();
     }
@@ -139,23 +138,26 @@ public:
     {
         const auto amount = static_cast<float>(deltaTime);
 
-        if (Runic::Input::IsKeyPressed(Runic::Key::W))
-            _camera.moveForward(amount);
+        if (_window->isMouseCaptured())
+        {
+            if (Runic::Input::IsKeyPressed(Runic::Key::W))
+                _camera.moveForward(amount);
 
-        if (Runic::Input::IsKeyPressed(Runic::Key::S))
-            _camera.moveBackward(amount);
+            if (Runic::Input::IsKeyPressed(Runic::Key::S))
+                _camera.moveBackward(amount);
 
-        if (Runic::Input::IsKeyPressed(Runic::Key::A))
-            _camera.moveLeft(amount);
+            if (Runic::Input::IsKeyPressed(Runic::Key::A))
+                _camera.moveLeft(amount);
 
-        if (Runic::Input::IsKeyPressed(Runic::Key::D))
-            _camera.moveRight(amount);
+            if (Runic::Input::IsKeyPressed(Runic::Key::D))
+                _camera.moveRight(amount);
 
-        if (Runic::Input::IsKeyPressed(Runic::Key::Space))
-            _camera.moveUp(amount);
+            if (Runic::Input::IsKeyPressed(Runic::Key::Space))
+                _camera.moveUp(amount);
 
-        if (Runic::Input::IsKeyPressed(Runic::Key::C))
-            _camera.moveDown(amount);
+            if (Runic::Input::IsKeyPressed(Runic::Key::C))
+                _camera.moveDown(amount);
+        }
 
         double secs = Runic::Time::Seconds();
 

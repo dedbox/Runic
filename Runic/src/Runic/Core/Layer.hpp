@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Event.hpp"
-
 namespace Runic
 {
 
@@ -30,21 +28,8 @@ public:
 
     const std::string& getName() const { return _name; }
 
-    template <typename EventType>
-    void addEventHandler(std::function<bool(const EventType&)> handler)
-    {
-        _dispatcher.addHandler<EventType>(handler);
-    }
-
-    template <typename EventType>
-    bool handleEvent(const EventType& event)
-    {
-        return _dispatcher.dispatch(event);
-    }
-
 private:
     std::string _name;
-    EventDispatcher _dispatcher;
 };
 
 } // namespace Runic

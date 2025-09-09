@@ -4,6 +4,7 @@
 
 #include <Runic/Core/Application.hpp>
 #include <Runic/Core/Event.hpp>
+#include <Runic/Core/EventBus.hpp>
 #include <Runic/Core/Input.hpp>
 #include <Runic/Core/Log.hpp>
 #include <Runic/Core/Time.hpp>

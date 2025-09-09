@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Input/Key.hpp"
-#include "Input/Mouse.hpp"
+#include "Runic/Core/Input/Key.hpp"
+#include "Runic/Core/Input/Mouse.hpp"
 
 namespace Runic
 {
 
-// Window Events ---------------------------------------------------------------
+// Window Events -----------------------------------------------------------------------------------
 
 struct WindowCloseEvent
 {
@@ -18,14 +18,14 @@ struct WindowFocusEvent
 
 struct WindowResizeEvent
 {
-    int width, height;
+    uint32_t width, height;
 };
 
 struct WindowUnfocusEvent
 {
 };
 
-//  Key Events -----------------------------------------------------------------
+// Keyboard Events ---------------------------------------------------------------------------------
 
 struct KeyPressEvent
 {
@@ -38,7 +38,7 @@ struct KeyReleaseEvent
     Key key;
 };
 
-// Mouse Events ----------------------------------------------------------------
+// Mouse Events ------------------------------------------------------------------------------------
 
 struct MouseButtonPressEvent
 {
@@ -62,45 +62,13 @@ struct MouseScrollEvent
     float horiz, vert;
 };
 
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
-class EventDispatcher
-{
-public:
-    using TypeErasedHandler = std::function<bool(const void*)>;
-
-    EventDispatcher()  = default;
-    ~EventDispatcher() = default;
-
-    // allow moving
-    EventDispatcher(EventDispatcher&&) noexcept            = default;
-    EventDispatcher& operator=(EventDispatcher&&) noexcept = default;
-
-    // prevent copying
-    EventDispatcher(const EventDispatcher&)            = delete;
-    EventDispatcher& operator=(const EventDispatcher&) = delete;
-
-    template <typename EventType>
-    void addHandler(std::function<bool(const EventType&)> handler)
-    {
-        _handlers[typeid(EventType)].push_back([handler](const void* event) {
-            return handler(*static_cast<const EventType*>(event));
-        });
-    }
-
-    template <typename EventType>
-    bool dispatch(const EventType& event)
-    {
-        auto it = _handlers.find(typeid(EventType));
-        if (it != _handlers.end())
-            for (auto& handler : it->second)
-                if (handler(&event))
-                    return true;
-        return false;
-    }
-
-private:
-    std::map<std::type_index, std::vector<TypeErasedHandler>> _handlers;
-};
+// clang-format off
+using EventVariant = std::variant<
+    WindowCloseEvent, WindowFocusEvent, WindowResizeEvent, WindowUnfocusEvent,
+    KeyPressEvent, KeyReleaseEvent,
+    MouseButtonPressEvent, MouseButtonReleaseEvent, MouseMoveEvent, MouseScrollEvent>;
+// clang-format on
 
 } // namespace Runic
