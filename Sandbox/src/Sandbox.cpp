@@ -5,6 +5,8 @@
 // Cube --------------------------------------------------------------------------------------------
 
 static constexpr Runic::color AlmostBlack(0.1F, 0.1F, 0.1F, 1.0F);
+static constexpr Runic::color DarkGray(0.2F, 0.2F, 0.2F, 1.0F);
+static constexpr Runic::color Gray(0.5F, 0.5F, 0.5F, 1.0F);
 static constexpr Runic::color Coral(1.0F, 0.5F, 0.31F, 1.0F);
 
 // CubeLayer --------------------------------------------------------------------------------------
@@ -35,12 +37,17 @@ public:
         _light->scale    = glm::vec3(0.2F);
 
         _object = Cube::Create(
-            _context, Runic::ShaderManager::Find<CubeLayout>(_context, "Cube", "CubePhong"));
+            _context, Runic::ShaderManager::Find<CubeLayout>(_context, "Cube", "Material"));
 
         _object->shader->bind();
-        _object->shader->setUniform("u_LightColor", Runic::Color::White);
-        _object->shader->setUniform("u_ObjectColor", Coral);
-        _object->shader->setUniform("u_LightPosition", _light->position);
+        _object->shader->setUniform("u_Material.ambient", Coral);
+        _object->shader->setUniform("u_Material.diffuse", Coral);
+        _object->shader->setUniform("u_Material.specular", Gray);
+        _object->shader->setUniform("u_Material.shininess", 32.0F);
+        _object->shader->setUniform("u_Light.position", _light->position);
+        _object->shader->setUniform("u_Light.ambient", DarkGray);
+        _object->shader->setUniform("u_Light.diffuse", Gray);
+        _object->shader->setUniform("u_Light.specular", Runic::Color::White);
         _object->shader->setUniform("u_ViewPosition", _camera.position());
         _object->shader->unbind();
 
@@ -161,10 +168,22 @@ public:
 
         double secs = Runic::Time::Seconds();
 
-        _light->position = 2.0F * glm::vec3(sin(secs), sin(secs) * cos(secs), cos(secs));
+        Runic::color lightColor;
+        lightColor.r = static_cast<float>(sin(secs * 2.0F));
+        lightColor.g = static_cast<float>(sin(secs * 0.7F));
+        lightColor.b = static_cast<float>(sin(secs * 1.3F));
+        lightColor.a = 1.0F;
+
+        Runic::color diffuseColor = lightColor * glm::vec4(glm::vec3(0.5F), 1.0F);
+        Runic::color ambientColor = diffuseColor * glm::vec4(glm::vec3(0.2F), 1.0F);
+
+        _light->shader->bind();
+        _light->shader->setUniform("u_LightColor", lightColor);
+        _light->shader->unbind();
 
         _object->shader->bind();
-        _object->shader->setUniform("u_LightPosition", _light->position);
+        _object->shader->setUniform("u_Light.ambient", ambientColor);
+        _object->shader->setUniform("u_Light.diffuse", diffuseColor);
         _object->shader->setUniform("u_ViewPosition", _camera.position());
         _object->shader->unbind();
     }
