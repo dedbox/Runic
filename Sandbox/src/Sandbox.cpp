@@ -27,28 +27,31 @@ public:
     void attach() override
     {
         _light = Cube::Create(
-            _context, Runic::ShaderManager::Find<CubeLayout>(_context, "Cube", "LightSource"));
+            _context, Runic::ShaderManager::Find<CubeLayout>(_context, "Light", "Light"));
 
         _light->shader->bind();
-        _light->shader->setUniform("u_LightColor", Runic::Color::White);
+        _light->shader->setUniform("light_color", Runic::Color::White);
         _light->shader->unbind();
 
         _light->position = {1.2F, 1.0F, 2.0F};
         _light->scale    = glm::vec3(0.2F);
 
         _object = Cube::Create(
-            _context, Runic::ShaderManager::Find<CubeLayout>(_context, "Cube", "Material"));
+            _context,
+            Runic::ShaderManager::Find<CubeLayout>(_context, "LightingMaps", "LightingMaps"));
+
+        _object->mesh->addTexture(Runic::TextureManager::Find(_context, "container2.png"));
+        _object->mesh->addTexture(Runic::TextureManager::Find(_context, "container2_specular.png"));
 
         _object->shader->bind();
-        _object->shader->setUniform("u_Material.ambient", Coral);
-        _object->shader->setUniform("u_Material.diffuse", Coral);
-        _object->shader->setUniform("u_Material.specular", Gray);
-        _object->shader->setUniform("u_Material.shininess", 32.0F);
-        _object->shader->setUniform("u_Light.position", _light->position);
-        _object->shader->setUniform("u_Light.ambient", DarkGray);
-        _object->shader->setUniform("u_Light.diffuse", Gray);
-        _object->shader->setUniform("u_Light.specular", Runic::Color::White);
-        _object->shader->setUniform("u_ViewPosition", _camera.position());
+        _object->shader->setUniform("material.diffuse", 0);  // container2
+        _object->shader->setUniform("material.specular", 1); // container2_specular
+        _object->shader->setUniform("material.shininess", 32.0F);
+        _object->shader->setUniform("light.position", _light->position);
+        _object->shader->setUniform("light.ambient", DarkGray);
+        _object->shader->setUniform("light.diffuse", Gray);
+        _object->shader->setUniform("light.specular", Runic::Color::White);
+        _object->shader->setUniform("viewPosition", _camera.position());
         _object->shader->unbind();
 
         std::visit(
@@ -166,25 +169,10 @@ public:
                 _camera.moveDown(amount);
         }
 
-        double secs = Runic::Time::Seconds();
-
-        Runic::color lightColor;
-        lightColor.r = static_cast<float>(sin(secs * 2.0F));
-        lightColor.g = static_cast<float>(sin(secs * 0.7F));
-        lightColor.b = static_cast<float>(sin(secs * 1.3F));
-        lightColor.a = 1.0F;
-
-        Runic::color diffuseColor = lightColor * glm::vec4(glm::vec3(0.5F), 1.0F);
-        Runic::color ambientColor = diffuseColor * glm::vec4(glm::vec3(0.2F), 1.0F);
-
-        _light->shader->bind();
-        _light->shader->setUniform("u_LightColor", lightColor);
-        _light->shader->unbind();
+        // double secs = Runic::Time::Seconds();
 
         _object->shader->bind();
-        _object->shader->setUniform("u_Light.ambient", ambientColor);
-        _object->shader->setUniform("u_Light.diffuse", diffuseColor);
-        _object->shader->setUniform("u_ViewPosition", _camera.position());
+        _object->shader->setUniform("viewPosition", _camera.position());
         _object->shader->unbind();
     }
 

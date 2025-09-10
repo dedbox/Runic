@@ -49,14 +49,14 @@ public:
 
     /** Draws the mesh with the shader, as viewed from a camera.
      *
-     * Assumes the shader follows our MVP uniform convention: u_Model, u_View, u_Projection.
+     * Assumes the shader follows our MVP uniform convention: model, view, projection.
      */
     void draw(const Camera& camera)
     {
         shader->bind();
-        shader->setUniform("u_Model", modelMatrix());
-        shader->setUniform("u_View", camera.viewMatrix());
-        shader->setUniform("u_Projection", camera.projectionMatrix());
+        shader->setUniform("model", modelMatrix());
+        shader->setUniform("view", camera.viewMatrix());
+        shader->setUniform("projection", camera.projectionMatrix());
         shader->unbind();
 
         mesh->draw(*shader);
