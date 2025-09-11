@@ -12,7 +12,7 @@
 // Application Entry Point
 #include <Runic/Core/Main.hpp>
 
-// The Graphics API
+// The Renderer API
 #include <Runic/Renderer/Attribute.hpp>
 #include <Runic/Renderer/Camera.hpp>
 #include <Runic/Renderer/Color.hpp>
@@ -24,3 +24,6 @@
 #include <Runic/Renderer/Texture.hpp>
 #include <Runic/Renderer/TextureManager.hpp>
 #include <Runic/Renderer/VertexData.hpp>
+
+// The Graphics API
+#include <Runic/Graphics.hpp>

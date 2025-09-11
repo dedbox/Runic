@@ -1,7 +1,5 @@
 #include <Runic.hpp>
 
-#include "Cube.hpp"
-
 // Cube --------------------------------------------------------------------------------------------
 
 static constexpr Runic::color AlmostBlack(0.1F, 0.1F, 0.1F, 1.0F);
@@ -26,8 +24,9 @@ public:
 
     void attach() override
     {
-        _light = Cube::Create(
-            _context, Runic::ShaderManager::Find<CubeLayout>(_context, "Light", "Light"));
+        _light = Runic::Graphics::Cube::Create(
+            _context,
+            Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(_context, "Light", "Light"));
 
         _light->shader->bind();
         _light->shader->setUniform("light_color", Runic::Color::White);
@@ -36,9 +35,10 @@ public:
         _light->position = {1.2F, 1.0F, 2.0F};
         _light->scale    = glm::vec3(0.2F);
 
-        _object = Cube::Create(
+        _object = Runic::Graphics::Cube::Create(
             _context,
-            Runic::ShaderManager::Find<CubeLayout>(_context, "LightingMaps", "LightingMaps"));
+            Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(
+                _context, "LightingMaps", "LightingMaps"));
 
         _object->mesh->addTexture(Runic::TextureManager::Find(_context, "container2.png"));
         _object->mesh->addTexture(Runic::TextureManager::Find(_context, "container2_specular.png"));
@@ -186,8 +186,8 @@ public:
     }
 
 private:
-    std::unique_ptr<Cube> _light;
-    std::unique_ptr<Cube> _object;
+    std::unique_ptr<Runic::Graphics::Cube> _light;
+    std::unique_ptr<Runic::Graphics::Cube> _object;
 
     Runic::Camera _camera;
 };

@@ -114,6 +114,7 @@ add_library(
   src/Runic/Core/Log.cpp
   src/Runic/Core/Time.cpp
   src/Runic/Core/Window.cpp
+  src/Runic/Graphics/Cube.cpp
   src/Runic/Renderer/Buffer.cpp
   src/Runic/Renderer/Camera.cpp
   src/Runic/Renderer/GraphicsContext.cpp
