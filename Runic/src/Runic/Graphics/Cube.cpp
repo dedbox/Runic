@@ -21,55 +21,116 @@ std::unique_ptr<Cube> Cube::Create(
 
 VertexData<CubeLayout> Cube::CreateData()
 {
-    using namespace std::ranges;
-
-    auto position = positions | views::chunk(3);
-    auto normal   = normals | views::chunk(3);
-    auto texCoord = texCoords | views::chunk(2);
-
-    auto [positions_index, normal_index, texCoord_index] = CreateIndex();
-
-    auto vertices = views::zip(positions_index, normal_index, texCoord_index) |
-                    views::transform([&](auto args) {
-                        auto&& [position_i, normal_i, texCoord_i] = args;
-
+    auto position = Positions() | std::ranges::views::chunk(3);
+    auto normal   = Normals() | std::ranges::views::chunk(3);
+    auto texCoord = TexCoords() | std::ranges::views::chunk(2);
+    auto vertices = std::ranges::views::zip(PositionIndex(), NormalIndex(), TexCoordIndex()) |
+                    std::ranges::views::transform([&](auto args) {
+                        auto&& [p, n, t] = args;
                         std::array<float, 8> result; // NOLINT
-                        copy(position[position_i], result.begin());
-                        copy(normal[normal_i], result.begin() + 3);
-                        copy(texCoord[texCoord_i], result.begin() + 6);
-
+                        std::ranges::copy(position[p], result.begin());
+                        std::ranges::copy(normal[n], result.begin() + 3);
+                        std::ranges::copy(texCoord[t], result.begin() + 6);
                         return result;
                     }) |
-                    views::join | to<std::vector<float>>();
-
+                    std::ranges::views::join | std::ranges::to<std::vector<float>>();
     return VertexData<CubeLayout>(vertices);
 }
 
-std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> Cube::CreateIndex()
+constexpr std::array<float, 24> Cube::Positions()
 {
-    using namespace std::ranges;
+    float l = 0.5F;
+    // clang-format off
+    return {
+        -l, -l, -l,             // back bottom left
+         l, -l, -l,             // back bottom right
+         l,  l, -l,             // back top right
+        -l,  l, -l,             // back top left
 
-    auto position_index = face_positions | views::chunk(4) | views::transform([](auto chunk) {
-                              std::array<uint32_t, 6> result; // NOLINT
-                              result[0] = chunk[0];
-                              result[1] = chunk[1];
-                              result[2] = chunk[2];
-                              result[3] = chunk[2];
-                              result[4] = chunk[3];
-                              result[5] = chunk[0];
-                              return result;
-                          }) |
-                          views::join | to<std::vector<uint32_t>>();
+        -l, -l,  l,             // front bottom left
+         l, -l,  l,             // front bottom right
+         l,  l,  l,             // front top right
+        -l,  l,  l,             // front top left
+    };
+    // clang-format on
+}
 
-    auto normal_index = std::ranges::views::iota(0) | std::ranges::views::take(36) |
-                        std::ranges::views::transform([](uint32_t i) { return (i / 6) % 6; }) |
-                        std::ranges::to<std::vector<uint32_t>>();
+constexpr std::array<float, 18> Cube::Normals()
+{
+    float O = 0.0F, l = 1.0F;
+    // clang-format off
+    return {
+         O,  O, -l,             // back
+         O,  O,  l,             // front
+        -l,  O,  O,             // left
+         l,  O,  O,             // right
+         O, -l,  O,             // bottom
+         O,  l,  O,             // top
+    };
+    // clang-format on
+}
 
-    auto texCoord_index = std::ranges::views::iota(0) | std::ranges::views::take(36) |
-                          std::ranges::views::transform([](uint32_t i) { return i % 6; }) |
-                          std::ranges::to<std::vector<uint32_t>>();
+constexpr std::array<float, 12> Cube::TexCoords()
+{
+    float O = 0.0F, l = 1.0F;
+    // clang-format off
+    return {
+        O, O,                   // bottom left
+        l, O,                   // bottom right
+        l, l,                   // top right
 
-    return std::make_tuple(position_index, normal_index, texCoord_index);
+        l, l,                   // top right
+        O, l,                   // top left
+        O, O,                   // bottom left
+    };
+    // clang-format on
+}
+
+constexpr std::array<uint32_t, 36> Cube::PositionIndex()
+{
+    // clang-format off
+    static constexpr std::array<uint32_t, 24> faces {
+        0, 1, 2, 3,             // back
+        4, 5, 6, 7,             // front
+        7, 3, 0, 4,             // left
+        6, 2, 1, 5,             // right
+        0, 1, 5, 4,             // bottom
+        3, 2, 6, 7,             // top
+    };
+    // clang-format on
+
+    std::array<uint32_t, 36> positions; // NOLINT
+    for (int i = 0; i < 6; i++)
+    {
+        const int source = 4 * i;
+        const int dest   = 6 * i;
+        // NOLINTBEGIN
+        positions[dest + 0] = faces[source + 0];
+        positions[dest + 1] = faces[source + 1];
+        positions[dest + 2] = faces[source + 2];
+        positions[dest + 3] = faces[source + 2];
+        positions[dest + 4] = faces[source + 3];
+        positions[dest + 5] = faces[source + 0];
+        // NOLINTEND
+    }
+
+    return positions;
+}
+
+constexpr std::array<uint32_t, 36> Cube::NormalIndex()
+{
+    std::array<uint32_t, 36> index; // NOLINT
+    for (int i = 0; i < 36; i++)
+        index[i] = i / 6; // NOLINT
+    return index;
+}
+
+constexpr std::array<uint32_t, 36> Cube::TexCoordIndex()
+{
+    std::array<uint32_t, 36> index; // NOLINT
+    for (int i = 0; i < 36; i++)
+        index[i] = i % 6; // NOLINT
+    return index;
 }
 
 } // namespace Runic::Graphics
