@@ -1,4 +1,3 @@
-#include "Runic/Renderer/Light.hpp"
 #include <Runic.hpp>
 
 // Cube --------------------------------------------------------------------------------------------
@@ -24,20 +23,29 @@ public:
     {
         _light.direction = {-0.2F, -1.0F, -0.3F};
 
+        // _cube = Runic::Graphics::Cube::Create(
+        //     _context,
+        //     Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(
+        //         _context, "Directional", "Flat"));
+
+        // _cube->setMaterial(
+        //     "material", Runic::PhongMaterial(Coral, Coral, Runic::Color::White, 23.0F));
+
         _cube = Runic::Graphics::Cube::Create(
             _context,
             Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(
-                _context, "Directional", "Directional"));
+                _context, "Directional", "LightMap"));
+
+        _cube->setMaterial(
+            "material",
+            Runic::LightingMapMaterial(
+                _cube->addTexture("container2.png"),
+                _cube->addTexture("container2_specular.png"),
+                32.0F));
 
         _cube->rotationAxis = {1.0F, 0.3F, 0.5F};
 
-        _cube->mesh->addTexture(Runic::TextureManager::Find(_context, "container2.png"));
-        _cube->mesh->addTexture(Runic::TextureManager::Find(_context, "container2_specular.png"));
-
         _cube->shader->bind();
-        _cube->shader->setUniform("material.diffuse", 0);  // container2
-        _cube->shader->setUniform("material.specular", 1); // container2_specular
-        _cube->shader->setUniform("material.shininess", 32.0F);
         _cube->shader->setUniform("light.direction", _light.direction);
         _cube->shader->setUniform("light.ambient", _light.ambient);
         _cube->shader->setUniform("light.diffuse", _light.diffuse);

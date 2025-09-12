@@ -20,6 +20,7 @@
 #include <Runic/Renderer/GuiLayer.hpp>
 #include <Runic/Renderer/Light.hpp>
 #include <Runic/Renderer/LightManager.hpp>
+#include <Runic/Renderer/Material.hpp>
 #include <Runic/Renderer/Mesh.hpp>
 #include <Runic/Renderer/RenderObject.hpp>
 #include <Runic/Renderer/ShaderManager.hpp>

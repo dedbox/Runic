@@ -5,8 +5,11 @@
 
 #include "Runic/Renderer/Camera.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
+#include "Runic/Renderer/Material.hpp"
 #include "Runic/Renderer/Mesh.hpp"
 #include "Runic/Renderer/ShaderProgram.hpp"
+#include "Runic/Renderer/Texture.hpp"
+#include "Runic/Renderer/TextureManager.hpp"
 
 namespace Runic
 {
@@ -39,6 +42,41 @@ public:
 
     void createMesh(DrawMode mode) { mesh = Mesh<Layouts...>::Create(_context, mode); }
 
+    TextureId addTexture(const std::string& path)
+    {
+        if (_textures.contains(path))
+            return _textures[path];
+
+        mesh->addTexture(TextureManager::Find(_context, path));
+
+        TextureId id    = _textures.size();
+        _textures[path] = id;
+
+        return id;
+    }
+
+    void setMaterial(const std::string& name, Material material)
+    {
+        std::visit(
+            [&](auto&& material) {
+                // using T = std::decay_t<decltype(material)>;
+                // if constexpr (std::is_same_v<T, PhongMaterial>)
+
+                shader->bind();
+                shader->setUniform(std::format("{}.diffuse", name), material.diffuse);
+                shader->setUniform(std::format("{}.specular", name), material.specular);
+                shader->setUniform(std::format("{}.shininess", name), material.shininess);
+                shader->unbind();
+            },
+            material);
+
+        _material = material;
+    }
+
+    void unsetMaterial() { _material = std::nullopt; };
+
+    std::optional<Material> material() const { return _material; }
+
     glm::mat4 modelMatrix() const
     {
         glm::mat4 model(1.0F);
@@ -65,6 +103,10 @@ public:
 
         mesh->draw(*shader);
     }
+
+private:
+    std::map<std::string, TextureId> _textures;
+    std::optional<Material> _material;
 };
 
 } // namespace Runic

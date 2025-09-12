@@ -6,6 +6,8 @@
 namespace Runic
 {
 
+using TextureId = int;
+
 struct TextureSampling
 {
     TextureWrap wrapS          = TextureWrap::Repeat;
