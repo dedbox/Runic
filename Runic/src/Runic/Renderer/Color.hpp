@@ -61,5 +61,15 @@ static constexpr color Cyan    = Color::hex(0x00FFFFFF);
 static constexpr color Magenta = Color::hex(0xFF00FFFF);
 static constexpr color Yellow  = Color::hex(0xFFFF00FF);
 
+static constexpr color Gray1 = color(0.1F, 0.1F, 0.1F, 1.0F);
+static constexpr color Gray2 = color(0.2F, 0.2F, 0.2F, 1.0F);
+static constexpr color Gray3 = color(0.3F, 0.3F, 0.3F, 1.0F);
+static constexpr color Gray4 = color(0.4F, 0.4F, 0.4F, 1.0F);
+static constexpr color Gray5 = color(0.5F, 0.5F, 0.5F, 1.0F);
+static constexpr color Gray6 = color(0.6F, 0.6F, 0.6F, 1.0F);
+static constexpr color Gray7 = color(0.7F, 0.7F, 0.7F, 1.0F);
+static constexpr color Gray8 = color(0.8F, 0.8F, 0.8F, 1.0F);
+static constexpr color Gray9 = color(0.9F, 0.9F, 0.9F, 1.0F);
+
 } // namespace Color
 } // namespace Runic

@@ -1,11 +1,5 @@
 #version 450 core
 
-in vec3 vPosition;
-in vec3 vNormal;
-in vec2 vTexCoord;
-
-out vec4 fColor;
-
 struct Material
 {
     sampler2D diffuse;
@@ -15,15 +9,21 @@ struct Material
 
 struct Light
 {
-    vec3 position;
+    vec3 direction;
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
 };
 
+in vec3 vPosition;
+in vec3 vNormal;
+in vec2 vTexCoord;
+
+out vec4 fColor;
+
+uniform vec3 viewPosition;
 uniform Material material;
 uniform Light light;
-uniform vec3 viewPosition;
 
 void main()
 {
@@ -32,7 +32,7 @@ void main()
 
     // diffuse
     vec3 norm = normalize(vNormal);
-    vec3 lightDir = normalize(light.position - vPosition);
+    vec3 lightDir = normalize(-light.direction);
     vec4 diffuse = light.diffuse * max(dot(norm, lightDir), 0.0) * texture(material.diffuse, vTexCoord);
 
     // specular

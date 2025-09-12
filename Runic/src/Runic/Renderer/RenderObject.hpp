@@ -29,6 +29,9 @@ public:
     glm::vec3 position = {0.0F, 0.0F, 0.0F};
     glm::vec3 scale    = {1.0F, 1.0F, 1.0F};
 
+    glm::vec3 rotationAxis = {0.0F, 1.0F, 0.0F}; /**< rotation axis */
+    float rotation         = 0.0F;               /**< rotation angle (degrees) */
+
     static std::unique_ptr<RenderObject> Create(GraphicsContext* context)
     {
         return std::unique_ptr<RenderObject>(new RenderObject(context));
@@ -40,6 +43,7 @@ public:
     {
         glm::mat4 model(1.0F);
         model = glm::translate(model, position);
+        model = glm::rotate(model, glm::radians(rotation), rotationAxis);
         model = glm::scale(model, scale);
         return model;
     }

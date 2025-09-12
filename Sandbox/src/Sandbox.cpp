@@ -1,10 +1,8 @@
+#include "Runic/Renderer/Light.hpp"
 #include <Runic.hpp>
 
 // Cube --------------------------------------------------------------------------------------------
 
-static constexpr Runic::color AlmostBlack(0.1F, 0.1F, 0.1F, 1.0F);
-static constexpr Runic::color DarkGray(0.2F, 0.2F, 0.2F, 1.0F);
-static constexpr Runic::color Gray(0.5F, 0.5F, 0.5F, 1.0F);
 static constexpr Runic::color Coral(1.0F, 0.5F, 0.31F, 1.0F);
 
 // CubeLayer --------------------------------------------------------------------------------------
@@ -24,35 +22,28 @@ public:
 
     void attach() override
     {
-        _light = Runic::Graphics::Cube::Create(
-            _context,
-            Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(_context, "Light", "Light"));
+        _light.direction = {-0.2F, -1.0F, -0.3F};
 
-        _light->shader->bind();
-        _light->shader->setUniform("light_color", Runic::Color::White);
-        _light->shader->unbind();
-
-        _light->position = {1.2F, 1.0F, 2.0F};
-        _light->scale    = glm::vec3(0.1F);
-
-        _object = Runic::Graphics::Cube::Create(
+        _cube = Runic::Graphics::Cube::Create(
             _context,
             Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(
-                _context, "LightingMaps", "LightingMaps"));
+                _context, "Directional", "Directional"));
 
-        _object->mesh->addTexture(Runic::TextureManager::Find(_context, "container2.png"));
-        _object->mesh->addTexture(Runic::TextureManager::Find(_context, "container2_specular.png"));
+        _cube->rotationAxis = {1.0F, 0.3F, 0.5F};
 
-        _object->shader->bind();
-        _object->shader->setUniform("material.diffuse", 0);  // container2
-        _object->shader->setUniform("material.specular", 1); // container2_specular
-        _object->shader->setUniform("material.shininess", 32.0F);
-        _object->shader->setUniform("light.position", _light->position);
-        _object->shader->setUniform("light.ambient", DarkGray);
-        _object->shader->setUniform("light.diffuse", Gray);
-        _object->shader->setUniform("light.specular", Runic::Color::White);
-        _object->shader->setUniform("viewPosition", _camera.position());
-        _object->shader->unbind();
+        _cube->mesh->addTexture(Runic::TextureManager::Find(_context, "container2.png"));
+        _cube->mesh->addTexture(Runic::TextureManager::Find(_context, "container2_specular.png"));
+
+        _cube->shader->bind();
+        _cube->shader->setUniform("material.diffuse", 0);  // container2
+        _cube->shader->setUniform("material.specular", 1); // container2_specular
+        _cube->shader->setUniform("material.shininess", 32.0F);
+        _cube->shader->setUniform("light.direction", _light.direction);
+        _cube->shader->setUniform("light.ambient", _light.ambient);
+        _cube->shader->setUniform("light.diffuse", _light.diffuse);
+        _cube->shader->setUniform("light.specular", _light.specular);
+        _cube->shader->setUniform("viewPosition", _camera.position());
+        _cube->shader->unbind();
 
         std::visit(
             [&](auto&& policy) {
@@ -140,8 +131,7 @@ public:
     {
         _window->releaseMouse();
 
-        _light.reset();
-        _object.reset();
+        _cube.reset();
     }
 
     void update(double deltaTime) override
@@ -169,31 +159,42 @@ public:
                 _camera.moveDown(amount);
         }
 
-        // double theta = Runic::Time::Seconds();
-
-        // _light->position = {1.2F * cos(theta), sin(0.5F * theta), 2.0F * sin(theta)};
-        // _light->shader->bind();
-        // _light->shader->setUniform("position", _light->position);
-        // _light->shader->unbind();
-
-        _object->shader->bind();
-        _object->shader->setUniform("viewPosition", _camera.position());
-        // _object->shader->setUniform("light.position", _light->position);
-        _object->shader->unbind();
+        _cube->shader->bind();
+        _cube->shader->setUniform("viewPosition", _camera.position());
+        _cube->shader->unbind();
     }
 
     void render() override
     {
-        _context->setClearColor(AlmostBlack);
+        _context->setClearColor(Runic::Color::Gray1);
         _context->clear();
 
-        _light->draw(_camera);
-        _object->draw(_camera);
+        for (int i = 0; i < 10; i++)
+        {
+            _cube->position = _cubePositions[i]; // NOLINT
+            _cube->rotation = 20.0F * static_cast<float>(i);
+            _cube->draw(_camera);
+        }
     }
 
 private:
-    std::unique_ptr<Runic::Graphics::Cube> _light;
-    std::unique_ptr<Runic::Graphics::Cube> _object;
+    Runic::Light::Directional _light;
+    std::unique_ptr<Runic::Graphics::Cube> _cube;
+
+    // clang-format off
+    const std::array<glm::vec3, 10> _cubePositions = {
+        glm::vec3( 0.0F,  0.0F,   0.0F),
+        glm::vec3( 2.0F,  5.0F, -15.0F),
+        glm::vec3(-1.5F, -2.2F,  -2.5F),
+        glm::vec3(-3.8F, -2.0F, -12.3F),
+        glm::vec3( 2.4F, -0.4F,  -3.5F),
+        glm::vec3(-1.7F,  3.0F,  -7.5F),
+        glm::vec3( 1.3F, -2.0F,  -2.5F),
+        glm::vec3( 1.5F,  2.0F,  -2.5F),
+        glm::vec3( 1.5F,  0.2F,  -1.5F),
+        glm::vec3(-1.3F,  1.0F,  -1.5F),
+    };
+    // clang-format off
 
     Runic::Camera _camera;
 };
