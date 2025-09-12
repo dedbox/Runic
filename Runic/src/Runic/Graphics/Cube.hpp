@@ -27,15 +27,14 @@ public:
         std::shared_ptr<Runic::ShaderProgram<CubeLayout>>&& shader);
 
 private:
-    static VertexData<CubeLayout> CreateData();
+    static constexpr VertexData<CubeLayout> CreateData();
+    static constexpr std::vector<uint32_t> CreateIndex();
+
+    static constexpr std::array<uint32_t, 24> Faces();
 
     static constexpr std::array<float, 24> Positions();
     static constexpr std::array<float, 18> Normals();
-    static constexpr std::array<float, 12> TexCoords();
-
-    static constexpr std::array<uint32_t, 36> PositionIndex();
-    static constexpr std::array<uint32_t, 36> NormalIndex();
-    static constexpr std::array<uint32_t, 36> TexCoordIndex();
+    static constexpr std::array<float, 8> TexCoords();
 };
 
 } // namespace Runic::Graphics

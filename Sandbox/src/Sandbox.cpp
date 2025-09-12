@@ -33,7 +33,7 @@ public:
         _light->shader->unbind();
 
         _light->position = {1.2F, 1.0F, 2.0F};
-        _light->scale    = glm::vec3(0.2F);
+        _light->scale    = glm::vec3(0.1F);
 
         _object = Runic::Graphics::Cube::Create(
             _context,
@@ -169,10 +169,16 @@ public:
                 _camera.moveDown(amount);
         }
 
-        // double secs = Runic::Time::Seconds();
+        // double theta = Runic::Time::Seconds();
+
+        // _light->position = {1.2F * cos(theta), sin(0.5F * theta), 2.0F * sin(theta)};
+        // _light->shader->bind();
+        // _light->shader->setUniform("position", _light->position);
+        // _light->shader->unbind();
 
         _object->shader->bind();
         _object->shader->setUniform("viewPosition", _camera.position());
+        // _object->shader->setUniform("light.position", _light->position);
         _object->shader->unbind();
     }
 
