@@ -9,10 +9,15 @@ struct Material
 
 struct Light
 {
-    vec3 direction;
+    vec3 position;
+
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 in vec3 vPosition;
@@ -32,7 +37,7 @@ void main()
 
     // diffuse
     vec3 norm = normalize(vNormal);
-    vec3 lightDir = normalize(-light.direction);
+    vec3 lightDir = normalize(light.position - vPosition);
     vec4 diffuse = light.diffuse * max(dot(norm, lightDir), 0.0) * texture(material.diffuse, vTexCoord);
 
     // specular
@@ -42,5 +47,8 @@ void main()
         * pow(max(dot(viewDir, reflectDir), 0.0), material.shininess)
         * texture(material.specular, vTexCoord);
 
-    fColor = ambient + diffuse + specular;
+    float distance = length(light.position - vPosition);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
+
+    fColor = (ambient + diffuse + specular) * attenuation;
 }

@@ -21,12 +21,26 @@ public:
 
     void attach() override
     {
-        _light.direction = {-0.2F, -1.0F, -0.3F};
+        _light.position  = {1.2F, 1.0F, 2.0F};
+        _light.constant  = 1.0F;
+        _light.linear    = 0.08F;
+        _light.quadratic = 0.032F;
+
+        _lightCube = Runic::Graphics::Cube::Create(
+            _context,
+            Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(_context, "Light", "Light"));
+
+        _lightCube->position = _light.position;
+        _lightCube->scale    = glm::vec3(0.1F);
+
+        _lightCube->shader->bind();
+        _lightCube->shader->setUniform("position", _lightCube->position);
+        _lightCube->shader->setUniform("light_color", _light.specular);
+        _lightCube->shader->unbind();
 
         // _cube = Runic::Graphics::Cube::Create(
         //     _context,
-        //     Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(
-        //         _context, "Directional", "Flat"));
+        //     Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(_context, "Object", "Flat"));
 
         // _cube->setMaterial(
         //     "material", Runic::PhongMaterial(Coral, Coral, Runic::Color::White, 23.0F));
@@ -34,7 +48,7 @@ public:
         _cube = Runic::Graphics::Cube::Create(
             _context,
             Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(
-                _context, "Directional", "LightMap"));
+                _context, "Object", "LightMap"));
 
         _cube->setMaterial(
             "material",
@@ -46,10 +60,13 @@ public:
         _cube->rotationAxis = {1.0F, 0.3F, 0.5F};
 
         _cube->shader->bind();
-        _cube->shader->setUniform("light.direction", _light.direction);
+        _cube->shader->setUniform("light.position", _light.position);
         _cube->shader->setUniform("light.ambient", _light.ambient);
         _cube->shader->setUniform("light.diffuse", _light.diffuse);
         _cube->shader->setUniform("light.specular", _light.specular);
+        _cube->shader->setUniform("light.constant", _light.constant);
+        _cube->shader->setUniform("light.linear", _light.linear);
+        _cube->shader->setUniform("light.quadratic", _light.quadratic);
         _cube->shader->setUniform("viewPosition", _camera.position());
         _cube->shader->unbind();
 
@@ -183,14 +200,17 @@ public:
             _cube->rotation = 20.0F * static_cast<float>(i);
             _cube->draw(_camera);
         }
+
+        _lightCube->draw(_camera);
     }
 
 private:
-    Runic::Light::Directional _light;
+    Runic::Light::Point _light;
+    std::unique_ptr<Runic::Graphics::Cube> _lightCube;
     std::unique_ptr<Runic::Graphics::Cube> _cube;
 
     // clang-format off
-    const std::array<glm::vec3, 10> _cubePositions = {
+    std::array<glm::vec3, 10> _cubePositions = {
         glm::vec3( 0.0F,  0.0F,   0.0F),
         glm::vec3( 2.0F,  5.0F, -15.0F),
         glm::vec3(-1.5F, -2.2F,  -2.5F),
