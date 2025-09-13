@@ -1,5 +1,7 @@
 #include <Runic.hpp>
 
+#include "glm/trigonometric.hpp"
+
 // Cube --------------------------------------------------------------------------------------------
 
 static constexpr Runic::color Coral(1.0F, 0.5F, 0.31F, 1.0F);
@@ -21,22 +23,12 @@ public:
 
     void attach() override
     {
-        _light.position  = {1.2F, 1.0F, 2.0F};
+        _light.cutoff      = glm::cos(glm::radians(8.0F));
+        _light.outerCutoff = glm::cos(glm::radians(12.5F));
+
         _light.constant  = 1.0F;
-        _light.linear    = 0.08F;
-        _light.quadratic = 0.032F;
-
-        _lightCube = Runic::Graphics::Cube::Create(
-            _context,
-            Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(_context, "Light", "Light"));
-
-        _lightCube->position = _light.position;
-        _lightCube->scale    = glm::vec3(0.1F);
-
-        _lightCube->shader->bind();
-        _lightCube->shader->setUniform("position", _lightCube->position);
-        _lightCube->shader->setUniform("light_color", _light.specular);
-        _lightCube->shader->unbind();
+        _light.linear    = 0.0014F;
+        _light.quadratic = 0.000007F;
 
         // _cube = Runic::Graphics::Cube::Create(
         //     _context,
@@ -61,6 +53,8 @@ public:
 
         _cube->shader->bind();
         _cube->shader->setUniform("light.position", _light.position);
+        _cube->shader->setUniform("light.cutoff", _light.cutoff);
+        _cube->shader->setUniform("light.outerCutoff", _light.outerCutoff);
         _cube->shader->setUniform("light.ambient", _light.ambient);
         _cube->shader->setUniform("light.diffuse", _light.diffuse);
         _cube->shader->setUniform("light.specular", _light.specular);
@@ -184,7 +178,12 @@ public:
                 _camera.moveDown(amount);
         }
 
+        _light.position  = _camera.position();
+        _light.direction = _camera.front();
+
         _cube->shader->bind();
+        _cube->shader->setUniform("light.position", _light.position);
+        _cube->shader->setUniform("light.direction", _light.direction);
         _cube->shader->setUniform("viewPosition", _camera.position());
         _cube->shader->unbind();
     }
@@ -200,13 +199,11 @@ public:
             _cube->rotation = 20.0F * static_cast<float>(i);
             _cube->draw(_camera);
         }
-
-        _lightCube->draw(_camera);
     }
 
 private:
-    Runic::Light::Point _light;
-    std::unique_ptr<Runic::Graphics::Cube> _lightCube;
+    Runic::Light::Spot _light;
+
     std::unique_ptr<Runic::Graphics::Cube> _cube;
 
     // clang-format off

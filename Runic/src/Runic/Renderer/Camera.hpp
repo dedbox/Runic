@@ -31,6 +31,7 @@ public:
     bool invert = true;
 
     const glm::vec3& position() const { return _position; }
+    const glm::vec3& front() const { return _front; }
 
     void setAspect(float aspect) { _aspect = aspect; }
 
