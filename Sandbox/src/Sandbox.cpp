@@ -23,12 +23,36 @@ public:
 
     void attach() override
     {
-        _light.cutoff      = glm::cos(glm::radians(8.0F));
-        _light.outerCutoff = glm::cos(glm::radians(12.5F));
+        _dirLight.direction = {-0.2F, -1.0F, -0.3F};
+        _dirLight.ambient   = {0.05F, 0.05F, 0.05F, 1.0F};
+        _dirLight.diffuse   = {0.4F, 0.4F, 0.4F, 1.0F};
+        _dirLight.specular  = {0.5F, 0.5F, 0.5F, 1.0F};
 
-        _light.constant  = 1.0F;
-        _light.linear    = 0.0014F;
-        _light.quadratic = 0.000007F;
+        _pointLight.ambient   = {0.05F, 0.05F, 0.05F, 1.0F};
+        _pointLight.diffuse   = {0.8F, 0.8F, 0.8F, 1.0F};
+        _pointLight.specular  = {1.0F, 1.0F, 1.0F, 1.0F};
+        _pointLight.constant  = 1.0F;
+        _pointLight.linear    = 0.09F;
+        _pointLight.quadratic = 0.032F;
+
+        _spotLight.cutoff      = glm::cos(glm::radians(12.5F));
+        _spotLight.outerCutoff = glm::cos(glm::radians(15.0F));
+        _spotLight.ambient     = {0.0F, 0.0F, 0.0F, 1.0F};
+        _spotLight.diffuse     = {1.0F, 1.0F, 1.0F, 1.0F};
+        _spotLight.specular    = {1.0F, 1.0F, 1.0F, 1.0F};
+        _spotLight.constant    = 1.0F;
+        _spotLight.linear      = 0.09F;
+        _spotLight.quadratic   = 0.032F;
+
+        _lightCube = Runic::Graphics::Cube::Create(
+            _context,
+            Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(_context, "Light", "Light"));
+
+        _lightCube->scale = glm::vec3(0.1);
+
+        _lightCube->shader->bind();
+        _lightCube->shader->setUniform("light_color", Runic::Color::White);
+        _lightCube->shader->unbind();
 
         // _cube = Runic::Graphics::Cube::Create(
         //     _context,
@@ -52,15 +76,38 @@ public:
         _cube->rotationAxis = {1.0F, 0.3F, 0.5F};
 
         _cube->shader->bind();
-        _cube->shader->setUniform("light.position", _light.position);
-        _cube->shader->setUniform("light.cutoff", _light.cutoff);
-        _cube->shader->setUniform("light.outerCutoff", _light.outerCutoff);
-        _cube->shader->setUniform("light.ambient", _light.ambient);
-        _cube->shader->setUniform("light.diffuse", _light.diffuse);
-        _cube->shader->setUniform("light.specular", _light.specular);
-        _cube->shader->setUniform("light.constant", _light.constant);
-        _cube->shader->setUniform("light.linear", _light.linear);
-        _cube->shader->setUniform("light.quadratic", _light.quadratic);
+
+        _cube->shader->setUniform("dirLight.direction", _dirLight.direction);
+        _cube->shader->setUniform("dirLight.ambient", _dirLight.ambient);
+        _cube->shader->setUniform("dirLight.diffuse", _dirLight.diffuse);
+        _cube->shader->setUniform("dirLight.specular", _dirLight.specular);
+
+        for (int i = 0; i < 4; i++)
+        {
+            _cube->shader->setUniform(
+                std::format("pointLights[{}].position", i), _pointLightPositions[i]); // NOLINT
+            _cube->shader->setUniform(
+                std::format("pointLights[{}].ambient", i), _pointLight.ambient);
+            _cube->shader->setUniform(
+                std::format("pointLights[{}].diffuse", i), _pointLight.diffuse);
+            _cube->shader->setUniform(
+                std::format("pointLights[{}].specular", i), _pointLight.specular);
+            _cube->shader->setUniform(
+                std::format("pointLights[{}].constant", i), _pointLight.constant);
+            _cube->shader->setUniform(std::format("pointLights[{}].linear", i), _pointLight.linear);
+            _cube->shader->setUniform(
+                std::format("pointLights[{}].quadratic", i), _pointLight.quadratic);
+        }
+
+        _cube->shader->setUniform("spotLight.cutoff", _spotLight.cutoff);
+        _cube->shader->setUniform("spotLight.outerCutoff", _spotLight.outerCutoff);
+        _cube->shader->setUniform("spotLight.ambient", _spotLight.ambient);
+        _cube->shader->setUniform("spotLight.diffuse", _spotLight.diffuse);
+        _cube->shader->setUniform("spotLight.specular", _spotLight.specular);
+        _cube->shader->setUniform("spotLight.constant", _spotLight.constant);
+        _cube->shader->setUniform("spotLight.linear", _spotLight.linear);
+        _cube->shader->setUniform("spotLight.quadratic", _spotLight.quadratic);
+
         _cube->shader->setUniform("viewPosition", _camera.position());
         _cube->shader->unbind();
 
@@ -178,13 +225,16 @@ public:
                 _camera.moveDown(amount);
         }
 
-        _light.position  = _camera.position();
-        _light.direction = _camera.front();
+        _spotLight.position  = _camera.position();
+        _spotLight.direction = _camera.front();
 
         _cube->shader->bind();
-        _cube->shader->setUniform("light.position", _light.position);
-        _cube->shader->setUniform("light.direction", _light.direction);
+
+        _cube->shader->setUniform("spotLight.position", _spotLight.position);
+        _cube->shader->setUniform("spotLight.direction", _spotLight.direction);
+
         _cube->shader->setUniform("viewPosition", _camera.position());
+
         _cube->shader->unbind();
     }
 
@@ -192,6 +242,12 @@ public:
     {
         _context->setClearColor(Runic::Color::Gray1);
         _context->clear();
+
+        for (int i = 0; i < 4; i++)
+        {
+            _lightCube->position = _pointLightPositions[i]; // NOLINT
+            _lightCube->draw(_camera);
+        }
 
         for (int i = 0; i < 10; i++)
         {
@@ -202,11 +258,21 @@ public:
     }
 
 private:
-    Runic::Light::Spot _light;
+    Runic::Light::Directional _dirLight;
+    Runic::Light::Point _pointLight;
+    Runic::Light::Spot _spotLight;
 
+    std::unique_ptr<Runic::Graphics::Cube> _lightCube;
     std::unique_ptr<Runic::Graphics::Cube> _cube;
 
     // clang-format off
+    std::array<glm::vec3, 4> _pointLightPositions = {
+        glm::vec3( 0.7F,  0.2F,   2.0F),
+        glm::vec3( 2.3F, -3.3F,  -4.0F),
+        glm::vec3(-4.0F,  2.0F, -12.0F),
+        glm::vec3( 0.0F,  0.0F,  -3.0F),
+    };
+
     std::array<glm::vec3, 10> _cubePositions = {
         glm::vec3( 0.0F,  0.0F,   0.0F),
         glm::vec3( 2.0F,  5.0F, -15.0F),
