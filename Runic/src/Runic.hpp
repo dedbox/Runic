@@ -26,7 +26,6 @@
 #include <Runic/Renderer/ShaderManager.hpp>
 #include <Runic/Renderer/Texture.hpp>
 #include <Runic/Renderer/TextureManager.hpp>
-#include <Runic/Renderer/VertexData.hpp>
 
 // The Graphics API
 #include <Runic/Graphics.hpp>

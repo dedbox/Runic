@@ -34,6 +34,34 @@ Buffer& Buffer::operator=(Buffer&& other) noexcept
     return *this;
 }
 
+// Vertex Buffer -----------------------------------------------------------------------------------
+
+VertexBuffer::VertexBuffer(GraphicsContext* context, RendererId id, size_t count, size_t size)
+    : Buffer(context, id)
+    , _count(count)
+    , _size(size)
+{
+}
+
+std::unique_ptr<VertexBuffer> VertexBuffer::Create(
+    GraphicsContext* context, const std::vector<float>& vertices, BufferUsage usage)
+{
+    size_t count  = vertices.size();
+    size_t size   = count * sizeof(float);
+    RendererId id = context->createVertexBuffer(vertices.data(), size, usage);
+    return std::unique_ptr<VertexBuffer>(new VertexBuffer(context, id, count, size));
+}
+
+void VertexBuffer::bind() const
+{
+    _context->bindVertexBuffer(_id);
+}
+
+void VertexBuffer::unbind() const
+{
+    _context->unbindVertexBuffer();
+}
+
 // Index Buffer ----------------------------------------------------------------
 
 IndexBuffer::IndexBuffer(

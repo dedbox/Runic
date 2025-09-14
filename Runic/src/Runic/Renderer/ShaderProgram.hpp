@@ -9,6 +9,16 @@ namespace Runic
 class ShaderProgramBase
 {
 public:
+    ShaderProgramBase() = default;
+
+    // allow moving
+    ShaderProgramBase(ShaderProgramBase&&)            = default;
+    ShaderProgramBase& operator=(ShaderProgramBase&&) = default;
+
+    // prevent copying
+    ShaderProgramBase(const ShaderProgramBase&)            = delete;
+    ShaderProgramBase& operator=(const ShaderProgramBase&) = delete;
+
     virtual ~ShaderProgramBase() = default;
 
     virtual void bind() const   = 0;
@@ -27,7 +37,6 @@ public:
     virtual void setUniform(const std::string& name, glm::mat4 value) const  = 0;
 };
 
-template <typename... Layouts>
 class ShaderProgram : public ShaderProgramBase
 {
 private:
@@ -41,7 +50,7 @@ private:
     }
 
 public:
-    static std::shared_ptr<ShaderProgram<Layouts...>> Create(
+    static std::shared_ptr<ShaderProgram> Create(
         GraphicsContext* context, Shader& vertexShader, Shader& fragmentShader)
     {
         RendererId id = context->createShaderProgram();
@@ -64,7 +73,7 @@ public:
         return std::unique_ptr<ShaderProgram>(new ShaderProgram(context, id));
     }
 
-    ~ShaderProgram() { _context->destroyShaderProgram(_id); }
+    ~ShaderProgram() override { _context->destroyShaderProgram(_id); }
 
     // allow moving
     ShaderProgram(ShaderProgram&& other) noexcept

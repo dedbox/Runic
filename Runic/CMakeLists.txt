@@ -119,11 +119,13 @@ add_library(
   src/Runic/Renderer/Camera.cpp
   src/Runic/Renderer/GraphicsContext.cpp
   src/Runic/Renderer/GuiLayer.cpp
+  src/Runic/Renderer/RenderObject.cpp
   src/Runic/Renderer/Renderer.cpp
   src/Runic/Renderer/Shader.cpp
   src/Runic/Renderer/ShaderManager.cpp
   src/Runic/Renderer/Texture.cpp
-  src/Runic/Renderer/TextureManager.cpp)
+  src/Runic/Renderer/TextureManager.cpp
+  src/Runic/Renderer/VertexArray.cpp)
 
 target_link_libraries(Runic PUBLIC ${OPENGL_LIBRARIES} glad_gl_core_46 glm::glm
                                    ImGUI)

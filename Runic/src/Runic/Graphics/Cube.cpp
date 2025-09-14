@@ -4,14 +4,20 @@ namespace Runic::Graphics
 {
 
 std::unique_ptr<Cube> Cube::Create(
-    Runic::GraphicsContext* context, std::shared_ptr<Runic::ShaderProgram<CubeLayout>>&& shader)
+    Runic::GraphicsContext* context, std::shared_ptr<Runic::ShaderProgram>&& shader)
 {
     auto cube = std::unique_ptr<Cube>(new Cube(context));
 
     cube->createMesh(DrawMode::Triangles);
-    cube->mesh->setVertexBuffers(
-        std::make_tuple(
-            VertexBuffer<CubeLayout>::Create(context, CreateData(), BufferUsage::Static)));
+
+    auto vertexBuffer = VertexBuffer::Create(context, CreateData(), BufferUsage::Static);
+    std::vector<VertexAttribute> layout = {
+        {.type = AttributeType::Float3, .normalize = false},
+        {.type = AttributeType::Float3, .normalize = false},
+        {.type = AttributeType::Float2, .normalize = false},
+    };
+
+    cube->mesh->addVertexBuffer(std::move(vertexBuffer), layout);
     cube->mesh->setIndices(CreateIndex(), IndexType::Int, BufferUsage::Static);
 
     cube->shader = std::move(shader);
@@ -19,7 +25,7 @@ std::unique_ptr<Cube> Cube::Create(
     return cube;
 }
 
-constexpr VertexData<CubeLayout> Cube::CreateData()
+constexpr std::vector<float> Cube::CreateData()
 {
     const auto position = Positions() | std::ranges::views::chunk(3);
     const auto normal   = Normals() | std::ranges::views::chunk(3);
@@ -36,7 +42,7 @@ constexpr VertexData<CubeLayout> Cube::CreateData()
         std::ranges::copy(texCoord[i % 4], vertices.begin() + offset + 6L);
     }
 
-    return VertexData<CubeLayout>(vertices);
+    return vertices;
 }
 
 constexpr std::vector<uint32_t> Cube::CreateIndex()

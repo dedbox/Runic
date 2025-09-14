@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Runic/Renderer/GraphicsContext.hpp"
-#include "Runic/Renderer/VertexData.hpp"
 
 namespace Runic
 {
@@ -32,39 +31,24 @@ protected:
 
 // Vertex Buffer ---------------------------------------------------------------
 
-template <typename Layout>
 class VertexBuffer : public Buffer
 {
 private:
     size_t _count;
     size_t _size;
 
-    VertexBuffer(GraphicsContext* context, RendererId id, size_t count, size_t size)
-        : Buffer(context, id)
-        , _count(count)
-        , _size(size)
-    {
-    }
+    VertexBuffer(GraphicsContext* context, RendererId id, size_t count, size_t size);
 
 public:
     static std::unique_ptr<VertexBuffer> Create(
-        GraphicsContext* context, const VertexData<Layout>& vertices, BufferUsage usage)
-    {
-        size_t count  = vertices.count();
-        size_t size   = vertices.size();
-        RendererId id = context->createVertexBuffer(vertices.data(), size, usage);
-        return std::unique_ptr<VertexBuffer>(new VertexBuffer(context, id, count, size));
-    }
+        GraphicsContext* context, const std::vector<float>& vertices, BufferUsage usage);
 
     size_t getCount() const { return _count; }
     size_t getSize() const { return _size; }
 
-    void bind() const override { _context->bindVertexBuffer(_id); }
-    void unbind() const override { _context->unbindVertexBuffer(); }
+    void bind() const override;
+    void unbind() const override;
 };
-
-template <typename... Layouts>
-using VertexBufferTuple = std::tuple<std::unique_ptr<VertexBuffer<Layouts>...>>;
 
 // Index Buffer ----------------------------------------------------------------
 

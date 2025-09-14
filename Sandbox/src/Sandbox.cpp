@@ -45,8 +45,7 @@ public:
         _spotLight.quadratic   = 0.032F;
 
         _lightCube = Runic::Graphics::Cube::Create(
-            _context,
-            Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(_context, "Light", "Light"));
+            _context, Runic::ShaderManager::Find(_context, "Light", "Light"));
 
         _lightCube->scale = glm::vec3(0.1);
 
@@ -55,16 +54,13 @@ public:
         _lightCube->shader->unbind();
 
         // _cube = Runic::Graphics::Cube::Create(
-        //     _context,
-        //     Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(_context, "Object", "Flat"));
+        //     _context, Runic::ShaderManager::Find(_context, "Object", "Flat"));
 
         // _cube->setMaterial(
         //     "material", Runic::PhongMaterial(Coral, Coral, Runic::Color::White, 23.0F));
 
         _cube = Runic::Graphics::Cube::Create(
-            _context,
-            Runic::ShaderManager::Find<Runic::Graphics::CubeLayout>(
-                _context, "Object", "LightMap"));
+            _context, Runic::ShaderManager::Find(_context, "Object", "LightMap"));
 
         _cube->setMaterial(
             "material",

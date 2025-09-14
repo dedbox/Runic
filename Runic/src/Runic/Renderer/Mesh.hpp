@@ -8,7 +8,6 @@
 namespace Runic
 {
 
-template <typename... Layouts>
 class Mesh
 {
 protected:
@@ -16,7 +15,7 @@ protected:
 
     Mesh(GraphicsContext* context, DrawMode mode)
         : _context(context)
-        , _vertexArray(VertexArray<Layouts...>::Create(_context, mode))
+        , _vertexArray(VertexArray::Create(_context, mode))
     {
     }
 
@@ -26,9 +25,10 @@ public:
         return std::unique_ptr<Mesh>(new Mesh(context, mode));
     }
 
-    void setVertexBuffers(VertexBufferTuple<Layouts...> vertexBuffers)
+    void addVertexBuffer(
+        std::unique_ptr<VertexBuffer> vertexBuffer, const std::vector<VertexAttribute>& layout)
     {
-        _vertexArray->setVertexBuffers(std::move(vertexBuffers));
+        _vertexArray->addVertexBuffer(std::move(vertexBuffer), layout);
     }
 
     void setIndices(const std::vector<uint32_t>& indices, IndexType type, BufferUsage usage)
@@ -43,7 +43,7 @@ public:
             _textures.push_back(std::move(texture));
     }
 
-    void draw(const ShaderProgram<Layouts...>& shaderProgram) const
+    void draw(const ShaderProgram& shaderProgram) const
     {
         shaderProgram.bind();
 
@@ -61,7 +61,7 @@ public:
     }
 
 private:
-    std::unique_ptr<VertexArray<Layouts...>> _vertexArray;
+    std::unique_ptr<VertexArray> _vertexArray;
     std::vector<std::shared_ptr<Texture>> _textures;
 };
 

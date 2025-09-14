@@ -16,7 +16,6 @@ struct VertexAttribute
 
 // Vertex Array ----------------------------------------------------------------
 
-template <typename... Layouts>
 class VertexArray
 {
 private:
@@ -24,124 +23,36 @@ private:
     RendererId _id;
     DrawMode _mode;
 
-    VertexArray(GraphicsContext* context, RendererId id, DrawMode mode)
-        : _context(context)
-        , _id(id)
-        , _mode(mode)
-    {
-        bind();
-    }
+    VertexArray(GraphicsContext* context, RendererId id, DrawMode mode);
 
 public:
-    static std::unique_ptr<VertexArray> Create(GraphicsContext* context, DrawMode mode)
-    {
-        RendererId id = context->createVertexArray();
-        return std::unique_ptr<VertexArray>(new VertexArray(context, id, mode));
-    }
+    static std::unique_ptr<VertexArray> Create(GraphicsContext* context, DrawMode mode);
 
     // allow moving
-    VertexArray(VertexArray&& other) noexcept
-        : _context(std::exchange(other._context, nullptr))
-        , _id(std::exchange(other._id, 0))
-        , _mode(other._mode)
-    {
-    }
-
-    VertexArray& operator=(VertexArray&& other) noexcept
-    {
-        if (this != &other)
-        {
-            _context->destroyVertexArray(_id);
-            _context = std::exchange(other._context, nullptr);
-            _id      = std::exchange(other._id, 0);
-            _mode    = other._mode;
-        }
-        return *this;
-    }
+    VertexArray(VertexArray&& other) noexcept;
+    VertexArray& operator=(VertexArray&& other) noexcept;
 
     // prevent copying
     VertexArray(VertexArray&)                  = delete;
     VertexArray& operator=(const VertexArray&) = delete;
 
-    ~VertexArray()
-    {
-        if (_id != 0)
-        {
-            _context->destroyVertexArray(_id);
-            _id = 0;
-        }
-    }
+    ~VertexArray();
 
     DrawMode getMode() const { return _mode; }
 
-    void bind() const { _context->bindVertexArray(_id); }
-    void unbind() const { _context->unbindVertexArray(); }
+    void bind() const;
+    void unbind() const;
 
-    void setVertexBuffers(VertexBufferTuple<Layouts...> vertexBuffers)
-    {
-        if constexpr (std::tuple_size_v<VertexBufferTuple<Layouts...>> == 0)
-            return;
+    void addVertexBuffer(
+        std::unique_ptr<VertexBuffer> vertexBuffer, const std::vector<VertexAttribute>& layout);
 
-        if (std::get<0>(_vertexBuffers))
-        {
-            Core::Warn("Multiple attempts to set vertex buffers on one vertex array");
-            return;
-        }
+    void setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer);
 
-        constexpr auto tuple_size = std::tuple_size_v<std::decay_t<VertexBufferTuple<Layouts...>>>;
-        [&]<size_t... Is>(std::index_sequence<Is...>) {
-            (addVertexBuffer(
-                 std::get<Is>(std::forward<const VertexBufferTuple<Layouts...>>(vertexBuffers))),
-             ...);
-        }(std::make_index_sequence<tuple_size>{});
-
-        _vertexBuffers = std::move(vertexBuffers);
-    }
-
-private:
-    template <typename Layout>
-    void addVertexBuffer(const std::unique_ptr<VertexBuffer<Layout>>& vertexBuffer)
-    {
-        _count += vertexBuffer->getSize() / Layout::stride;
-
-        for (const auto&& [index, count, type, normalize, offset] : std::ranges::views::zip(
-                 std::ranges::views::iota(0),
-                 Layout::counts,
-                 Layout::attributeTypes,
-                 Layout::normalizes,
-                 Layout::offsets))
-        {
-            _context->enableVertexAttribute(index);
-            _context->defineVertexAttributeData(
-                index,
-                count,
-                type,
-                normalize,
-                Layout::stride,
-                reinterpret_cast<const void*>(offset)); // NOLINT
-        }
-    }
-
-public:
-    void setIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
-    {
-        _indexBuffer = std::move(indexBuffer);
-    }
-
-    void draw() const
-    {
-        if (_indexBuffer)
-            _context->drawIndexed(
-                _mode, _indexBuffer->getCount(), _indexBuffer->getType(), nullptr);
-        else
-        {
-            _context->drawVertices(_mode, 0, _count);
-        }
-    }
+    void draw() const;
 
 private:
     size_t _count = 0;
-    VertexBufferTuple<Layouts...> _vertexBuffers;
+    std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffers;
     std::unique_ptr<IndexBuffer> _indexBuffer;
 };
 
