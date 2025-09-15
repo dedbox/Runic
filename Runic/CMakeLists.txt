@@ -104,6 +104,19 @@ target_sources(
 
 target_link_libraries(ImGUI PRIVATE SDL3::SDL3)
 
+# Assimp -----------------------------------------------------------------------
+
+FetchContent_Declare(
+  assimp
+  GIT_REPOSITORY https://github.com/assimp/assimp.git
+  GIT_TAG v6.0.2
+  GIT_SHALLOW YES)
+
+set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_INSTALL OFF)
+
+FetchContent_MakeAvailable(assimp)
+
 # Runic ------------------------------------------------------------------------
 
 add_library(
@@ -130,7 +143,7 @@ add_library(
 target_link_libraries(Runic PUBLIC ${OPENGL_LIBRARIES} glad_gl_core_46 glm::glm
                                    ImGUI)
 target_link_libraries(Runic PRIVATE SDL3::SDL3 SDL3_image::SDL3_image
-                                    spdlog::spdlog)
+                                    spdlog::spdlog assimp)
 
 target_precompile_headers(
   Runic
