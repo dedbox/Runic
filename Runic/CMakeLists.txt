@@ -109,10 +109,12 @@ target_link_libraries(ImGUI PRIVATE SDL3::SDL3)
 FetchContent_Declare(
   assimp
   GIT_REPOSITORY https://github.com/assimp/assimp.git
-  GIT_TAG v6.0.2
+  GIT_TAG master # v6.0.2
   GIT_SHALLOW YES)
 
 set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_INJECT_DEBUG_POSTFIX OFF)
 set(ASSIMP_INSTALL OFF)
 
 FetchContent_MakeAvailable(assimp)
@@ -132,6 +134,7 @@ add_library(
   src/Runic/Renderer/Camera.cpp
   src/Runic/Renderer/GraphicsContext.cpp
   src/Runic/Renderer/GuiLayer.cpp
+  src/Runic/Renderer/Model.cpp
   src/Runic/Renderer/RenderObject.cpp
   src/Runic/Renderer/Renderer.cpp
   src/Runic/Renderer/Shader.cpp
@@ -163,6 +166,7 @@ target_precompile_headers(
   <optional>
   <print>
   <ranges>
+  <span>
   <stdexcept>
   <string>
   <tuple>
@@ -177,7 +181,7 @@ target_precompile_headers(
   src/Runic/Core/SDLException.hpp)
 
 target_include_directories(Runic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
-                                        ${glm_INCLUDE_DIR})
+                                        ${glm_INCLUDE_DIR} "${assimp_SOURCE_DIR}/include" "${assimp_BINARY_DIR}/include")
 target_include_directories(Runic PRIVATE ${OPENGL_INCLUDE_DIR}
                                          ${glad_INCLUDE_DIR})
 

@@ -20,10 +20,17 @@ add_custom_target(
     "$<TARGET_FILE_DIR:Sandbox>/textures"
   COMMENT "Copying textures if different...")
 
+add_custom_target(
+  copy_models
+  COMMAND
+    ${CMAKE_COMMAND} -E copy_directory_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/models/" "$<TARGET_FILE_DIR:Sandbox>/models"
+  COMMENT "Copying models if different...")
+
 add_executable(Sandbox src/Sandbox.cpp)
 
 target_link_libraries(Sandbox PRIVATE Runic)
 
-add_dependencies(Sandbox copy_shaders copy_textures)
+add_dependencies(Sandbox copy_shaders copy_textures copy_models)
 
 install(TARGETS Sandbox DESTINATION bin)

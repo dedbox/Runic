@@ -30,7 +30,7 @@ static std::string LoadFile(const std::string& path)
 
 } // namespace
 
-std::map<Strings, std::shared_ptr<ShaderProgramBase>> ShaderManager::_shaders;
+std::map<Strings, std::shared_ptr<ShaderProgram>> ShaderManager::_shaders;
 
 void ShaderManager::Load(
     GraphicsContext* context, const std::string& vertexName, const std::string& fragmentName)

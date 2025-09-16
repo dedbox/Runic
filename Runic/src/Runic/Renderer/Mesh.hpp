@@ -37,19 +37,21 @@ public:
         _vertexArray->setIndexBuffer(IndexBuffer::Create(_context, indices, type, usage));
     }
 
-    void addTexture(std::shared_ptr<Texture> texture)
+    void addTexture(const std::string& name, std::shared_ptr<Texture> texture)
     {
         if (texture)
-            _textures.push_back(std::move(texture));
+            _textures.emplace_back(name, std::move(texture));
     }
 
     void draw(const ShaderProgram& shaderProgram) const
     {
         shaderProgram.bind();
 
-        for (const auto&& [index, texture] : _textures | std::ranges::views::enumerate)
+        for (const auto&& [i, binding] : _textures | std::ranges::views::enumerate)
         {
-            _context->activateTextureUnit(index);
+            const auto& [name, texture] = binding;
+            _context->activateTextureUnit(i);
+            shaderProgram.setUniform(name, static_cast<int>(i));
             texture->bind();
         }
 
@@ -62,7 +64,7 @@ public:
 
 private:
     std::unique_ptr<VertexArray> _vertexArray;
-    std::vector<std::shared_ptr<Texture>> _textures;
+    std::vector<std::pair<std::string, std::shared_ptr<Texture>>> _textures;
 };
 
 } // namespace Runic

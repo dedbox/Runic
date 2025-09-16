@@ -12,7 +12,7 @@ std::map<TexKey, std::shared_ptr<Texture>> TextureManager::_textures;
 void TextureManager::Load(
     GraphicsContext* context, const std::string& path, const TextureSampling& sampling)
 {
-    SDL_Surface* raw = IMG_Load(std::format("textures/{}", path).c_str());
+    SDL_Surface* raw = IMG_Load(path.c_str());
     if (!raw)
         throw SDLException(std::format("Could not load image `texures/{}'", path));
 

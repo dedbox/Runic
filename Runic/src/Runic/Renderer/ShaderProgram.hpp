@@ -6,38 +6,7 @@
 namespace Runic
 {
 
-class ShaderProgramBase
-{
-public:
-    ShaderProgramBase() = default;
-
-    // allow moving
-    ShaderProgramBase(ShaderProgramBase&&)            = default;
-    ShaderProgramBase& operator=(ShaderProgramBase&&) = default;
-
-    // prevent copying
-    ShaderProgramBase(const ShaderProgramBase&)            = delete;
-    ShaderProgramBase& operator=(const ShaderProgramBase&) = delete;
-
-    virtual ~ShaderProgramBase() = default;
-
-    virtual void bind() const   = 0;
-    virtual void unbind() const = 0;
-
-    virtual void setUniform(const std::string& name, bool value) const       = 0;
-    virtual void setUniform(const std::string& name, int value) const        = 0;
-    virtual void setUniform(const std::string& name, glm::ivec2 value) const = 0;
-    virtual void setUniform(const std::string& name, glm::ivec3 value) const = 0;
-    virtual void setUniform(const std::string& name, glm::ivec4 value) const = 0;
-    virtual void setUniform(const std::string& name, float value) const      = 0;
-    virtual void setUniform(const std::string& name, glm::vec2 value) const  = 0;
-    virtual void setUniform(const std::string& name, glm::vec3 value) const  = 0;
-    virtual void setUniform(const std::string& name, glm::vec4 value) const  = 0;
-    virtual void setUniform(const std::string& name, glm::mat3 value) const  = 0;
-    virtual void setUniform(const std::string& name, glm::mat4 value) const  = 0;
-};
-
-class ShaderProgram : public ShaderProgramBase
+class ShaderProgram
 {
 private:
     GraphicsContext* _context;
@@ -60,7 +29,7 @@ public:
 
         if (!context->linkShaderProgram(id))
         {
-            Core::Error(context->getShaderProgramInfoLog(id));
+            Core::Error("{}", context->getShaderProgramInfoLog(id));
             Core::Assert(false, "shader program linking failed");
             context->destroyShaderProgram(id);
             fragmentShader.destroy();
@@ -73,7 +42,7 @@ public:
         return std::unique_ptr<ShaderProgram>(new ShaderProgram(context, id));
     }
 
-    ~ShaderProgram() override { _context->destroyShaderProgram(_id); }
+    ~ShaderProgram() { _context->destroyShaderProgram(_id); }
 
     // allow moving
     ShaderProgram(ShaderProgram&& other) noexcept
@@ -97,65 +66,10 @@ public:
     ShaderProgram(const ShaderProgram&)            = delete;
     ShaderProgram& operator=(const ShaderProgram&) = delete;
 
-    void bind() const override { _context->useShaderProgram(_id); }
-    void unbind() const override { _context->useShaderProgram(0); }
+    void bind() const { _context->useShaderProgram(_id); }
+    void unbind() const { _context->useShaderProgram(0); }
 
     void setUniform(const std::string& name, auto value) const
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, bool value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, int value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, glm::ivec2 value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, glm::ivec3 value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, glm::ivec4 value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, float value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, glm::vec2 value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, glm::vec3 value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, glm::vec4 value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, glm::mat3 value) const override
-    {
-        _context->setUniform(getUniformLocation(name), value);
-    }
-
-    void setUniform(const std::string& name, glm::mat4 value) const override
     {
         _context->setUniform(getUniformLocation(name), value);
     }

@@ -4,7 +4,6 @@
 
 #include "Runic/Renderer/Camera.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
-#include "Runic/Renderer/Material.hpp"
 #include "Runic/Renderer/Mesh.hpp"
 #include "Runic/Renderer/ShaderProgram.hpp"
 #include "Runic/Renderer/Texture.hpp"
@@ -33,13 +32,7 @@ public:
 
     void createMesh(DrawMode mode);
 
-    TextureId addTexture(const std::string& path);
-
-    void setMaterial(const std::string& name, Material material);
-
-    void unsetMaterial() { _material = std::nullopt; };
-
-    std::optional<Material> material() const { return _material; }
+    TextureId addTexture(const std::string& name, const std::string& path);
 
     glm::mat4 modelMatrix() const;
 
@@ -54,7 +47,6 @@ public:
 
 private:
     std::map<std::string, TextureId> _textures;
-    std::optional<Material> _material;
 };
 
 } // namespace Runic

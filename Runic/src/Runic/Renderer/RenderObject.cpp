@@ -1,7 +1,8 @@
 #include "Runic/Renderer/RenderObject.hpp"
 
-#include "Runic/Renderer/TextureManager.hpp"
 #include "glm/ext/matrix_transform.hpp"
+
+#include "Runic/Renderer/TextureManager.hpp"
 
 namespace Runic
 {
@@ -21,36 +22,18 @@ void RenderObject::createMesh(DrawMode mode)
     mesh = Mesh::Create(_context, mode);
 }
 
-TextureId RenderObject::addTexture(const std::string& path)
+TextureId RenderObject::addTexture(const std::string& name, const std::string& path)
 {
     if (_textures.contains(path))
         return _textures[path];
 
-    mesh->addTexture(TextureManager::Find(_context, path));
+    mesh->addTexture(name, TextureManager::Find(_context, path));
 
     auto id = static_cast<TextureId>(_textures.size());
 
     _textures[path] = id;
 
     return id;
-}
-
-void RenderObject::setMaterial(const std::string& name, Material material)
-{
-    std::visit(
-        [&](auto&& material) {
-            // using T = std::decay_t<decltype(material)>;
-            // if constexpr (std::is_same_v<T, PhongMaterial>)
-
-            shader->bind();
-            shader->setUniform(std::format("{}.diffuse", name), material.diffuse);
-            shader->setUniform(std::format("{}.specular", name), material.specular);
-            shader->setUniform(std::format("{}.shininess", name), material.shininess);
-            shader->unbind();
-        },
-        material);
-
-    _material = material;
 }
 
 glm::mat4 RenderObject::modelMatrix() const

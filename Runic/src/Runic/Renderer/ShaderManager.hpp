@@ -31,7 +31,7 @@ public:
         GraphicsContext* context, const std::string& vertexName, const std::string& fragmentName);
 
 private:
-    static std::map<Strings, std::shared_ptr<ShaderProgramBase>> _shaders;
+    static std::map<Strings, std::shared_ptr<ShaderProgram>> _shaders;
 };
 
 } // namespace Runic
