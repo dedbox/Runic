@@ -23,7 +23,7 @@ public:
         _plane = Runic::Graphics::Plane::Create(_context);
         _plane->addTexture("texture1", "textures/metal.png");
         _plane->scale    = {5.0F, 1.0F, 5.0F};
-        _plane->position = {0.0F, -0.5F, 0.0F};
+        _plane->position = {0.0F, -0.501F, 0.0F};
 
         _shader = Runic::ShaderManager::Find(_context, "DepthTesting", "DepthTesting");
     }
