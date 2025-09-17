@@ -252,6 +252,25 @@ inline GLenum to_GLenum(PolygonMode mode)
     return static_cast<GLenum>(mode);
 }
 
+// Depth Test Function ---------------------------------------------------------
+
+enum class DepthFunction : uint16_t
+{
+    Never    = GL_NEVER,
+    Less     = GL_LESS,
+    Equal    = GL_EQUAL,
+    LEqual   = GL_LEQUAL,
+    Greater  = GL_GREATER,
+    NotEqual = GL_NOTEQUAL,
+    GEqual   = GL_GEQUAL,
+    Always   = GL_ALWAYS,
+};
+
+inline GLenum to_GLenum(DepthFunction fun)
+{
+    return static_cast<GLenum>(fun);
+}
+
 // Graphics Context ------------------------------------------------------------
 
 class GraphicsContext
@@ -278,6 +297,8 @@ public:
 
     void enableDepthTesting() const;
     void disableDepthTesting() const;
+
+    void setDepthFunction(DepthFunction fun) const;
 
     void setClearColor(const glm::vec4& color) const;
     void clear() const;

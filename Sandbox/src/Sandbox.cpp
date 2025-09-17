@@ -16,9 +16,16 @@ public:
     CubeLayer(Runic::Window* window, Runic::GraphicsContext* context)
         : _window(window)
         , _context(context)
-        , _backpack(Runic::Model::Create(_context, "models/backpack/backpack.obj"))
-        , _shader(Runic::ShaderManager::Find(_context, "Model", "Model"))
     {
+        _cube = Runic::Graphics::Cube::Create(_context);
+        _cube->addTexture("texture1", "textures/marble.jpg");
+
+        _plane = Runic::Graphics::Plane::Create(_context);
+        _plane->addTexture("texture1", "textures/metal.png");
+        _plane->scale    = {5.0F, 1.0F, 5.0F};
+        _plane->position = {0.0F, -0.5F, 0.0F};
+
+        _shader = Runic::ShaderManager::Find(_context, "DepthTesting", "DepthTesting");
     }
 
     void attach() override
@@ -135,14 +142,21 @@ public:
 
     void render() override
     {
-        _context->setClearColor(Runic::Color::Gray5);
+        _context->setClearColor(Runic::Color::Gray1);
         _context->clear();
 
-        _backpack->draw(*_shader, _camera);
+        _cube->position = {-1.0F, 0.0F, -1.0F};
+        _cube->draw(*_shader, _camera);
+
+        _cube->position = {2.0F, 0.0F, 0.0F};
+        _cube->draw(*_shader, _camera);
+
+        _plane->draw(*_shader, _camera);
     }
 
 private:
-    std::unique_ptr<Runic::Model> _backpack;
+    std::unique_ptr<Runic::Graphics::Cube> _cube;
+    std::unique_ptr<Runic::Graphics::Plane> _plane;
     std::shared_ptr<Runic::ShaderProgram> _shader;
     Runic::Camera _camera;
 };

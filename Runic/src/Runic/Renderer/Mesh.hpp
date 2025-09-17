@@ -37,15 +37,16 @@ public:
         _vertexArray->setIndexBuffer(IndexBuffer::Create(_context, indices, type, usage));
     }
 
-    void addTexture(const std::string& name, std::shared_ptr<Texture> texture)
+    void addTexture(const std::string& name, const std::shared_ptr<Texture>& texture)
     {
         if (texture)
-            _textures.emplace_back(name, std::move(texture));
+            _textures.emplace_back(name, texture);
     }
 
     void draw(const ShaderProgram& shaderProgram) const
     {
         shaderProgram.bind();
+        _vertexArray->bind();
 
         for (const auto&& [i, binding] : _textures | std::ranges::views::enumerate)
         {
@@ -55,10 +56,9 @@ public:
             texture->bind();
         }
 
-        _vertexArray->bind();
         _vertexArray->draw();
-        _vertexArray->unbind();
 
+        _vertexArray->unbind();
         shaderProgram.unbind();
     }
 

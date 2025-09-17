@@ -22,18 +22,9 @@ void RenderObject::createMesh(DrawMode mode)
     mesh = Mesh::Create(_context, mode);
 }
 
-TextureId RenderObject::addTexture(const std::string& name, const std::string& path)
+void RenderObject::addTexture(const std::string& name, const std::string& path)
 {
-    if (_textures.contains(path))
-        return _textures[path];
-
     mesh->addTexture(name, TextureManager::Find(_context, path));
-
-    auto id = static_cast<TextureId>(_textures.size());
-
-    _textures[path] = id;
-
-    return id;
 }
 
 glm::mat4 RenderObject::modelMatrix() const
@@ -45,20 +36,20 @@ glm::mat4 RenderObject::modelMatrix() const
     return model;
 }
 
-void RenderObject::draw()
+void RenderObject::draw(const ShaderProgram& shader)
 {
-    mesh->draw(*shader);
+    mesh->draw(shader);
 }
 
-void RenderObject::draw(const Camera& camera)
+void RenderObject::draw(const ShaderProgram& shader, const Camera& camera)
 {
-    shader->bind();
-    shader->setUniform("model", modelMatrix());
-    shader->setUniform("view", camera.viewMatrix());
-    shader->setUniform("projection", camera.projectionMatrix());
-    shader->unbind();
+    shader.bind();
+    shader.setUniform("model", modelMatrix());
+    shader.setUniform("view", camera.viewMatrix());
+    shader.setUniform("projection", camera.projectionMatrix());
+    shader.unbind();
 
-    mesh->draw(*shader);
+    mesh->draw(shader);
 }
 
 } // namespace Runic

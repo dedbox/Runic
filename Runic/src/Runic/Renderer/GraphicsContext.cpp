@@ -183,6 +183,11 @@ void GraphicsContext::disableDepthTesting() const
     glDisable(GL_DEPTH_TEST);
 }
 
+void GraphicsContext::setDepthFunction(DepthFunction fun) const
+{
+    glDepthFunc(to_GLenum(fun));
+}
+
 void GraphicsContext::setClearColor(const glm::vec4& color) const
 {
     glClearColor(color.r, color.g, color.b, color.a);

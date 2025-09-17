@@ -3,8 +3,7 @@
 namespace Runic::Graphics
 {
 
-std::unique_ptr<Cube> Cube::Create(
-    Runic::GraphicsContext* context, std::shared_ptr<Runic::ShaderProgram>&& shader)
+std::unique_ptr<Cube> Cube::Create(Runic::GraphicsContext* context)
 {
     auto cube = std::unique_ptr<Cube>(new Cube(context));
 
@@ -19,8 +18,6 @@ std::unique_ptr<Cube> Cube::Create(
 
     cube->mesh->addVertexBuffer(std::move(vertexBuffer), layout);
     cube->mesh->setIndices(CreateIndex(), IndexType::Int, BufferUsage::Static);
-
-    cube->shader = std::move(shader);
 
     return cube;
 }

@@ -20,7 +20,6 @@ protected:
 
 public:
     std::unique_ptr<Mesh> mesh;
-    std::shared_ptr<ShaderProgram> shader;
 
     glm::vec3 position = {0.0F, 0.0F, 0.0F};
     glm::vec3 scale    = {1.0F, 1.0F, 1.0F};
@@ -32,18 +31,18 @@ public:
 
     void createMesh(DrawMode mode);
 
-    TextureId addTexture(const std::string& name, const std::string& path);
+    void addTexture(const std::string& name, const std::string& path);
 
     glm::mat4 modelMatrix() const;
 
-    /** Draws the mesh with the shader. */
-    void draw();
+    /** Draws the mesh with a shader. */
+    void draw(const ShaderProgram& shader);
 
-    /** Draws the mesh with the shader, as viewed from a camera.
+    /** Draws the mesh with a shader, as viewed from a camera.
      *
      * Assumes the shader follows our MVP uniform convention: model, view, projection.
      */
-    void draw(const Camera& camera);
+    void draw(const ShaderProgram& shader, const Camera& camera);
 
 private:
     std::map<std::string, TextureId> _textures;
