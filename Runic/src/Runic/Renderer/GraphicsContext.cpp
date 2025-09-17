@@ -188,6 +188,31 @@ void GraphicsContext::setDepthFunction(DepthFunction fun) const
     glDepthFunc(to_GLenum(fun));
 }
 
+void GraphicsContext::enableStencilTest() const
+{
+    glEnable(GL_STENCIL_TEST);
+}
+
+void GraphicsContext::disableStencilTest() const
+{
+    glDisable(GL_STENCIL_TEST);
+}
+
+void GraphicsContext::setStencilFunction(StencilFunction fun, int ref, unsigned int mask) const
+{
+    glStencilFunc(to_GLenum(fun), ref, mask);
+}
+
+void GraphicsContext::setStencilOp(StencilOp sfail, StencilOp dpfail, StencilOp dppass) const
+{
+    glStencilOp(to_GLenum(sfail), to_GLenum(dpfail), to_GLenum(dppass));
+}
+
+void GraphicsContext::setStencilMask(unsigned int mask) const
+{
+    glStencilMask(mask);
+}
+
 void GraphicsContext::setClearColor(const glm::vec4& color) const
 {
     glClearColor(color.r, color.g, color.b, color.a);
@@ -196,7 +221,7 @@ void GraphicsContext::setClearColor(const glm::vec4& color) const
 void GraphicsContext::clear() const
 {
     // NOLINTNEXTLINE(hicpp-signed-bitwise)
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 // Vertex Array ------------------------------------------------------------------------------------

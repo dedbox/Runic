@@ -271,6 +271,44 @@ inline GLenum to_GLenum(DepthFunction fun)
     return static_cast<GLenum>(fun);
 }
 
+// Stencil Test Function -------------------------------------------------------
+
+enum class StencilFunction : uint16_t
+{
+    Never    = GL_NEVER,
+    Less     = GL_LESS,
+    LEqual   = GL_LEQUAL,
+    Greater  = GL_GREATER,
+    GEqual   = GL_GEQUAL,
+    Equal    = GL_EQUAL,
+    NotEqual = GL_NOTEQUAL,
+    Always   = GL_ALWAYS,
+};
+
+inline GLenum to_GLenum(StencilFunction fun)
+{
+    return static_cast<GLenum>(fun);
+}
+
+// Stencil Operation -----------------------------------------------------------
+
+enum class StencilOp : uint16_t
+{
+    Keep          = GL_KEEP,
+    Zero          = GL_ZERO,
+    Replace       = GL_REPLACE,
+    Increment     = GL_INCR,
+    IncrementWrap = GL_INCR_WRAP,
+    Decrement     = GL_DECR,
+    DecrementWrap = GL_DECR_WRAP,
+    Invert        = GL_INVERT,
+};
+
+inline GLenum to_GLenum(StencilOp op)
+{
+    return static_cast<GLenum>(op);
+}
+
 // Graphics Context ------------------------------------------------------------
 
 class GraphicsContext
@@ -297,8 +335,13 @@ public:
 
     void enableDepthTesting() const;
     void disableDepthTesting() const;
-
     void setDepthFunction(DepthFunction fun) const;
+
+    void enableStencilTest() const;
+    void disableStencilTest() const;
+    void setStencilFunction(StencilFunction fun, int ref, unsigned int mask) const;
+    void setStencilOp(StencilOp sfail, StencilOp dpfail, StencilOp dppass) const;
+    void setStencilMask(unsigned int mask) const;
 
     void setClearColor(const glm::vec4& color) const;
     void clear() const;

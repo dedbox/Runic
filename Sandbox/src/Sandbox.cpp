@@ -25,7 +25,8 @@ public:
         _plane->scale    = {5.0F, 1.0F, 5.0F};
         _plane->position = {0.0F, -0.501F, 0.0F};
 
-        _shader = Runic::ShaderManager::Find(_context, "DepthTesting", "DepthTesting");
+        _shader        = Runic::ShaderManager::Find(_context, "DepthTesting", "DepthTesting");
+        _outlineShader = Runic::ShaderManager::Find(_context, "DepthTesting", "Border");
     }
 
     void attach() override
@@ -142,8 +143,21 @@ public:
 
     void render() override
     {
+        _context->enableStencilTest();
+        _context->setStencilOp(
+            Runic::StencilOp::Keep, Runic::StencilOp::Keep, Runic::StencilOp::Replace);
+
         _context->setClearColor(Runic::Color::Gray1);
         _context->clear();
+
+        _context->setStencilMask(0x00);
+
+        _plane->draw(*_shader, _camera);
+
+        _context->setStencilFunction(Runic::StencilFunction::Always, 1, 0xFF);
+        _context->setStencilMask(0xFF);
+
+        _cube->scale = glm::vec3(1.0F);
 
         _cube->position = {-1.0F, 0.0F, -1.0F};
         _cube->draw(*_shader, _camera);
@@ -151,13 +165,28 @@ public:
         _cube->position = {2.0F, 0.0F, 0.0F};
         _cube->draw(*_shader, _camera);
 
-        _plane->draw(*_shader, _camera);
+        _context->setStencilFunction(Runic::StencilFunction::NotEqual, 1, 0xFF);
+        _context->setStencilMask(0x00);
+        _context->disableDepthTesting();
+
+        _cube->scale = glm::vec3(1.05F);
+
+        _cube->position = {-1.0F, 0.0F, -1.0F};
+        _cube->draw(*_outlineShader, _camera);
+
+        _cube->position = {2.0F, 0.0F, 0.0F};
+        _cube->draw(*_outlineShader, _camera);
+
+        _context->setStencilMask(0xFF);
+        _context->setStencilFunction(Runic::StencilFunction::Always, 1, 0xFF);
+        _context->enableDepthTesting();
     }
 
 private:
     std::unique_ptr<Runic::Graphics::Cube> _cube;
     std::unique_ptr<Runic::Graphics::Plane> _plane;
     std::shared_ptr<Runic::ShaderProgram> _shader;
+    std::shared_ptr<Runic::ShaderProgram> _outlineShader;
     Runic::Camera _camera;
 };
 
