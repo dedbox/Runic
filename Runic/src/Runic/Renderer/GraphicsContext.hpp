@@ -309,6 +309,31 @@ inline GLenum to_GLenum(StencilOp op)
     return static_cast<GLenum>(op);
 }
 
+// Blend Factor ----------------------------------------------------------------
+
+enum class BlendFactor
+{
+    Zero                  = GL_ZERO,
+    One                   = GL_ONE,
+    SrcColor              = GL_SRC_COLOR,
+    OneMinusSrcColor      = GL_ONE_MINUS_SRC_COLOR,
+    DstColor              = GL_DST_COLOR,
+    OneMinusDstColor      = GL_ONE_MINUS_DST_COLOR,
+    SrcAlpha              = GL_SRC_ALPHA,
+    OneMinusSrcAlpha      = GL_ONE_MINUS_SRC_ALPHA,
+    DstAlpha              = GL_DST_ALPHA,
+    OneMinusDstAlpha      = GL_ONE_MINUS_DST_ALPHA,
+    ConstantColor         = GL_CONSTANT_COLOR,
+    OneMinusConstantColor = GL_ONE_MINUS_CONSTANT_COLOR,
+    ConstantAlpha         = GL_CONSTANT_ALPHA,
+    OneMinusConstantAlpha = GL_ONE_MINUS_CONSTANT_ALPHA,
+};
+
+inline GLenum to_GLenum(BlendFactor factor)
+{
+    return static_cast<GLenum>(factor);
+}
+
 // Graphics Context ------------------------------------------------------------
 
 class GraphicsContext
@@ -325,24 +350,33 @@ private:
     SDL_GLContext _native = nullptr;
 
 public:
+    // Viewport
     void setViewport(const glm::uvec2& size, const glm::uvec2& offset = {0, 0}) const;
     std::pair<glm::uvec2, glm::uvec2> getViewport() const;
 
+    // Scissor
     void enableScissor() const;
     void disableScissor() const;
-
     void setScissor(const glm::uvec2& size, const glm::uvec2& offset) const;
 
+    // Depth Test
     void enableDepthTesting() const;
     void disableDepthTesting() const;
     void setDepthFunction(DepthFunction fun) const;
 
+    // Stencil Test
     void enableStencilTest() const;
     void disableStencilTest() const;
     void setStencilFunction(StencilFunction fun, int ref, unsigned int mask) const;
     void setStencilOp(StencilOp sfail, StencilOp dpfail, StencilOp dppass) const;
     void setStencilMask(unsigned int mask) const;
 
+    // Blend
+    void enableBlend() const;
+    void disableBlend() const;
+    void setBlendFunction(BlendFactor sfactor, BlendFactor dfactor) const;
+
+    // Clear
     void setClearColor(const glm::vec4& color) const;
     void clear() const;
 

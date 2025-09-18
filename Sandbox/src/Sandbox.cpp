@@ -2,22 +2,22 @@
 
 #include "glm/ext/vector_float3.hpp"
 
-// Grass -------------------------------------------------------------------------------------------
+// Window ------------------------------------------------------------------------------------------
 
-class Grass : public Runic::RenderObject
+class Window : public Runic::RenderObject
 {
 private:
-    explicit Grass(Runic::GraphicsContext* context)
+    explicit Window(Runic::GraphicsContext* context)
         : Runic::RenderObject(context)
     {
     }
 
 public:
-    static std::unique_ptr<Grass> Create(Runic::GraphicsContext* context)
+    static std::unique_ptr<Window> Create(Runic::GraphicsContext* context)
     {
-        auto grass = std::unique_ptr<Grass>(new Grass(context));
+        auto window = std::unique_ptr<Window>(new Window(context));
 
-        grass->createMesh(Runic::DrawMode::Triangles);
+        window->createMesh(Runic::DrawMode::Triangles);
 
         const std::vector<Runic::VertexAttribute> layout{
             {.type = Runic::AttributeType::Float3, .normalize = false},
@@ -36,16 +36,16 @@ public:
 
         const std::vector<uint32_t> indices{0, 1, 2, 2, 3, 0};
 
-        grass->mesh->addVertexBuffer(
+        window->mesh->addVertexBuffer(
             Runic::VertexBuffer::Create(context, vertices, Runic::BufferUsage::Static), layout);
-        grass->mesh->setIndices(indices, Runic::IndexType::Int, Runic::BufferUsage::Static);
+        window->mesh->setIndices(indices, Runic::IndexType::Int, Runic::BufferUsage::Static);
 
-        grass->addTexture(
+        window->addTexture(
             "texture1",
-            "textures/grass.png",
+            "textures/blending_transparent_window.png",
             {.wrapS = Runic::TextureWrap::ClampEdge, .wrapT = Runic::TextureWrap::ClampEdge});
 
-        return grass;
+        return window;
     }
 };
 
@@ -62,6 +62,10 @@ public:
         : _window(window)
         , _context(context)
     {
+        _context->enableBlend();
+        _context->setBlendFunction(
+            Runic::BlendFactor::SrcAlpha, Runic::BlendFactor::OneMinusSrcAlpha);
+
         _cube = Runic::Graphics::Cube::Create(_context);
         _cube->addTexture("texture1", "textures/marble.jpg", {});
 
@@ -70,7 +74,7 @@ public:
         _plane->scale    = {5.0F, 1.0F, 5.0F};
         _plane->position = {0.0F, -0.501F, 0.0F};
 
-        _grass = Grass::Create(_context);
+        _windowObject = Window::Create(_context);
 
         _shader = Runic::ShaderManager::Find(_context, "Model", "Discard");
     }
@@ -200,22 +204,29 @@ public:
         _cube->position = {2.0F, 0.0F, 0.0F};
         _cube->draw(*_shader, _camera);
 
-        for (const auto& position : _vegetation)
+        std::map<float, glm::vec3> sorted;
+        for (const auto& position : _windows)
         {
-            _grass->position = position;
-            _grass->draw(*_shader, _camera);
+            float distance   = glm::length(_camera.position() - position);
+            sorted[distance] = position;
+        }
+
+        for (const auto& pair : sorted | std::ranges::views::reverse)
+        {
+            _windowObject->position = pair.second;
+            _windowObject->draw(*_shader, _camera);
         }
     }
 
 private:
     std::unique_ptr<Runic::Graphics::Cube> _cube;
     std::unique_ptr<Runic::Graphics::Plane> _plane;
-    std::unique_ptr<Grass> _grass;
+    std::unique_ptr<Window> _windowObject;
     std::shared_ptr<Runic::ShaderProgram> _shader;
     Runic::Camera _camera;
 
     // clang-format off
-    std::vector<glm::vec3> _vegetation = {
+    std::vector<glm::vec3> _windows = {
         {-1.5F, 0.0F, -0.48F},
         { 1.5F, 0.0F,  0.51F},
         { 0.0F, 0.0F,  0.7F},

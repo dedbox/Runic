@@ -138,6 +138,8 @@ void GraphicsContext::init()
     }
 }
 
+// Viewport ----------------------------------------------------------------------------------------
+
 void GraphicsContext::setViewport(const glm::uvec2& size, const glm::uvec2& offset) const
 {
     glViewport(
@@ -153,6 +155,8 @@ std::pair<glm::uvec2, glm::uvec2> GraphicsContext::getViewport() const
     glGetIntegerv(GL_VIEWPORT, values.data());
     return {{values[2], values[3]}, {values[0], values[1]}};
 }
+
+// Scissor -----------------------------------------------------------------------------------------
 
 void GraphicsContext::enableScissor() const
 {
@@ -173,6 +177,8 @@ void GraphicsContext::setScissor(const glm::uvec2& size, const glm::uvec2& offse
         static_cast<GLint>(size.y));
 }
 
+// Depth Test --------------------------------------------------------------------------------------
+
 void GraphicsContext::enableDepthTesting() const
 {
     glEnable(GL_DEPTH_TEST);
@@ -187,6 +193,8 @@ void GraphicsContext::setDepthFunction(DepthFunction fun) const
 {
     glDepthFunc(to_GLenum(fun));
 }
+
+// Stencil Test ------------------------------------------------------------------------------------
 
 void GraphicsContext::enableStencilTest() const
 {
@@ -212,6 +220,25 @@ void GraphicsContext::setStencilMask(unsigned int mask) const
 {
     glStencilMask(mask);
 }
+
+// Blend -------------------------------------------------------------------------------------------
+
+void GraphicsContext::enableBlend() const
+{
+    glEnable(GL_BLEND);
+}
+
+void GraphicsContext::disableBlend() const
+{
+    glDisable(GL_BLEND);
+}
+
+void GraphicsContext::setBlendFunction(BlendFactor sfactor, BlendFactor dfactor) const
+{
+    glBlendFunc(to_GLenum(sfactor), to_GLenum(dfactor));
+}
+
+// Clear -------------------------------------------------------------------------------------------
 
 void GraphicsContext::setClearColor(const glm::vec4& color) const
 {
