@@ -1,32 +1,78 @@
 #include <Runic.hpp>
 
-// Cube --------------------------------------------------------------------------------------------
+#include "glm/ext/vector_float3.hpp"
 
-static constexpr Runic::color Coral(1.0F, 0.5F, 0.31F, 1.0F);
+// Grass -------------------------------------------------------------------------------------------
 
-// CubeLayer --------------------------------------------------------------------------------------
+class Grass : public Runic::RenderObject
+{
+private:
+    explicit Grass(Runic::GraphicsContext* context)
+        : Runic::RenderObject(context)
+    {
+    }
 
-class CubeLayer : public Runic::Layer
+public:
+    static std::unique_ptr<Grass> Create(Runic::GraphicsContext* context)
+    {
+        auto grass = std::unique_ptr<Grass>(new Grass(context));
+
+        grass->createMesh(Runic::DrawMode::Triangles);
+
+        const std::vector<Runic::VertexAttribute> layout{
+            {.type = Runic::AttributeType::Float3, .normalize = false},
+            {.type = Runic::AttributeType::Float3, .normalize = false},
+            {.type = Runic::AttributeType::Float2, .normalize = false},
+        };
+
+        // clang-format off
+        const std::vector<float> vertices{
+            -0.5F, -0.5F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F,
+             0.5F, -0.5F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F,
+             0.5F,  0.5F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F,
+            -0.5F,  0.5F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F,
+        };
+        // clang-format on
+
+        const std::vector<uint32_t> indices{0, 1, 2, 2, 3, 0};
+
+        grass->mesh->addVertexBuffer(
+            Runic::VertexBuffer::Create(context, vertices, Runic::BufferUsage::Static), layout);
+        grass->mesh->setIndices(indices, Runic::IndexType::Int, Runic::BufferUsage::Static);
+
+        grass->addTexture(
+            "texture1",
+            "textures/grass.png",
+            {.wrapS = Runic::TextureWrap::ClampEdge, .wrapT = Runic::TextureWrap::ClampEdge});
+
+        return grass;
+    }
+};
+
+// MainLayer ---------------------------------------------------------------------------------------
+
+class MainLayer : public Runic::Layer
 {
 private:
     Runic::Window* _window;
     Runic::GraphicsContext* _context;
 
 public:
-    CubeLayer(Runic::Window* window, Runic::GraphicsContext* context)
+    MainLayer(Runic::Window* window, Runic::GraphicsContext* context)
         : _window(window)
         , _context(context)
     {
         _cube = Runic::Graphics::Cube::Create(_context);
-        _cube->addTexture("texture1", "textures/marble.jpg");
+        _cube->addTexture("texture1", "textures/marble.jpg", {});
 
         _plane = Runic::Graphics::Plane::Create(_context);
-        _plane->addTexture("texture1", "textures/metal.png");
+        _plane->addTexture("texture1", "textures/metal.png", {});
         _plane->scale    = {5.0F, 1.0F, 5.0F};
         _plane->position = {0.0F, -0.501F, 0.0F};
 
-        _shader        = Runic::ShaderManager::Find(_context, "DepthTesting", "DepthTesting");
-        _outlineShader = Runic::ShaderManager::Find(_context, "DepthTesting", "Border");
+        _grass = Grass::Create(_context);
+
+        _shader = Runic::ShaderManager::Find(_context, "Model", "Discard");
     }
 
     void attach() override
@@ -143,51 +189,40 @@ public:
 
     void render() override
     {
-        _context->enableStencilTest();
-        _context->setStencilOp(
-            Runic::StencilOp::Keep, Runic::StencilOp::Keep, Runic::StencilOp::Replace);
-
         _context->setClearColor(Runic::Color::Gray1);
         _context->clear();
 
-        _context->setStencilMask(0x00);
-
         _plane->draw(*_shader, _camera);
 
-        _context->setStencilFunction(Runic::StencilFunction::Always, 1, 0xFF);
-        _context->setStencilMask(0xFF);
-
-        _cube->scale = glm::vec3(1.0F);
-
         _cube->position = {-1.0F, 0.0F, -1.0F};
         _cube->draw(*_shader, _camera);
 
         _cube->position = {2.0F, 0.0F, 0.0F};
         _cube->draw(*_shader, _camera);
 
-        _context->setStencilFunction(Runic::StencilFunction::NotEqual, 1, 0xFF);
-        _context->setStencilMask(0x00);
-        _context->disableDepthTesting();
-
-        _cube->scale = glm::vec3(1.05F);
-
-        _cube->position = {-1.0F, 0.0F, -1.0F};
-        _cube->draw(*_outlineShader, _camera);
-
-        _cube->position = {2.0F, 0.0F, 0.0F};
-        _cube->draw(*_outlineShader, _camera);
-
-        _context->setStencilMask(0xFF);
-        _context->setStencilFunction(Runic::StencilFunction::Always, 1, 0xFF);
-        _context->enableDepthTesting();
+        for (const auto& position : _vegetation)
+        {
+            _grass->position = position;
+            _grass->draw(*_shader, _camera);
+        }
     }
 
 private:
     std::unique_ptr<Runic::Graphics::Cube> _cube;
     std::unique_ptr<Runic::Graphics::Plane> _plane;
+    std::unique_ptr<Grass> _grass;
     std::shared_ptr<Runic::ShaderProgram> _shader;
-    std::shared_ptr<Runic::ShaderProgram> _outlineShader;
     Runic::Camera _camera;
+
+    // clang-format off
+    std::vector<glm::vec3> _vegetation = {
+        {-1.5F, 0.0F, -0.48F},
+        { 1.5F, 0.0F,  0.51F},
+        { 0.0F, 0.0F,  0.7F},
+        {-0.3F, 0.0F, -2.3F},
+        { 0.5F, 0.0F, -0.6F},
+    };
+    // clang-format on
 };
 
 // Sandbox -----------------------------------------------------------------------------------------
@@ -204,7 +239,7 @@ public:
         auto context = getGraphicsContext();
         auto& layers = getLayerManager();
 
-        layers.push_back(std::make_unique<CubeLayer>(window, context));
+        layers.push_back(std::make_unique<MainLayer>(window, context));
     }
 };
 

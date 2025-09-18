@@ -31,7 +31,8 @@ public:
 
     void createMesh(DrawMode mode);
 
-    void addTexture(const std::string& name, const std::string& path);
+    void addTexture(
+        const std::string& name, const std::string& path, const TextureSampling& sampling);
 
     glm::mat4 modelMatrix() const;
 

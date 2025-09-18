@@ -22,9 +22,10 @@ void RenderObject::createMesh(DrawMode mode)
     mesh = Mesh::Create(_context, mode);
 }
 
-void RenderObject::addTexture(const std::string& name, const std::string& path)
+void RenderObject::addTexture(
+    const std::string& name, const std::string& path, const TextureSampling& sampling)
 {
-    mesh->addTexture(name, TextureManager::Find(_context, path));
+    mesh->addTexture(name, TextureManager::Find(_context, path, sampling));
 }
 
 glm::mat4 RenderObject::modelMatrix() const
