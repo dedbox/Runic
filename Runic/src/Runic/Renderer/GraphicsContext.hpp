@@ -334,6 +334,33 @@ inline GLenum to_GLenum(BlendFactor factor)
     return static_cast<GLenum>(factor);
 }
 
+// Cull Mode -------------------------------------------------------------------
+
+enum class CullMode : uint16_t
+{
+    Front     = GL_FRONT,
+    Back      = GL_BACK,
+    FrontBack = GL_FRONT_AND_BACK,
+};
+
+inline GLenum to_GLenum(CullMode mode)
+{
+    return static_cast<GLenum>(mode);
+}
+
+// Front Face ------------------------------------------------------------------
+
+enum class FrontFace : uint16_t
+{
+    CW  = GL_CW,
+    CCW = GL_CCW,
+};
+
+inline GLenum to_GLenum(FrontFace face)
+{
+    return static_cast<GLenum>(face);
+}
+
 // Graphics Context ------------------------------------------------------------
 
 class GraphicsContext
@@ -375,6 +402,12 @@ public:
     void enableBlend() const;
     void disableBlend() const;
     void setBlendFunction(BlendFactor sfactor, BlendFactor dfactor) const;
+
+    // Face Culling
+    void enableFaceCulling() const;
+    void disableFaceCulling() const;
+    void setCullMode(CullMode mode) const;
+    void setFrontFace(FrontFace face) const;
 
     // Clear
     void setClearColor(const glm::vec4& color) const;

@@ -238,6 +238,28 @@ void GraphicsContext::setBlendFunction(BlendFactor sfactor, BlendFactor dfactor)
     glBlendFunc(to_GLenum(sfactor), to_GLenum(dfactor));
 }
 
+// Face Culling ------------------------------------------------------------------------------------
+
+void GraphicsContext::enableFaceCulling() const
+{
+    glEnable(GL_CULL_FACE);
+}
+
+void GraphicsContext::disableFaceCulling() const
+{
+    glDisable(GL_CULL_FACE);
+}
+
+void GraphicsContext::setCullMode(CullMode mode) const
+{
+    glCullFace(to_GLenum(mode));
+}
+
+void GraphicsContext::setFrontFace(FrontFace face) const
+{
+    glFrontFace(to_GLenum(face));
+}
+
 // Clear -------------------------------------------------------------------------------------------
 
 void GraphicsContext::setClearColor(const glm::vec4& color) const
