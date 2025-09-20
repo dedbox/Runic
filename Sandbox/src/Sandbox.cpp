@@ -63,7 +63,7 @@ public:
 
         _screen = Screen::Create(_context, _frameBuffer->getTexture());
 
-        _screenShader = Runic::ShaderManager::Find(_context, "Screen", "Screen");
+        _screenShader = Runic::ShaderManager::Find(_context, "Screen", "EdgeDetect");
 
         _context->enableBlend();
         _context->setBlendFunction(
