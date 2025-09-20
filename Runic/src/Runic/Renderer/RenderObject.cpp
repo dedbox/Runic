@@ -22,6 +22,11 @@ void RenderObject::createMesh(DrawMode mode)
     mesh = Mesh::Create(_context, mode);
 }
 
+void RenderObject::addTexture(const std::string& name, const std::shared_ptr<Texture>& texture)
+{
+    mesh->addTexture(name, texture);
+}
+
 void RenderObject::addTexture(
     const std::string& name, const std::string& path, const TextureSampling& sampling)
 {

@@ -31,6 +31,8 @@ public:
 
     void createMesh(DrawMode mode);
 
+    void addTexture(const std::string& name, const std::shared_ptr<Texture>& texture);
+
     void addTexture(
         const std::string& name, const std::string& path, const TextureSampling& sampling);
 

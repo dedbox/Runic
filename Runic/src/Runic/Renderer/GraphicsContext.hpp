@@ -490,6 +490,7 @@ public:
 
     // Texture
 
+    RendererId createTexture(int width, int height) const;
     RendererId createTexture(SDL_Surface* surface) const;
     void destroyTexture(RendererId id) const;
 
@@ -514,6 +515,32 @@ public:
 
     void drawVertices(DrawMode mode, uint32_t first, size_t count);
     void drawIndexed(DrawMode mode, size_t count, IndexType type, const void* offset) const;
+
+    // Frame Buffer
+
+    RendererId createFrameBuffer() const;
+    void destroyFrameBuffer(RendererId id) const;
+
+    void bindFrameBuffer(RendererId id) const;
+    void bindFrameBufferRead(RendererId id) const;
+    void bindFrameBufferWrite(RendererId id) const;
+
+    void unbindFrameBuffer() const;
+    void unbindFrameBufferRead() const;
+    void unbindFrameBufferWrite() const;
+
+    void setFrameBufferTexture(RendererId id) const;
+    void setFrameBufferRenderBuffer(RendererId id) const;
+
+    bool isFrameBufferComplete() const;
+
+    // Render Buffer
+
+    RendererId createRenderBuffer(int width, int height) const;
+    void destroyRenderBuffer(RendererId id) const;
+
+    void bindRenderBuffer(RendererId id) const;
+    void unbindRenderBuffer() const;
 };
 
 } // namespace Runic

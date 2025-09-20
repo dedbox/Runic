@@ -3,6 +3,16 @@
 namespace Runic
 {
 
+std::shared_ptr<Texture> Texture::Create(GraphicsContext* context, int width, int height)
+{
+    RendererId id = context->createTexture(width, height);
+
+    context->setTextureMinFilter(TextureMinFilter::Linear);
+    context->setTextureMagFilter(TextureMagFilter::Linear);
+
+    return std::shared_ptr<Texture>(new Texture(context, id));
+}
+
 std::shared_ptr<Texture> Texture::Create(
     GraphicsContext* context, SDL_Surface* surface, const TextureSampling& sampling)
 {

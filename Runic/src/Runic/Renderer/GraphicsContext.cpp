@@ -529,6 +529,15 @@ RendererId GraphicsContext::getUniformLocation(RendererId id, const std::string&
 
 // Texture -----------------------------------------------------------------------------------------
 
+RendererId GraphicsContext::createTexture(int width, int height) const
+{
+    RendererId id = 0;
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    return id;
+}
+
 RendererId GraphicsContext::createTexture(SDL_Surface* surface) const
 {
     RendererId id = 0;
@@ -613,6 +622,97 @@ void GraphicsContext::drawIndexed(
     DrawMode mode, size_t count, IndexType type, const void* offset) const
 {
     glDrawElements(to_GLenum(mode), static_cast<GLsizei>(count), to_GLenum(type), offset);
+}
+
+// Frame Buffer ------------------------------------------------------------------------------------
+
+RendererId GraphicsContext::createFrameBuffer() const
+{
+    RendererId id = 0;
+    glGenFramebuffers(1, &id);
+    bindFrameBuffer(id);
+    return id;
+}
+
+void GraphicsContext::destroyFrameBuffer(RendererId id) const
+{
+    glDeleteFramebuffers(1, &id);
+}
+
+void GraphicsContext::bindFrameBuffer(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to bind a zero frame buffer id");
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+}
+
+void GraphicsContext::bindFrameBufferRead(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to bind a zero frame buffer id");
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
+}
+
+void GraphicsContext::bindFrameBufferWrite(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to bind a zero frame buffer id");
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
+}
+
+void GraphicsContext::unbindFrameBuffer() const
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GraphicsContext::unbindFrameBufferRead() const
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+}
+
+void GraphicsContext::unbindFrameBufferWrite() const
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+}
+
+void GraphicsContext::setFrameBufferTexture(RendererId id) const
+{
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0);
+}
+
+void GraphicsContext::setFrameBufferRenderBuffer(RendererId id) const
+{
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id);
+}
+
+bool GraphicsContext::isFrameBufferComplete() const
+{
+    return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+}
+
+// Render Buffer -----------------------------------------------------------------------------------
+
+RendererId GraphicsContext::createRenderBuffer(int width, int height) const
+{
+    RendererId id = 0;
+    glGenRenderbuffers(1, &id);
+    bindRenderBuffer(id);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+    unbindRenderBuffer();
+    return id;
+}
+
+void GraphicsContext::destroyRenderBuffer(RendererId id) const
+{
+    glDeleteRenderbuffers(1, &id);
+}
+
+void GraphicsContext::bindRenderBuffer(RendererId id) const
+{
+    Core::Assert(id != 0, "attempt to bind a zero render buffer id");
+    glBindRenderbuffer(GL_RENDERBUFFER, id);
+}
+
+void GraphicsContext::unbindRenderBuffer() const
+{
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 } // namespace Runic

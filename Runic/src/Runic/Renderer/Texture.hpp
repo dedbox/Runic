@@ -23,6 +23,7 @@ struct TextureSampling
 class Texture
 {
 public:
+    static std::shared_ptr<Texture> Create(GraphicsContext* context, int width, int height);
     static std::shared_ptr<Texture> Create(
         GraphicsContext* context, SDL_Surface* surface, const TextureSampling& sampling);
 
@@ -35,6 +36,8 @@ public:
     // prevent copying
     Texture(const Texture&)            = delete;
     Texture& operator=(const Texture&) = delete;
+
+    RendererId getId() const { return _id; }
 
     void bind() const;
     void unbind() const;

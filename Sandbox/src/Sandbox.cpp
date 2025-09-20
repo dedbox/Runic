@@ -1,51 +1,45 @@
 #include <Runic.hpp>
 
-#include "glm/ext/vector_float3.hpp"
+// Screen ------------------------------------------------------------------------------------------
 
-// Window ------------------------------------------------------------------------------------------
-
-class Window : public Runic::RenderObject
+class Screen : public Runic::RenderObject
 {
 private:
-    explicit Window(Runic::GraphicsContext* context)
+    explicit Screen(Runic::GraphicsContext* context)
         : Runic::RenderObject(context)
     {
     }
 
 public:
-    static std::unique_ptr<Window> Create(Runic::GraphicsContext* context)
+    static std::unique_ptr<Screen> Create(
+        Runic::GraphicsContext* context, const std::shared_ptr<Runic::Texture> texture)
     {
-        auto window = std::unique_ptr<Window>(new Window(context));
+        auto screen = std::unique_ptr<Screen>(new Screen(context));
 
-        window->createMesh(Runic::DrawMode::Triangles);
+        screen->createMesh(Runic::DrawMode::Triangles);
 
         const std::vector<Runic::VertexAttribute> layout{
-            {.type = Runic::AttributeType::Float3, .normalize = false},
-            {.type = Runic::AttributeType::Float3, .normalize = false},
+            {.type = Runic::AttributeType::Float2, .normalize = false},
             {.type = Runic::AttributeType::Float2, .normalize = false},
         };
 
         // clang-format off
         const std::vector<float> vertices{
-            -0.5F, -0.5F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F,
-             0.5F, -0.5F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F,
-             0.5F,  0.5F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F,
-            -0.5F,  0.5F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F,
+            -1.0F,  1.0F, 0.0F, 1.0F,
+            -1.0F, -1.0F, 0.0F, 0.0F,
+             1.0F, -1.0F, 1.0F, 0.0F,
+             1.0F,  1.0F, 1.0F, 1.0F,
         };
         // clang-format on
 
-        const std::vector<uint32_t> indices{0, 1, 2, 2, 3, 0};
+        const std::vector<uint32_t> indices{0, 1, 2, 0, 2, 3};
 
-        window->mesh->addVertexBuffer(
+        screen->mesh->addVertexBuffer(
             Runic::VertexBuffer::Create(context, vertices, Runic::BufferUsage::Static), layout);
-        window->mesh->setIndices(indices, Runic::IndexType::Int, Runic::BufferUsage::Static);
+        screen->mesh->setIndices(indices, Runic::IndexType::Int, Runic::BufferUsage::Static);
+        screen->mesh->addTexture("screenTexture", texture);
 
-        window->addTexture(
-            "texture1",
-            "textures/blending_transparent_window.png",
-            {.wrapS = Runic::TextureWrap::ClampEdge, .wrapT = Runic::TextureWrap::ClampEdge});
-
-        return window;
+        return screen;
     }
 };
 
@@ -62,25 +56,42 @@ public:
         : _window(window)
         , _context(context)
     {
+        auto size    = _window->getSize();
+        _frameBuffer = Runic::FrameBuffer::Create(_context, size.x, size.y);
+        _frameBuffer->setRenderBuffer(Runic::RenderBuffer::Create(_context, size.x, size.y));
+        _frameBuffer->unbind();
+
+        _screen = Screen::Create(_context, _frameBuffer->getTexture());
+
+        _screenShader = Runic::ShaderManager::Find(_context, "Screen", "Screen");
+
         _context->enableBlend();
         _context->setBlendFunction(
             Runic::BlendFactor::SrcAlpha, Runic::BlendFactor::OneMinusSrcAlpha);
 
         _cube = Runic::Graphics::Cube::Create(_context);
-        _cube->addTexture("texture1", "textures/marble.jpg", {});
+        _cube->addTexture("texture1", "textures/container.jpg", {});
 
         _plane = Runic::Graphics::Plane::Create(_context);
         _plane->addTexture("texture1", "textures/metal.png", {});
         _plane->scale    = {5.0F, 1.0F, 5.0F};
         _plane->position = {0.0F, -0.501F, 0.0F};
 
-        _windowObject = Window::Create(_context);
-
         _shader = Runic::ShaderManager::Find(_context, "Model", "Discard");
     }
 
     void attach() override
     {
+        Runic::EventBus::Subscribe<Runic::WindowResizeEvent>(
+            [&](const Runic::WindowResizeEvent& event) {
+                int width    = static_cast<int>(event.width);
+                int height   = static_cast<int>(event.height);
+                _frameBuffer = Runic::FrameBuffer::Create(_context, width, height);
+                _frameBuffer->setRenderBuffer(Runic::RenderBuffer::Create(_context, width, height));
+                _frameBuffer->unbind();
+                _screen = Screen::Create(_context, _frameBuffer->getTexture());
+            });
+
         std::visit(
             [&](auto&& policy) {
                 using T = std::decay_t<decltype(policy)>;
@@ -121,6 +132,15 @@ public:
             case Runic::Key::RightShift:
                 _camera.moveSpeed = 5.0F;
                 break;
+
+            case Runic::Key::P: {
+                if (_wireframe)
+                    _context->setPolygonMode(Runic::PolygonMode::Fill);
+                else
+                    _context->setPolygonMode(Runic::PolygonMode::Line);
+                _wireframe = !_wireframe;
+                break;
+            }
 
             default:
                 break;
@@ -189,10 +209,17 @@ public:
             if (Runic::Input::IsKeyPressed(Runic::Key::C))
                 _camera.moveDown(amount);
         }
+
+        _screenShader->bind();
+        _screenShader->setUniform("wireframe", _wireframe);
+        _screenShader->unbind();
     }
 
     void render() override
     {
+        // scene
+        _frameBuffer->bind();
+
         _context->setClearColor(Runic::Color::Gray1);
         _context->clear();
 
@@ -204,36 +231,26 @@ public:
         _cube->position = {2.0F, 0.0F, 0.0F};
         _cube->draw(*_shader, _camera);
 
-        std::map<float, glm::vec3> sorted;
-        for (const auto& position : _windows)
-        {
-            float distance   = glm::length(_camera.position() - position);
-            sorted[distance] = position;
-        }
+        _frameBuffer->unbind();
 
-        for (const auto& pair : sorted | std::ranges::views::reverse)
-        {
-            _windowObject->position = pair.second;
-            _windowObject->draw(*_shader, _camera);
-        }
+        // screen
+
+        _context->setClearColor(Runic::Color::Blue);
+        _context->clear();
+
+        _screen->draw(*_screenShader);
     }
 
 private:
+    std::unique_ptr<Runic::FrameBuffer> _frameBuffer;
+    std::shared_ptr<Runic::ShaderProgram> _screenShader;
+    std::unique_ptr<Screen> _screen;
+    bool _wireframe = false;
+
     std::unique_ptr<Runic::Graphics::Cube> _cube;
     std::unique_ptr<Runic::Graphics::Plane> _plane;
-    std::unique_ptr<Window> _windowObject;
     std::shared_ptr<Runic::ShaderProgram> _shader;
     Runic::Camera _camera;
-
-    // clang-format off
-    std::vector<glm::vec3> _windows = {
-        {-1.5F, 0.0F, -0.48F},
-        { 1.5F, 0.0F,  0.51F},
-        { 0.0F, 0.0F,  0.7F},
-        {-0.3F, 0.0F, -2.3F},
-        { 0.5F, 0.0F, -0.6F},
-    };
-    // clang-format on
 };
 
 // Sandbox -----------------------------------------------------------------------------------------
