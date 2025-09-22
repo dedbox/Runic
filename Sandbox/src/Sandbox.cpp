@@ -177,7 +177,7 @@ public:
         _backpack = Runic::Model::Create(_context, "models/backpack/backpack.obj");
         _backpack->addCubeMap("skyBox", cubeMap);
 
-        _shader = Runic::ShaderManager::Find(_context, "EnvReflect", "EnvReflect");
+        _shader = Runic::ShaderManager::Find(_context, "EnvRefract", "EnvRefract");
     }
 
     void attach() override
