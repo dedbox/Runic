@@ -13,20 +13,19 @@ std::map<std::array<std::string, 6>, std::shared_ptr<CubeMap>> TextureManager::_
 void TextureManager::Load(
     GraphicsContext* context, const std::string& path, const TextureSampling& sampling)
 {
-    SDL_Surface* raw = IMG_Load(std::format("textures/{}", path).c_str());
+    SDL_Surface* raw = IMG_Load(path.c_str());
     if (!raw)
-        throw SDLException(std::format("Could not load image `texures/{}'", path));
+        throw SDLException(std::format("Could not load image `{}'", path));
 
-    Core::Info("Image `textures/{}' loaded", path);
+    Core::Info("Image `{}' loaded", path);
     Core::Info("    format: {}", SDL_GetPixelFormatName(raw->format));
 
     if (!SDL_FlipSurface(raw, SDL_FLIP_VERTICAL))
-        throw SDLException(std::format("Could not flip image `texures/{}'", path));
+        throw SDLException(std::format("Could not flip image `{}'", path));
 
     SDL_Surface* converted = SDL_ConvertSurface(raw, SDL_PIXELFORMAT_RGBA32);
     if (!converted)
-        throw SDLException(
-            std::format("Could not convert image `texures/{}' format to RGBA32", path));
+        throw SDLException(std::format("Could not convert image `{}' format to RGBA32", path));
 
     TexKey key(path, sampling);
 
@@ -51,16 +50,16 @@ void TextureManager::LoadCubeMap(GraphicsContext* context, std::array<std::strin
 {
     auto surfaces =
         paths | std::ranges::views::transform([&](const auto& path) {
-            SDL_Surface* raw = IMG_Load(std::format("cubemaps/{}", path).c_str());
+            SDL_Surface* raw = IMG_Load(path.c_str());
             if (!raw)
-                throw SDLException(std::format("Could not load image `cubemaps/{}'", path));
-            Core::Info("Image `cubemaps/{}' loaded", path);
+                throw SDLException(std::format("Could not load image `{}'", path));
+            Core::Info("Image `{}' loaded", path);
             Core::Info("    format: {}", SDL_GetPixelFormatName(raw->format));
 
             SDL_Surface* converted = SDL_ConvertSurface(raw, SDL_PIXELFORMAT_RGBA32);
             if (!converted)
                 throw SDLException(
-                    std::format("Could not convert images `cubemaps/{}' format to RGBA32", path));
+                    std::format("Could not convert images `{}' format to RGBA32", path));
 
             SDL_DestroySurface(raw);
 

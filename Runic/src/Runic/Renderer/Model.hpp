@@ -5,6 +5,7 @@
 #include "assimp/scene.h"
 
 #include "Runic/Renderer/Camera.hpp"
+#include "Runic/Renderer/CubeMap.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
 #include "Runic/Renderer/Mesh.hpp"
 #include "Runic/Renderer/ShaderProgram.hpp"
@@ -21,6 +22,8 @@ private:
 
 public:
     static std::unique_ptr<Model> Create(GraphicsContext* context, const std::string& path);
+
+    void addCubeMap(const std::string& name, std::shared_ptr<CubeMap> cubeMap);
 
     void draw(const ShaderProgram& shaderProgram, const Camera& camera);
 

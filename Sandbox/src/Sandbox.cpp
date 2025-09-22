@@ -2,6 +2,10 @@
 
 #include "glm/ext/matrix_float4x4.hpp"
 
+constexpr float CameraSneakSpeed = 1.0F;
+constexpr float CameraWalkSpeed  = 5.0F;
+constexpr float CameraRunSpeed   = 10.0F;
+
 // Sky Box -----------------------------------------------------------------------------------------
 
 class SkyBox : public Runic::RenderObject
@@ -158,20 +162,20 @@ public:
         auto cubeMap = Runic::TextureManager::FindCubeMap(
             _context,
             {
-                "skybox/right.jpg",
-                "skybox/left.jpg",
-                "skybox/top.jpg",
-                "skybox/bottom.jpg",
-                "skybox/front.jpg",
-                "skybox/back.jpg",
+                "cubemaps/skybox/right.jpg",
+                "cubemaps/skybox/left.jpg",
+                "cubemaps/skybox/top.jpg",
+                "cubemaps/skybox/bottom.jpg",
+                "cubemaps/skybox/front.jpg",
+                "cubemaps/skybox/back.jpg",
             });
 
         _skyBox = SkyBox::Create(_context, cubeMap);
 
         _skyBoxShader = Runic::ShaderManager::Find(_context, "SkyBox", "SkyBox");
 
-        _cube = Runic::Graphics::Cube::Create(_context);
-        _cube->addCubeMap("skyBox", cubeMap);
+        _backpack = Runic::Model::Create(_context, "models/backpack/backpack.obj");
+        _backpack->addCubeMap("skyBox", cubeMap);
 
         _shader = Runic::ShaderManager::Find(_context, "EnvReflect", "EnvReflect");
     }
@@ -221,12 +225,17 @@ public:
             {
             case Runic::Key::Escape:
                 _window->releaseMouse();
-                _camera.moveSpeed = 1.0F;
+                _camera.moveSpeed = CameraWalkSpeed;
                 break;
 
             case Runic::Key::LeftShift:
             case Runic::Key::RightShift:
-                _camera.moveSpeed = 5.0F;
+                _camera.moveSpeed = CameraRunSpeed;
+                break;
+
+            case Runic::Key::LeftCtrl:
+            case Runic::Key::RightCtrl:
+                _camera.moveSpeed = CameraSneakSpeed;
                 break;
 
             case Runic::Key::P: {
@@ -252,7 +261,9 @@ public:
                 {
                 case Runic::Key::LeftShift:
                 case Runic::Key::RightShift:
-                    _camera.moveSpeed = 1.0F;
+                case Runic::Key::LeftCtrl:
+                case Runic::Key::RightCtrl:
+                    _camera.moveSpeed = CameraWalkSpeed;
                     break;
 
                 default:
@@ -275,6 +286,8 @@ public:
 
                 _camera.zoom(event.vert);
             });
+
+        _camera.moveSpeed = CameraWalkSpeed;
 
         _window->captureMouse();
     }
@@ -323,7 +336,7 @@ public:
         _shader->setUniform("cameraPosition", _camera.position());
         _shader->unbind();
 
-        _cube->draw(*_shader, _camera);
+        _backpack->draw(*_shader, _camera);
 
         SkyBoxCamera skyCam(_camera);
 
@@ -349,7 +362,7 @@ private:
     std::unique_ptr<SkyBox> _skyBox;
     std::shared_ptr<Runic::ShaderProgram> _skyBoxShader;
 
-    std::unique_ptr<Runic::Graphics::Cube> _cube;
+    std::unique_ptr<Runic::Model> _backpack;
     std::shared_ptr<Runic::ShaderProgram> _shader;
     Runic::Camera _camera;
 };

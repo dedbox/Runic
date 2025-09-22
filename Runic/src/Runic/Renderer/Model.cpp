@@ -35,6 +35,12 @@ std::unique_ptr<Model> Model::Create(GraphicsContext* context, const std::string
     return model;
 }
 
+void Model::addCubeMap(const std::string& name, std::shared_ptr<CubeMap> cubeMap)
+{
+    for (auto& mesh : _meshes)
+        mesh->addCubeMap(name, cubeMap);
+}
+
 void Model::draw(const ShaderProgram& shader, const Camera& camera)
 {
     shader.bind();
