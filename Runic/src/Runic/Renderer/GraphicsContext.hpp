@@ -509,6 +509,14 @@ public:
     void bindTexture(RendererId id) const;
     void unbindTexture() const;
 
+    // Cube Map
+
+    RendererId createCubeMap(std::vector<SDL_Surface*> surfaces) const;
+    void destroyCubeMap(RendererId id) const;
+
+    void bindCubeMap(RendererId id) const;
+    void unbindCubeMap() const;
+
     // Drawing
 
     void setPolygonMode(PolygonMode mode) const;

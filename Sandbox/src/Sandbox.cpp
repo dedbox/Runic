@@ -1,5 +1,94 @@
 #include <Runic.hpp>
 
+#include "glm/ext/matrix_float4x4.hpp"
+
+// Sky Box -----------------------------------------------------------------------------------------
+
+class SkyBox : public Runic::RenderObject
+{
+private:
+    explicit SkyBox(Runic::GraphicsContext* context)
+        : Runic::RenderObject(context)
+    {
+    }
+
+public:
+    static std::unique_ptr<SkyBox> Create(
+        Runic::GraphicsContext* context, const std::shared_ptr<Runic::CubeMap>& cubeMap)
+    {
+        auto skyBox = std::unique_ptr<SkyBox>(new SkyBox(context));
+
+        skyBox->createMesh(Runic::DrawMode::Triangles);
+
+        const std::vector<Runic::VertexAttribute> layout{
+            {.type = Runic::AttributeType::Float3, .normalize = false},
+        };
+
+        // clang-format off
+        const std::vector<float> vertices{
+            -1.0F,  1.0F, -1.0F,
+            -1.0F, -1.0F, -1.0F,
+             1.0F, -1.0F, -1.0F,
+             1.0F, -1.0F, -1.0F,
+             1.0F,  1.0F, -1.0F,
+            -1.0F,  1.0F, -1.0F,
+
+            -1.0F, -1.0F,  1.0F,
+            -1.0F, -1.0F, -1.0F,
+            -1.0F,  1.0F, -1.0F,
+            -1.0F,  1.0F, -1.0F,
+            -1.0F,  1.0F,  1.0F,
+            -1.0F, -1.0F,  1.0F,
+
+             1.0F, -1.0F, -1.0F,
+             1.0F, -1.0F,  1.0F,
+             1.0F,  1.0F,  1.0F,
+             1.0F,  1.0F,  1.0F,
+             1.0F,  1.0F, -1.0F,
+             1.0F, -1.0F, -1.0F,
+
+            -1.0F, -1.0F,  1.0F,
+            -1.0F,  1.0F,  1.0F,
+             1.0F,  1.0F,  1.0F,
+             1.0F,  1.0F,  1.0F,
+             1.0F, -1.0F,  1.0F,
+            -1.0F, -1.0F,  1.0F,
+
+            -1.0F,  1.0F, -1.0F,
+             1.0F,  1.0F, -1.0F,
+             1.0F,  1.0F,  1.0F,
+             1.0F,  1.0F,  1.0F,
+            -1.0F,  1.0F,  1.0F,
+            -1.0F,  1.0F, -1.0F,
+
+            -1.0F, -1.0F, -1.0F,
+            -1.0F, -1.0F,  1.0F,
+             1.0F, -1.0F, -1.0F,
+             1.0F, -1.0F, -1.0F,
+            -1.0F, -1.0F,  1.0F,
+             1.0F, -1.0F,  1.0F,
+        };
+        // clang-format on
+
+        skyBox->mesh->addVertexBuffer(
+            Runic::VertexBuffer::Create(context, vertices, Runic::BufferUsage::Static), layout);
+        skyBox->mesh->addCubeMap("skyBox", cubeMap);
+
+        return skyBox;
+    }
+};
+
+class SkyBoxCamera : public Runic::Camera
+{
+public:
+    explicit SkyBoxCamera(const Camera& camera)
+        : Camera(camera)
+    {
+    }
+
+    glm::mat4 viewMatrix() const override { return glm::mat4(glm::mat3(Camera::viewMatrix())); }
+};
+
 // Screen ------------------------------------------------------------------------------------------
 
 class Screen : public Runic::RenderObject
@@ -12,7 +101,7 @@ private:
 
 public:
     static std::unique_ptr<Screen> Create(
-        Runic::GraphicsContext* context, const std::shared_ptr<Runic::Texture> texture)
+        Runic::GraphicsContext* context, const std::shared_ptr<Runic::Texture>& texture)
     {
         auto screen = std::unique_ptr<Screen>(new Screen(context));
 
@@ -63,19 +152,25 @@ public:
 
         _screen = Screen::Create(_context, _frameBuffer->getTexture());
 
-        _screenShader = Runic::ShaderManager::Find(_context, "Screen", "EdgeDetect");
+        _screenShader = Runic::ShaderManager::Find(_context, "Screen", "Screen");
 
-        _context->enableBlend();
-        _context->setBlendFunction(
-            Runic::BlendFactor::SrcAlpha, Runic::BlendFactor::OneMinusSrcAlpha);
+        _skyBox = SkyBox::Create(
+            _context,
+            Runic::TextureManager::FindCubeMap(
+                _context,
+                {
+                    "skybox/right.jpg",
+                    "skybox/left.jpg",
+                    "skybox/top.jpg",
+                    "skybox/bottom.jpg",
+                    "skybox/front.jpg",
+                    "skybox/back.jpg",
+                }));
+
+        _skyBoxShader = Runic::ShaderManager::Find(_context, "SkyBox", "SkyBox");
 
         _cube = Runic::Graphics::Cube::Create(_context);
-        _cube->addTexture("texture1", "textures/container.jpg", {});
-
-        _plane = Runic::Graphics::Plane::Create(_context);
-        _plane->addTexture("texture1", "textures/metal.png", {});
-        _plane->scale    = {5.0F, 1.0F, 5.0F};
-        _plane->position = {0.0F, -0.501F, 0.0F};
+        _cube->addTexture("texture1", "container.jpg", {});
 
         _shader = Runic::ShaderManager::Find(_context, "Model", "Discard");
     }
@@ -223,13 +318,13 @@ public:
         _context->setClearColor(Runic::Color::Gray1);
         _context->clear();
 
-        _plane->draw(*_shader, _camera);
-
-        _cube->position = {-1.0F, 0.0F, -1.0F};
         _cube->draw(*_shader, _camera);
 
-        _cube->position = {2.0F, 0.0F, 0.0F};
-        _cube->draw(*_shader, _camera);
+        SkyBoxCamera skyCam(_camera);
+
+        _context->setDepthFunction(Runic::DepthFunction::LEqual);
+        _skyBox->draw(*_skyBoxShader, skyCam);
+        _context->setDepthFunction(Runic::DepthFunction::Less);
 
         _frameBuffer->unbind();
 
@@ -247,8 +342,10 @@ private:
     std::unique_ptr<Screen> _screen;
     bool _wireframe = false;
 
+    std::unique_ptr<SkyBox> _skyBox;
+    std::shared_ptr<Runic::ShaderProgram> _skyBoxShader;
+
     std::unique_ptr<Runic::Graphics::Cube> _cube;
-    std::unique_ptr<Runic::Graphics::Plane> _plane;
     std::shared_ptr<Runic::ShaderProgram> _shader;
     Runic::Camera _camera;
 };

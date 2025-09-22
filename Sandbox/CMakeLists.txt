@@ -27,10 +27,18 @@ add_custom_target(
     "${CMAKE_CURRENT_SOURCE_DIR}/models/" "$<TARGET_FILE_DIR:Sandbox>/models"
   COMMENT "Copying models if different...")
 
+add_custom_target(
+  copy_cubemaps
+  COMMAND
+    ${CMAKE_COMMAND} -E copy_directory_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/cubemaps/"
+    "$<TARGET_FILE_DIR:Sandbox>/cubemaps"
+  COMMENT "Copying cubemaps if different...")
+
 add_executable(Sandbox src/Sandbox.cpp)
 
 target_link_libraries(Sandbox PRIVATE Runic)
 
-add_dependencies(Sandbox copy_shaders copy_textures copy_models)
+add_dependencies(Sandbox copy_shaders copy_textures copy_models copy_cubemaps)
 
 install(TARGETS Sandbox DESTINATION bin)

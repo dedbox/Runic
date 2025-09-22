@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Runic/Renderer/CubeMap.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
 #include "Runic/Renderer/ShaderProgram.hpp"
 #include "Runic/Renderer/Texture.hpp"
@@ -43,6 +44,12 @@ public:
             _textures.emplace_back(name, texture);
     }
 
+    void addCubeMap(const std::string& name, const std::shared_ptr<CubeMap>& cubeMap)
+    {
+        if (cubeMap)
+            _cubeMaps.emplace_back(name, cubeMap);
+    }
+
     void draw(const ShaderProgram& shaderProgram) const
     {
         shaderProgram.bind();
@@ -56,6 +63,16 @@ public:
             texture->bind();
         }
 
+        const size_t n = _textures.size();
+
+        for (const auto&& [i, binding] : _cubeMaps | std::ranges::views::enumerate)
+        {
+            _context->activateTextureUnit(n + i);
+            const auto& [name, cubeMap] = binding;
+            shaderProgram.setUniform(name, static_cast<int>(n + i));
+            cubeMap->bind();
+        }
+
         _vertexArray->draw();
 
         _vertexArray->unbind();
@@ -65,6 +82,7 @@ public:
 private:
     std::unique_ptr<VertexArray> _vertexArray;
     std::vector<std::pair<std::string, std::shared_ptr<Texture>>> _textures;
+    std::vector<std::pair<std::string, std::shared_ptr<CubeMap>>> _cubeMaps;
 };
 
 } // namespace Runic

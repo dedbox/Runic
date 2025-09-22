@@ -30,6 +30,18 @@ public:
 
     bool invert = true;
 
+    Camera() = default;
+
+    // prevent moving
+    Camera(Camera&&)            = delete;
+    Camera& operator=(Camera&&) = delete;
+
+    // allow copying
+    Camera(const Camera&)            = default;
+    Camera& operator=(const Camera&) = default;
+
+    virtual ~Camera() = default;
+
     const glm::vec3& position() const { return _position; }
     const glm::vec3& front() const { return _front; }
 
@@ -47,7 +59,7 @@ public:
 
     void zoom(float amount);
 
-    glm::mat4 viewMatrix() const;
+    virtual glm::mat4 viewMatrix() const;
     glm::mat4 projectionMatrix() const;
 
 private:

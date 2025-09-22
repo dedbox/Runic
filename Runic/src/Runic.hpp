@@ -16,6 +16,7 @@
 #include <Runic/Renderer/Attribute.hpp>
 #include <Runic/Renderer/Camera.hpp>
 #include <Runic/Renderer/Color.hpp>
+#include <Runic/Renderer/CubeMap.hpp>
 #include <Runic/Renderer/FrameBuffer.hpp>
 #include <Runic/Renderer/GraphicsContext.hpp>
 #include <Runic/Renderer/GuiLayer.hpp>

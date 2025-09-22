@@ -133,6 +133,7 @@ add_library(
   src/Runic/Graphics/Plane.cpp
   src/Runic/Renderer/Buffer.cpp
   src/Runic/Renderer/Camera.cpp
+  src/Runic/Renderer/CubeMap.cpp
   src/Runic/Renderer/FrameBuffer.cpp
   src/Runic/Renderer/GraphicsContext.cpp
   src/Runic/Renderer/GuiLayer.cpp

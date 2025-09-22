@@ -606,6 +606,55 @@ void GraphicsContext::unbindTexture() const
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+// Cube Map ----------------------------------------------------------------------------------------
+
+RendererId GraphicsContext::createCubeMap(std::vector<SDL_Surface*> surfaces) const
+{
+    Core::Assert(
+        surfaces.size() == 6,
+        "GraphicsContext::createCubeMap called with {} surface, expected 6.",
+        surfaces.size());
+
+    RendererId id = 0;
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+
+    for (const auto& [i, surface] : std::ranges::views::enumerate(surfaces))
+        glTexImage2D(
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+            0,
+            GL_RGBA,
+            surface->w,
+            surface->h,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            surface->pixels);
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return id;
+}
+
+void GraphicsContext::destroyCubeMap(RendererId id) const
+{
+    glDeleteTextures(1, &id);
+}
+
+void GraphicsContext::bindCubeMap(RendererId id) const
+{
+    glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+}
+
+void GraphicsContext::unbindCubeMap() const
+{
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
 // Drawing -----------------------------------------------------------------------------------------
 
 void GraphicsContext::setPolygonMode(PolygonMode mode) const

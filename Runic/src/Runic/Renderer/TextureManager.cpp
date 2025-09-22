@@ -8,15 +8,16 @@ namespace Runic
 {
 
 std::map<TexKey, std::shared_ptr<Texture>> TextureManager::_textures;
+std::map<std::array<std::string, 6>, std::shared_ptr<CubeMap>> TextureManager::_cubeMaps;
 
 void TextureManager::Load(
     GraphicsContext* context, const std::string& path, const TextureSampling& sampling)
 {
-    SDL_Surface* raw = IMG_Load(path.c_str());
+    SDL_Surface* raw = IMG_Load(std::format("textures/{}", path).c_str());
     if (!raw)
         throw SDLException(std::format("Could not load image `texures/{}'", path));
 
-    Core::Info("Image `{}' loaded", path);
+    Core::Info("Image `textures/{}' loaded", path);
     Core::Info("    format: {}", SDL_GetPixelFormatName(raw->format));
 
     if (!SDL_FlipSurface(raw, SDL_FLIP_VERTICAL))
@@ -44,6 +45,42 @@ std::shared_ptr<Texture> TextureManager::Find(
         Load(context, path, sampling);
 
     return _textures[key];
+}
+
+void TextureManager::LoadCubeMap(GraphicsContext* context, std::array<std::string, 6> paths)
+{
+    auto surfaces =
+        paths | std::ranges::views::transform([&](const auto& path) {
+            SDL_Surface* raw = IMG_Load(std::format("cubemaps/{}", path).c_str());
+            if (!raw)
+                throw SDLException(std::format("Could not load image `cubemaps/{}'", path));
+            Core::Info("Image `cubemaps/{}' loaded", path);
+            Core::Info("    format: {}", SDL_GetPixelFormatName(raw->format));
+
+            SDL_Surface* converted = SDL_ConvertSurface(raw, SDL_PIXELFORMAT_RGBA32);
+            if (!converted)
+                throw SDLException(
+                    std::format("Could not convert images `cubemaps/{}' format to RGBA32", path));
+
+            SDL_DestroySurface(raw);
+
+            return converted;
+        }) |
+        std::ranges::to<std::vector>();
+
+    _cubeMaps[paths] = CubeMap::Create(context, surfaces);
+
+    for (const auto& surface : surfaces)
+        SDL_DestroySurface(surface);
+}
+
+std::shared_ptr<CubeMap> TextureManager::FindCubeMap(
+    GraphicsContext* context, const std::array<std::string, 6>& paths)
+{
+    if (!_cubeMaps.contains(paths))
+        LoadCubeMap(context, paths);
+
+    return _cubeMaps[paths];
 }
 
 } // namespace Runic
