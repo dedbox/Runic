@@ -21,52 +21,53 @@ public:
         skyBox->createMesh(Runic::DrawMode::Triangles);
 
         const std::vector<Runic::VertexAttribute> layout{
-            {.type = Runic::AttributeType::Float3, .normalize = false},
+            {.type = Runic::AttributeType::Float3, .normalize = false}, // position
+            {.type = Runic::AttributeType::Float3, .normalize = false}, // normal
         };
 
         // clang-format off
         const std::vector<float> vertices{
-            -1.0F,  1.0F, -1.0F,
-            -1.0F, -1.0F, -1.0F,
-             1.0F, -1.0F, -1.0F,
-             1.0F, -1.0F, -1.0F,
-             1.0F,  1.0F, -1.0F,
-            -1.0F,  1.0F, -1.0F,
+            -0.5F, -0.5F, -0.5F,  0.0F,  0.0F, -1.0F,
+             0.5F, -0.5F, -0.5F,  0.0F,  0.0F, -1.0F, 
+             0.5F,  0.5F, -0.5F,  0.0F,  0.0F, -1.0F, 
+             0.5F,  0.5F, -0.5F,  0.0F,  0.0F, -1.0F, 
+            -0.5F,  0.5F, -0.5F,  0.0F,  0.0F, -1.0F, 
+            -0.5F, -0.5F, -0.5F,  0.0F,  0.0F, -1.0F, 
 
-            -1.0F, -1.0F,  1.0F,
-            -1.0F, -1.0F, -1.0F,
-            -1.0F,  1.0F, -1.0F,
-            -1.0F,  1.0F, -1.0F,
-            -1.0F,  1.0F,  1.0F,
-            -1.0F, -1.0F,  1.0F,
+            -0.5F, -0.5F,  0.5F,  0.0F,  0.0F, 1.0F,
+             0.5F, -0.5F,  0.5F,  0.0F,  0.0F, 1.0F,
+             0.5F,  0.5F,  0.5F,  0.0F,  0.0F, 1.0F,
+             0.5F,  0.5F,  0.5F,  0.0F,  0.0F, 1.0F,
+            -0.5F,  0.5F,  0.5F,  0.0F,  0.0F, 1.0F,
+            -0.5F, -0.5F,  0.5F,  0.0F,  0.0F, 1.0F,
 
-             1.0F, -1.0F, -1.0F,
-             1.0F, -1.0F,  1.0F,
-             1.0F,  1.0F,  1.0F,
-             1.0F,  1.0F,  1.0F,
-             1.0F,  1.0F, -1.0F,
-             1.0F, -1.0F, -1.0F,
+            -0.5F,  0.5F,  0.5F, -1.0F,  0.0F,  0.0F,
+            -0.5F,  0.5F, -0.5F, -1.0F,  0.0F,  0.0F,
+            -0.5F, -0.5F, -0.5F, -1.0F,  0.0F,  0.0F,
+            -0.5F, -0.5F, -0.5F, -1.0F,  0.0F,  0.0F,
+            -0.5F, -0.5F,  0.5F, -1.0F,  0.0F,  0.0F,
+            -0.5F,  0.5F,  0.5F, -1.0F,  0.0F,  0.0F,
 
-            -1.0F, -1.0F,  1.0F,
-            -1.0F,  1.0F,  1.0F,
-             1.0F,  1.0F,  1.0F,
-             1.0F,  1.0F,  1.0F,
-             1.0F, -1.0F,  1.0F,
-            -1.0F, -1.0F,  1.0F,
+             0.5F,  0.5F,  0.5F,  1.0F,  0.0F,  0.0F,
+             0.5F,  0.5F, -0.5F,  1.0F,  0.0F,  0.0F,
+             0.5F, -0.5F, -0.5F,  1.0F,  0.0F,  0.0F,
+             0.5F, -0.5F, -0.5F,  1.0F,  0.0F,  0.0F,
+             0.5F, -0.5F,  0.5F,  1.0F,  0.0F,  0.0F,
+             0.5F,  0.5F,  0.5F,  1.0F,  0.0F,  0.0F,
 
-            -1.0F,  1.0F, -1.0F,
-             1.0F,  1.0F, -1.0F,
-             1.0F,  1.0F,  1.0F,
-             1.0F,  1.0F,  1.0F,
-            -1.0F,  1.0F,  1.0F,
-            -1.0F,  1.0F, -1.0F,
+            -0.5F, -0.5F, -0.5F,  0.0F, -1.0F,  0.0F,
+             0.5F, -0.5F, -0.5F,  0.0F, -1.0F,  0.0F,
+             0.5F, -0.5F,  0.5F,  0.0F, -1.0F,  0.0F,
+             0.5F, -0.5F,  0.5F,  0.0F, -1.0F,  0.0F,
+            -0.5F, -0.5F,  0.5F,  0.0F, -1.0F,  0.0F,
+            -0.5F, -0.5F, -0.5F,  0.0F, -1.0F,  0.0F,
 
-            -1.0F, -1.0F, -1.0F,
-            -1.0F, -1.0F,  1.0F,
-             1.0F, -1.0F, -1.0F,
-             1.0F, -1.0F, -1.0F,
-            -1.0F, -1.0F,  1.0F,
-             1.0F, -1.0F,  1.0F,
+            -0.5F,  0.5F, -0.5F,  0.0F,  1.0F,  0.0F,
+             0.5F,  0.5F, -0.5F,  0.0F,  1.0F,  0.0F,
+             0.5F,  0.5F,  0.5F,  0.0F,  1.0F,  0.0F,
+             0.5F,  0.5F,  0.5F,  0.0F,  1.0F,  0.0F,
+            -0.5F,  0.5F,  0.5F,  0.0F,  1.0F,  0.0F,
+            -0.5F,  0.5F, -0.5F,  0.0F,  1.0F,  0.0F,
         };
         // clang-format on
 
@@ -154,25 +155,25 @@ public:
 
         _screenShader = Runic::ShaderManager::Find(_context, "Screen", "Screen");
 
-        _skyBox = SkyBox::Create(
+        auto cubeMap = Runic::TextureManager::FindCubeMap(
             _context,
-            Runic::TextureManager::FindCubeMap(
-                _context,
-                {
-                    "skybox/right.jpg",
-                    "skybox/left.jpg",
-                    "skybox/top.jpg",
-                    "skybox/bottom.jpg",
-                    "skybox/front.jpg",
-                    "skybox/back.jpg",
-                }));
+            {
+                "skybox/right.jpg",
+                "skybox/left.jpg",
+                "skybox/top.jpg",
+                "skybox/bottom.jpg",
+                "skybox/front.jpg",
+                "skybox/back.jpg",
+            });
+
+        _skyBox = SkyBox::Create(_context, cubeMap);
 
         _skyBoxShader = Runic::ShaderManager::Find(_context, "SkyBox", "SkyBox");
 
         _cube = Runic::Graphics::Cube::Create(_context);
-        _cube->addTexture("texture1", "container.jpg", {});
+        _cube->addCubeMap("skyBox", cubeMap);
 
-        _shader = Runic::ShaderManager::Find(_context, "Model", "Discard");
+        _shader = Runic::ShaderManager::Find(_context, "EnvReflect", "EnvReflect");
     }
 
     void attach() override
@@ -318,6 +319,10 @@ public:
         _context->setClearColor(Runic::Color::Gray1);
         _context->clear();
 
+        _shader->bind();
+        _shader->setUniform("cameraPosition", _camera.position());
+        _shader->unbind();
+
         _cube->draw(*_shader, _camera);
 
         SkyBoxCamera skyCam(_camera);
@@ -329,7 +334,6 @@ public:
         _frameBuffer->unbind();
 
         // screen
-
         _context->setClearColor(Runic::Color::Blue);
         _context->clear();
 

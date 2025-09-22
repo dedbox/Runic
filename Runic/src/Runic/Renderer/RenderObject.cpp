@@ -33,6 +33,11 @@ void RenderObject::addTexture(
     mesh->addTexture(name, TextureManager::Find(_context, path, sampling));
 }
 
+void RenderObject::addCubeMap(const std::string& name, const std::shared_ptr<CubeMap>& cubeMap)
+{
+    mesh->addCubeMap(name, cubeMap);
+}
+
 glm::mat4 RenderObject::modelMatrix() const
 {
     glm::mat4 model(1.0F);

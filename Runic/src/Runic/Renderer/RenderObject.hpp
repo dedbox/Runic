@@ -3,6 +3,7 @@
 #include "glm/ext/matrix_float4x4.hpp"
 
 #include "Runic/Renderer/Camera.hpp"
+#include "Runic/Renderer/CubeMap.hpp"
 #include "Runic/Renderer/GraphicsContext.hpp"
 #include "Runic/Renderer/Mesh.hpp"
 #include "Runic/Renderer/ShaderProgram.hpp"
@@ -35,6 +36,8 @@ public:
 
     void addTexture(
         const std::string& name, const std::string& path, const TextureSampling& sampling);
+
+    void addCubeMap(const std::string& name, const std::shared_ptr<CubeMap>& cubeMap);
 
     glm::mat4 modelMatrix() const;
 
