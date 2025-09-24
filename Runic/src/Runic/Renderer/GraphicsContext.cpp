@@ -380,6 +380,17 @@ void GraphicsContext::unbindIndexBuffer() const
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
+// Uniform Buffer ----------------------------------------------------------------------------------
+
+RendererId GraphicsContext::createUniformBuffer(size_t size, BufferUsage usage) const
+{
+    RendererId id = 0;
+    glGenBuffers(1, &id);
+    glBindBuffer(GL_UNIFORM_BUFFER, id);
+    glBufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(size), nullptr, to_GLenum(usage));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    return id;
+}
 
 // Shader ------------------------------------------------------------------------------------------
 
@@ -526,6 +537,13 @@ RendererId GraphicsContext::getUniformLocation(RendererId id, const std::string&
         Core::Error("Could not find uniform `{}'!", name);
     return location;
 }
+
+// Shader Uniform Block ----------------------------------------------------------------------------
+
+RendererId GraphicsContext::getUniformBlockId(RendererId id, const std::string& name) {}
+
+void setUniformBlockBindingPoint(
+    RendererId programId, RendererId uniformBlockId, size_t bindingPoint);
 
 // Texture -----------------------------------------------------------------------------------------
 

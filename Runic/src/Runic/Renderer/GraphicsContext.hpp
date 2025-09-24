@@ -414,7 +414,6 @@ public:
     void clear() const;
 
     // Vertex Array
-
     RendererId createVertexArray() const;
     void destroyVertexArray(RendererId id) const;
 
@@ -422,7 +421,6 @@ public:
     void unbindVertexArray() const;
 
     // Vertex Attribute
-
     void enableVertexAttribute(uint32_t index) const;
     void defineVertexAttributeData(
         uint32_t index,
@@ -433,26 +431,25 @@ public:
         const void* offset) const;
 
     // Buffer
-
     void destroyBuffer(RendererId id) const;
 
     // Vertex Buffer
-
     RendererId createVertexBuffer(const void* data, size_t size, BufferUsage usage) const;
 
     void bindVertexBuffer(RendererId id) const;
     void unbindVertexBuffer() const;
 
     // Index Buffer
-
     RendererId createIndexBuffer(
         const void* data, size_t count, IndexType type, BufferUsage usage) const;
 
     void bindIndexBuffer(RendererId id) const;
     void unbindIndexBuffer() const;
 
-    // Shader
+    // Uniform Buffer
+    RendererId createUniformBuffer(size_t size, BufferUsage usage) const;
 
+    // Shader
     RendererId createShader(ShaderType type) const;
     void destroyShader(RendererId id) const;
 
@@ -460,7 +457,6 @@ public:
     std::string getShaderInfoLog(RendererId id) const;
 
     // Shader Program
-
     RendererId createShaderProgram() const;
     void destroyShaderProgram(RendererId id) const;
 
@@ -473,7 +469,6 @@ public:
     void useShaderProgram(RendererId id) const;
 
     // Shader Uniform
-
     void setUniform(RendererId id, bool value) const;
     void setUniform(RendererId id, int value) const;
     void setUniform(RendererId id, glm::ivec2 value) const;
@@ -488,8 +483,12 @@ public:
 
     RendererId getUniformLocation(RendererId id, const std::string& name) const;
 
-    // Texture
+    // Shader Uniform Block
+    RendererId getUniformBlockId(RendererId id, const std::string& name);
+    void setUniformBlockBindingPoint(
+        RendererId programId, RendererId uniformBlockId, size_t bindingPoint);
 
+    // Texture
     RendererId createTexture(int width, int height) const;
     RendererId createTexture(SDL_Surface* surface) const;
     void destroyTexture(RendererId id) const;
@@ -510,7 +509,6 @@ public:
     void unbindTexture() const;
 
     // Cube Map
-
     RendererId createCubeMap(std::vector<SDL_Surface*> surfaces) const;
     void destroyCubeMap(RendererId id) const;
 
@@ -518,14 +516,12 @@ public:
     void unbindCubeMap() const;
 
     // Drawing
-
     void setPolygonMode(PolygonMode mode) const;
 
     void drawVertices(DrawMode mode, uint32_t first, size_t count);
     void drawIndexed(DrawMode mode, size_t count, IndexType type, const void* offset) const;
 
     // Frame Buffer
-
     RendererId createFrameBuffer() const;
     void destroyFrameBuffer(RendererId id) const;
 
@@ -543,7 +539,6 @@ public:
     bool isFrameBufferComplete() const;
 
     // Render Buffer
-
     RendererId createRenderBuffer(int width, int height) const;
     void destroyRenderBuffer(RendererId id) const;
 
